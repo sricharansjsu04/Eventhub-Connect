@@ -1,12 +1,19 @@
 import React, { useState, useEffect, useRef } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { BrowserRouter as Router, Route, Routes, Link, useNavigate } from 'react-router-dom';
 import { Button, Card, Container, Row, Col, Form, Navbar } from 'react-bootstrap';
 import './App.css';
-import { BrowserRouter as Router, Route, Routes, Link, useNavigate } from 'react-router-dom';
+import { AuthenticationDetails, CognitoUser, CognitoUserPool } from 'amazon-cognito-identity-js';
+import LoginForm from './components/Auth/LoginForm';
+import RegistrationForm from './components/Auth/RegistrationForm';
 import EventDetails from './components/Events/EventDetails';
-import HostEvent from "./components/Events/HostEvent";
+import HostEvent from './components/Events/HostEvent';
+// Other imports if necessary
 
-
+const userPool = new CognitoUserPool({
+  UserPoolId: 'us-east-1_nq7u4nqww', // Replace with your User Pool Id
+  ClientId: '41tv9idcmda9nen7v33tsfbhhj', // Replace with your Client Id
+});
 
 const VenueCard = ({ venue }) => {
     const navigate = useNavigate(); // Hook to navigate programmatically
@@ -135,12 +142,38 @@ const VenueFilter = ({ onSportTypeChange, onPoolSizeChange, onApplyFilters }) =>
 );
 
 
-
-const App = () => {
+function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userType, setUserType] = useState(null);
+  const [activeTab, setActiveTab] = useState('login');
   const [venuesData, setVenuesData] = useState(null);
   const [filteredVenues, setFilteredVenues] = useState([]);
-
   const apiCalled = useRef(false);
+  const [showSignIn, setShowSignIn] = useState(true);
+
+  // Function to handle login
+  const handleLogin = (username, password) => {
+    const user = new CognitoUser({ Username: username, Pool: userPool });
+    const authenticationDetails = new AuthenticationDetails({ Username: username, Password: password });
+
+    user.authenticateUser(authenticationDetails, {
+      onSuccess: (session) => {
+        console.log('Authentication Successful!', session);
+        setIsAuthenticated(true);
+        setUserType('playpal user'); // Determine and set user type based on Cognito groups or other criteria
+      },
+      onFailure: (err) => {
+        console.error('Authentication Failed!', err);
+      }
+    });
+  };
+
+  // Function to switch between login and register tabs
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+  };
+
+  // Fetch data logic from your friend's code
   useEffect(() => {
     if (!apiCalled.current) {
       async function fetchData() {
@@ -157,14 +190,14 @@ const App = () => {
     }
   }, []);
 
-     
-
   const [sportTypeFilter, setSportTypeFilter] = useState('');
   const [poolSizeFilter, setPoolSizeFilter] = useState('');
 
+  const toggleForms = () => setShowSignIn(!showSignIn);
+
   useEffect(() => {
     setFilteredVenues(venuesData);
-},[venuesData])
+  },[venuesData])
 
   const applyFilters = () => {
     const filteredResults = venuesData.filter((venue) => {
@@ -176,56 +209,77 @@ const App = () => {
   };
 const loggedInUser = "me1";
 
-  return (
+return (
+  <div className="app-background">
     <Router>
-      <div>
-        <Navbar bg="dark" variant="dark">
-        <Navbar.Brand as={Link} to="/" style={{marginLeft:"20px"}}>
-            PlayPals
-          </Navbar.Brand>
-          <Navbar.Collapse className="justify-content-end">
-            <Navbar.Text style={{marginRight:"20px"}}>
-              Logged in as: {loggedInUser}
-            </Navbar.Text>
-          </Navbar.Collapse>
-        </Navbar>
-        <Container fluid className="mt-4">
-          <Routes>
-            <Route
-              path="/"
-              element={
-                <div>
-                  <HostButton
-                    loggedInUser={loggedInUser}
-                    venuesData={venuesData}
-                    setFilteredVenues={setFilteredVenues}
-                  />
-                  <Row>
-                    <Col md={3}>
-                      <VenueFilter
-                        onSportTypeChange={(e) => setSportTypeFilter(e.target.value)}
-                        onPoolSizeChange={(e) => setPoolSizeFilter(e.target.value)}
-                        onApplyFilters={() => applyFilters()}
-                      />
-                    </Col>
-                    <Col md={9}>
-                      <VenueList venues={filteredVenues} />
-                    </Col>
-                  </Row>
-                </div>
-              }
+      {!isAuthenticated ? (
+        <div className="form-container">
+          {showSignIn ? (
+            // Sign In Form
+            <div className="form-card">
+              <img src="/playpal_logo.png" alt="Playpal Logo" className="logo" />
+              <LoginForm onLogin={handleLogin} />
+              <button onClick={toggleForms}>Sign Up</button>
+            </div>
+          ) : (
+            // Sign Up Form
+            <div className="form-card">
+              <img src="/playpal_logo.png" alt="Playpal Logo" className="logo" />
+              <RegistrationForm />
+              <button onClick={toggleForms}>Sign In</button>
+            </div>
+          )}
+        </div>
+      ) : (
+        <div>
+          <Navbar bg="dark" variant="dark">
+          <Navbar.Brand as={Link} to="/" style={{marginLeft:"20px"}}>
+              PlayPals
+            </Navbar.Brand>
+            <Navbar.Collapse className="justify-content-end">
+              <Navbar.Text style={{marginRight:"20px"}}>
+                Logged in as: {loggedInUser}
+              </Navbar.Text>
+            </Navbar.Collapse>
+          </Navbar>
+          <Container fluid className="mt-4">
+            <Routes>
+              <Route
+                path="/"
+                element={
+                  <div>
+                    <HostButton
+                      loggedInUser={loggedInUser}
+                      venuesData={venuesData}
+                      setFilteredVenues={setFilteredVenues}
+                    />
+                    <Row>
+                      <Col md={3}>
+                        <VenueFilter
+                          onSportTypeChange={(e) => setSportTypeFilter(e.target.value)}
+                          onPoolSizeChange={(e) => setPoolSizeFilter(e.target.value)}
+                          onApplyFilters={() => applyFilters()}
+                        />
+                      </Col>
+                      <Col md={9}>
+                        <VenueList venues={filteredVenues} />
+                      </Col>
+                    </Row>
+                  </div>
+                }
+              />
+               <Route path="/event/:id" element={<EventDetails venues={venuesData} />} />
+               <Route
+              path="/host-event"
+              element={<HostEvent />}
             />
-             <Route path="/event/:id" element={<EventDetails venues={venuesData} />} />
-             <Route
-            path="/host-event"
-            element={<HostEvent />}
-          />
-          </Routes>
-        </Container>
-      </div>
+            </Routes>
+          </Container>
+        </div>
+      )}
     </Router>
-  );
-};
-
-
+  </div>
+);
+}
 export default App;
+
