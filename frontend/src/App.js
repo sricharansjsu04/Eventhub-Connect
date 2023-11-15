@@ -158,7 +158,6 @@ const App = () => {
   }, []);
 
      
-
   const [sportTypeFilter, setSportTypeFilter] = useState('');
   const [poolSizeFilter, setPoolSizeFilter] = useState('');
 
