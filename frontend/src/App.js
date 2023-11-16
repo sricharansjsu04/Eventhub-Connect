@@ -143,6 +143,7 @@ const VenueFilter = ({ onSportTypeChange, onPoolSizeChange, onApplyFilters }) =>
   </Form>
 );
 
+
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userType, setUserType] = useState(null);
