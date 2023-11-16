@@ -8,12 +8,14 @@ import LoginForm from './components/Auth/LoginForm';
 import RegistrationForm from './components/Auth/RegistrationForm';
 import EventDetails from './components/Events/EventDetails';
 import HostEvent from './components/Events/HostEvent';
+import EmailVerificationForm from './components/Auth/EmailVerificationForm';
 // Other imports if necessary
 
 const userPool = new CognitoUserPool({
-  UserPoolId: 'us-east-1_nq7u4nqww', // Replace with your User Pool Id
-  ClientId: '41tv9idcmda9nen7v33tsfbhhj', // Replace with your Client Id
+  UserPoolId: 'us-east-1_cPUiK1Y6C', // Replace with your User Pool Id
+  ClientId: '2gfac6rthhbsj9gf791rt85l7o', // Replace with your Client Id
 });
+
 
 const VenueCard = ({ venue }) => {
     const navigate = useNavigate(); // Hook to navigate programmatically
@@ -149,6 +151,16 @@ function App() {
   const [filteredVenues, setFilteredVenues] = useState([]);
   const apiCalled = useRef(false);
   const [showSignIn, setShowSignIn] = useState(true);
+  const [isVerificationRequired, setIsVerificationRequired] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
+  const [userData, setUserData] = useState({
+    username: '',
+    email: '',
+    password: '',
+    firstName: '',
+    lastName: '',
+    role: ''
+  });
 
   // Function to handle login
   const handleLogin = (username, password) => {
@@ -189,6 +201,33 @@ function App() {
     }
   }, []);
 
+  // Call this function upon successful registration
+  const handleRegistrationComplete = (username) => {
+    setIsVerificationRequired(true);
+    setCurrentUser(username);
+  };
+
+  // Call this function after the user has successfully verified their email
+  const handleVerificationComplete = async () => {
+    setIsVerificationRequired(false);
+    setIsAuthenticated(true);
+    
+    try {
+      const response = await fetch('http://localhost:3001/users/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(userData)
+      });
+  
+      const data = await response.json();
+      console.log('User created in database:', data);
+      // Handle success - maybe navigate to the home page or show a success message
+    } catch (error) {
+      console.error('Error:', error);
+      // Handle error - show error message to user
+    }
+  };
+
   const [sportTypeFilter, setSportTypeFilter] = useState('');
   const [poolSizeFilter, setPoolSizeFilter] = useState('');
 
@@ -212,23 +251,32 @@ return (
   <div className="app-background">
     <Router>
       {!isAuthenticated ? (
-        <div className="form-container">
-          {showSignIn ? (
-            // Sign In Form
-            <div className="form-card">
-              <img src="/playpal_logo.png" alt="Playpal Logo" className="logo" />
-              <LoginForm onLogin={handleLogin} />
-              <button onClick={toggleForms}>Sign Up</button>
-            </div>
-          ) : (
-            // Sign Up Form
-            <div className="form-card">
-              <img src="/playpal_logo.png" alt="Playpal Logo" className="logo" />
-              <RegistrationForm />
-              <button onClick={toggleForms}>Sign In</button>
-            </div>
-          )}
-        </div>
+        !isVerificationRequired ? (
+          <div className="form-container">
+            {showSignIn ? (
+              // Sign In Form
+              <div className="form-card">
+                <img src="/playpal_logo.png" alt="Playpal Logo" className="logo" />
+                  <LoginForm onLogin={handleLogin} />
+                <button onClick={toggleForms}>Sign Up</button>
+              </div>
+            ) : (
+              // Sign Up Form
+              <div className="form-card">
+                <img src="/playpal_logo.png" alt="Playpal Logo" className="logo" />
+                <RegistrationForm onRegistrationComplete={handleRegistrationComplete} setUserData={setUserData}/>
+                <button onClick={toggleForms}>Sign In</button>
+              </div>
+            )}
+          </div>
+        ) : (
+          // Email Verification Form
+          <EmailVerificationForm 
+            username={currentUser} 
+            userPool={userPool} 
+            onVerified={handleVerificationComplete} 
+          />
+        )
       ) : (
         <div>
           <Navbar bg="dark" variant="dark">
@@ -279,6 +327,10 @@ return (
     </Router>
   </div>
 );
+
+
+
+
 }
 export default App;
 
