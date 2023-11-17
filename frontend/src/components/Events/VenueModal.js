@@ -10,18 +10,17 @@ const VenueModal = ({ showModal, formData, selectedVenue, closeModal }) => {
   const [selectedPoolSize, setSelectedPoolSize] = useState('');
   const [poolSizeError, setPoolSizeError] = useState('');
 
+  const [selectedCourt, setSelectedCourt] = useState('');
+
+  // console.log(selectedVenue)
   useEffect(() => {
     const bookVenue = () => {
-      if (selectedVenue != null) {
+      if (selectedVenue != null && selectedCourt !== '') {
         setLoading(true);
-        console.log(selectedVenue);
-        fetch('http://localhost:3500/book-venue', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(selectedVenue),
-        })
+        console.log(selectedVenue,selectedCourt)
+        var api = 'https://pbh79m29ck.execute-api.us-east-2.amazonaws.com/Test/api/getSlotsByPlayAreaAndCourt?playAreaId='+selectedVenue.id+'&courtId='+selectedCourt+'&inputDate='+formData.date+'';
+        console.log(api);
+        fetch(api)
           .then((response) => response.json())
           .then((data) => {
             setResponse(data);
@@ -36,7 +35,7 @@ const VenueModal = ({ showModal, formData, selectedVenue, closeModal }) => {
     };
 
     bookVenue();
-  }, [selectedVenue]);
+  }, [selectedVenue, selectedCourt]);
 
   const handleSlotChange = (event) => {
     setSelectedSlot(event.target.value);
@@ -55,8 +54,7 @@ const VenueModal = ({ showModal, formData, selectedVenue, closeModal }) => {
   };
 
   const handleBookVenue = () => {
-    // Validate if selected pool size is less than or equal to formData pool size
-    if (parseInt(selectedPoolSize) <= parseInt(selectedVenue.poolSize)) {
+
       // Prepare data for the POST request
       const requestData = {
         formData,
@@ -81,10 +79,7 @@ const VenueModal = ({ showModal, formData, selectedVenue, closeModal }) => {
         .catch((error) => {
           console.error('Error:', error);
         });
-    } else {
-      // Handle validation error (e.g., show an alert)
-      alert('Selected Pool Size cannot be greater than the available Pool Size.');
-    }
+   
   };
 
   const modalStyle = {
@@ -98,7 +93,7 @@ const VenueModal = ({ showModal, formData, selectedVenue, closeModal }) => {
 
   const carouselStyle = {
     width: '100%',
-    height: '60%', // Adjust this value as needed
+    height: '100%', // Adjust this value as needed
     margin: 'auto',
   };
 
@@ -116,11 +111,10 @@ const VenueModal = ({ showModal, formData, selectedVenue, closeModal }) => {
         <Modal.Title>Venue Slot Booking</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        {loading ? (
-          <Spinner />
-        ) : response && selectedVenue ? (
           <Row>
             <Col xs={6}>
+            {selectedVenue && selectedVenue.photoUrl && selectedVenue.photoUrl.length > 0 && (
+            <div style={{ width: '380px', height: '400px', overflow: 'hidden', borderRadius: '10px' }}>
               <Carousel style={carouselStyle} className="test">
                 {selectedVenue.photoUrl.map((photo, index) => (
                   <Carousel.Item key={index}>
@@ -128,19 +122,38 @@ const VenueModal = ({ showModal, formData, selectedVenue, closeModal }) => {
                   </Carousel.Item>
                 ))}
               </Carousel>
+              </div>
+              )}
             </Col>
             <Col xs={6}>
+            {selectedVenue && selectedVenue.courts ? (
               <div>
+
+              {console.log("This is the selected venue",selectedVenue)}
+              <label>Select a court:</label>
+                <select value={selectedCourt}  onChange={(e) => setSelectedCourt(e.target.value)}>
+                  <option value="">Select a court</option>
+                  {selectedVenue.courts.map((court, index) => (
+                    <option key={index} value={court}>
+                      {court}
+                    </option>
+                  ))}
+                </select>
+                <br />
+                {selectedCourt && (
+                  <div>
                 <label>Select a slot:</label>
                 <select value={selectedSlot} onChange={handleSlotChange}>
                   <option value="">Select a slot</option>
                   {slots.map((slot, index) => (
-                    <option key={index} value={slot.startTime} disabled={!slot.vacant}>
-                      {slot.label}
+                    <option key={index} value={slot.startTime}>
+                      {slot.startTime} - {slot.endTime}
                     </option>
                   ))}
                 </select>
-                <p></p>
+                
+              
+                <br/>
                 <label>Enter Pool Size:</label>
                 <input
                   type="number"
@@ -148,14 +161,14 @@ const VenueModal = ({ showModal, formData, selectedVenue, closeModal }) => {
                   onChange={handlePoolSizeChange}
                   placeholder={`Maximum ${selectedVenue.poolSize}`}
                 />
+                </div>
+                )}
+               
 
-                {poolSizeError && <div className="error-message" style={{ color: 'red' }}>{poolSizeError}</div>}
-
-
-              </div>
+              </div>):<p>No courts available</p>}
             </Col>
           </Row>
-        ) : null}
+        
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={closeModal}>

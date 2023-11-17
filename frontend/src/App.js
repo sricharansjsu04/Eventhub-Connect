@@ -9,6 +9,10 @@ import RegistrationForm from './components/Auth/RegistrationForm';
 import EmailVerificationForm from './components/Auth/EmailVerificationForm';
 import PlayerHome from './components/Events/PlayerHome';
 
+const VenueCard = ({ venue, isCreatedByUser }) => {
+  const navigate = useNavigate();
+
+  const handleCardClick = () => {
 
 
 const userPool = new CognitoUserPool({
@@ -50,17 +54,20 @@ function App() {
   };
 
 
+
   // Call this function upon successful registration
   const handleRegistrationComplete = (username) => {
     setIsVerificationRequired(true);
     setCurrentUser(username);
   };
 
+
   // Call this function after the user has successfully verified their email
   const handleVerificationComplete = async () => {
     setIsVerificationRequired(true);
     setShowVerificationSuccess(true);
     //setIsAuthenticated(true);
+
     
     try {
       const response = await fetch('http://localhost:3001/users/register', {
@@ -72,6 +79,7 @@ function App() {
       const data = await response.json();
       console.log('User created in database:', data);
       // Handle success - maybe navigate to the home page or show a success message
+
 
       // Fetch sports data here and store it in state
 
@@ -143,6 +151,7 @@ return (
       </Routes>
     </div>
 );
+
 
 }
 export default AppWrapper;

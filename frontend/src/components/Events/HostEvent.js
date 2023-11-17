@@ -1,57 +1,94 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Container, Form, Button, Row, Col, Card } from 'react-bootstrap';
 import VenueModal from './VenueModal';
 
-const venuesData = [
-  {
-    id: 1,
-    name: 'Venue 1',
-    sportType: 'Football',
-    poolSize: 11,
-    location: 'Location 1',
-    photoUrl: ['https://picsum.photos/id/96/200/300'],
-  },
-  {
-    id: 2,
-    name: 'Venue 2',
-    sportType: 'Basketball',
-    poolSize: 5,
-    location: 'Location 2',
-    photoUrl: ['https://picsum.photos/id/96/200/300'],
-  },
-  // Add more venues as needed
-];
+// const venuesData = [
+//   {
+//     id: 5,
+//     name: 'test',
+//     owner: 1,
+//     address1: 'welcome',
+//     address2: 'welcome',
+//     city: 'w',
+//     state: 'w',
+//     country: 'w',
+//     zipcode: 12312,
+//     status: 'Approved',
+//     comments: null,
+//     sports: [ 'Bad minton', 'Football' ]
+//   }
+
+// ];
+
 
 const EventForm = () => {
+  const [venuesData, setVenuesData] = useState([]);
+  const [selectedVenue, setSelectedVenue] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [filteredVenues, setFilteredVenues] = useState([]);
+  const [sports,setSports] = useState([]);
+  const [locations,setLocations] = useState([]);
+
   const [formData, setFormData] = useState({
     sportType: '',
     poolSize: '',
     slotTime: '',
     location: '',
-    date: '', // Add date field
+    date: '',
   });
 
-  const [filteredVenues, setFilteredVenues] = useState([]);
-  const [selectedVenue, setSelectedVenue] = useState(null);
-  const [showModal, setShowModal] = useState(false);
+  useEffect(() => {
+    fetch(`http://localhost:3500/venues/getSports`)
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+        setSports(data.sports);
+        setLocations(data.cities);
+      })
+      .catch((error) => console.error('Error fetching venues:', error));
+  }, []);
+
+  useEffect(() => {
+    // Filter venues based on form data
+    if (Array.isArray(venuesData)) {
+      const filteredResults = venuesData.filter((venue) => {
+        return (
+          (formData.sportType === '' || venue.sports.includes(formData.sportType)) &&
+          (formData.location === '' || venue.city === formData.location)
+        );
+      });
+      console.log("Filtering venues:", filteredResults);
+      setFilteredVenues(filteredResults);
+      console.log(filteredResults)
+    }
+  }, [venuesData, formData]);
 
   const handleFormChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
-    // console.log('Updated FormData:', { ...formData, [name]: value });
   };
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
-    // Filter venues based on form data
-    const filteredResults = venuesData.filter((venue) => {
-      return (
-        (formData.sportType === '' || venue.sportType === formData.sportType) &&
-        (formData.poolSize === '' || venue.poolSize >= parseInt(formData.poolSize)) &&
-        (formData.location === '' || venue.location === formData.location)
-      );
-    });
-    setFilteredVenues(filteredResults);
+
+    // Check if all form fields are filled
+    const { sportType, poolSize, location, date } = formData;
+    
+      // Perform POST request to fetch matching venues from the backend
+      fetch('http://localhost:3500/venues/getVenues', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log(data)
+          setVenuesData(data);
+        })
+        .catch((error) => console.error('Error fetching venues:', error));
+    
   };
 
   const handleVenueClick = (venue) => {
@@ -63,13 +100,11 @@ const EventForm = () => {
     setShowModal(false);
     setSelectedVenue(null);
   };
-
-  const availableSportsTypes = Array.from(new Set(venuesData.map((venue) => venue.sportType)));
-  const availableLocations = Array.from(new Set(venuesData.map((venue) => venue.location)));
-
+  
   return (
     <Container fluid className="mt-4">
       <h2>Host an Event</h2>
+      <h5>Filters</h5>
       <Form onSubmit={handleFormSubmit}>
         <Row>
           <Col>
@@ -77,11 +112,12 @@ const EventForm = () => {
               <Form.Label>Sport Type</Form.Label>
               <Form.Control as="select" name="sportType" onChange={handleFormChange}>
                 <option value="">All</option>
-                {availableSportsTypes.map((sportType) => (
-                  <option key={sportType} value={sportType}>
-                    {sportType}
+                {sports.map((sportType) => (
+                  <option key={sportType.name} value={sportType.name}>
+                    {sportType.name}
                   </option>
                 ))}
+
               </Form.Control>
             </Form.Group>
           </Col>
@@ -90,9 +126,9 @@ const EventForm = () => {
               <Form.Label>Location</Form.Label>
               <Form.Control as="select" name="location" onChange={handleFormChange}>
                 <option value="">All</option>
-                {availableLocations.map((location) => (
-                  <option key={location} value={location}>
-                    {location}
+                {locations.map((location) => (
+                  <option key={location.city} value={location.city}>
+                    {location.city}
                   </option>
                 ))}
               </Form.Control>
@@ -107,7 +143,7 @@ const EventForm = () => {
           Find Venues
         </Button>
       </Form>
-
+      {filteredVenues.length > 0 && (
       <Row className="mt-4">
         {filteredVenues.map((venue) => (
           <Col key={venue.id} md={4}>
@@ -115,17 +151,16 @@ const EventForm = () => {
               <Card.Body>
                 <Card.Title>{venue.name}</Card.Title>
                 <Card.Text>
-                  Sport Type: {venue.sportType}
+                  Sport Type: {venue.sports.join(', ')}
                   <br />
-                  Pool Size: {venue.poolSize}
-                  <br />
-                  Location: {venue.location}
+                  Location: {venue.city}
                 </Card.Text>
               </Card.Body>
             </Card>
           </Col>
         ))}
       </Row>
+      )}
       <VenueModal showModal={showModal} formData={formData} selectedVenue={selectedVenue} closeModal={closeModal} />
     </Container>
   );
