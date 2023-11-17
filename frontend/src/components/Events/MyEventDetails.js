@@ -2,12 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { Container, Button, Row, Col, Carousel, Alert } from 'react-bootstrap';
 import { useParams } from 'react-router-dom';
 
-const EventDetails = ({ venues,loggedInUser }) => {
+const MyEventDetails = ({ venues,loggedInUser }) => {
 
   const { id } = useParams();
   const [events, setEvents] = useState(venues);
-  const [error, setError] = useState(null); 
-  const [successMessage, setSuccessMessage] = useState(null); 
 
   useEffect(() => {
     if (venues) {
@@ -18,36 +16,7 @@ const EventDetails = ({ venues,loggedInUser }) => {
   if (!events) {
     return <div>Error loading data</div>;
   }
-  const handleJoinEvent = async () => {
-    try {
-      const response = await fetch('http://localhost:3500/home/joinEvent', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          event_id: id,
-          // Add user_id and status as needed, you might need to get the user_id from your authentication system
-          username: loggedInUser, // Replace with the actual user_id
-          status: 'Waitlist',
-        }),
-      });
-
-      if (response.ok) {
-        // Handle success, e.g., show a success message
-        setSuccessMessage('Successfully requested to join the event. You will join the event once the host accepts the request.');
-        console.log('Successfully requested to join the event!');
-      } else {
-        // Handle error, e.g., show an error message
-        const errorData = await response.json();
-        throw new Error(errorData.error);
-      }
-      setError(null);
-    } catch (error) {
-      setError(error.message);
-      console.error('Error joining the event:', error);
-    }
-  };
+  
   const event = events.find((venue) => venue.id === parseInt(id, 10));
 
   return (
@@ -55,8 +24,7 @@ const EventDetails = ({ venues,loggedInUser }) => {
       <Container className="main-container rounded p-4 bg-light" style={{ maxWidth: '80%', margin: 'auto' }}>
         <h2 className="mb-4">Event Details</h2>
         <Row>
-        {successMessage && <Alert variant="success">{successMessage}</Alert>}
-        {error && <Alert variant="danger">{error}</Alert>}
+
           <Col md={6} className="mb-4">
           <div className="details-container p-4 rounded bg-light">
           
@@ -95,7 +63,7 @@ const EventDetails = ({ venues,loggedInUser }) => {
       {/* Add more details as needed */}
     </dl>
 
-    <Button variant="primary" onClick={handleJoinEvent}>Request to Join the Event</Button>
+    
   </div>
           </Col>
           <Col md={6}>
@@ -120,4 +88,4 @@ const EventDetails = ({ venues,loggedInUser }) => {
   );
 };
 
-export default EventDetails;
+export default MyEventDetails;
