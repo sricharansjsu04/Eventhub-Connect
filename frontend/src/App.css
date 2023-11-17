@@ -1,3 +1,139 @@
+body, html {
+  height: 100%;
+  margin: 0;
+  font-family: 'Arial', sans-serif; /* Choose a font that fits your design */
+  background: url('../public/bb_bg.jpg') no-repeat center center fixed;
+  background-size: cover; 
+}
+
+/* This will center the card vertically and horizontally */
+.form-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* Use the full height of the viewport */
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+/* Style your card */
+.form-card {
+  background: rgba(255, 255, 255, 0.95); /* Semi-transparent white */
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  width: 100%;
+  max-width: 400px;
+  margin: auto;
+}
+
+/* Logo at the top of the form */
+.logo {
+  width: 150px; /* Adjust as necessary */
+  margin: 0 auto 30px auto;
+  display: block;
+}
+
+input, select {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-family: 'Arial', sans-serif; /* Ensure the font matches that of the input fields */
+  font-size: 16px; /* Match the font size of the input fields */
+  line-height: 1.5; /* Match the line height of the input fields */
+  box-sizing: border-box;
+}
+
+select {
+  width:94%;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background: url('../public/dropdown.png') no-repeat right 0.8em center;
+  background-size: 12px 12px;
+  cursor: pointer;
+}
+
+/* Correct the padding for the select element */
+select {
+  padding-right: 2em; /* Make room for the dropdown arrow */
+}
+
+/* Style the default option to look like placeholder text */
+select option[value=""][disabled] {
+  color: gray;
+}
+
+/* Ensure the color of the select text is the same as that of other inputs */
+select {
+  color: #495057; /* The default text color you're using for inputs */
+}
+
+/* Make sure the non-placeholder options are styled normally */
+select option:not([value=""]) {
+  color: black;
+}
+
+/* Style the focus state for inputs and selects for better accessibility */
+input:focus, select:focus {
+  outline: none;
+  border-color: #0056b3;
+  box-shadow: 0 0 0 2px rgba(0, 86, 179, 0.25);
+}
+
+
+/* Style headings */
+h2 {
+  color: #333;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* Style inputs with more padding and rounded borders for a modern look */
+input {
+  width: calc(100% - 20px);
+  margin-bottom: 15px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+/* Style buttons with your theme color */
+button {
+  width: calc(100% - 20px);
+  padding: 10px;
+  border-radius: 4px;
+  border: none;
+  background-color: #0056b3;
+  color: white;
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #003d82;
+}
+
+/* Remove tab and other styles not needed for the new design */
+/* ... */
+
+/* Add responsiveness for smaller screens */
+@media (max-width: 768px) {
+  .centered-form-container {
+    padding: 10px;
+  }
+
+  .form-card {
+    padding: 20px;
+  }
+
+  input, button {
+    width: 100%;
+  }
+}
+  
   #FilterSubmit{
     margin-top:2%;
   }
@@ -31,3 +167,8 @@
     justify-content: space-between;
     margin-bottom: 10px;
   }
+
+  .confirmation-message {
+    text-align: center;
+  }
+  

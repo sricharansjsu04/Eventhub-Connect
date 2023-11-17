@@ -1,277 +1,158 @@
 import React, { useState, useEffect, useRef } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { BrowserRouter as Router, Route, Routes, Link, useNavigate } from 'react-router-dom';
 import { Button, Card, Container, Row, Col, Form, Navbar } from 'react-bootstrap';
 import './App.css';
-import { BrowserRouter as Router, Route, Routes, Link, useNavigate } from 'react-router-dom';
-import EventDetails from './components/Events/EventDetails';
-import HostEvent from "./components/Events/HostEvent";
-import CreatedEvents from "./components/Events/CreatedEvents";
-import MyEvents from "./components/Events/MyEvents";
-import MyEventDetails from "./components/Events/MyEventDetails";
-import EventHosted from "./components/Events/EventHosted";
+import { AuthenticationDetails, CognitoUser, CognitoUserPool } from 'amazon-cognito-identity-js';
+import LoginForm from './components/Auth/LoginForm';
+import RegistrationForm from './components/Auth/RegistrationForm';
+import EmailVerificationForm from './components/Auth/EmailVerificationForm';
+import PlayerHome from './components/Events/PlayerHome';
 
 const VenueCard = ({ venue, isCreatedByUser }) => {
   const navigate = useNavigate();
 
   const handleCardClick = () => {
 
-      navigate(`/event/${venue.id}`);
-   
-  };
 
-  return (
-    <Col md={12} className="mb-4">
-      <Card onClick={handleCardClick}>
-        <Card.Body className="d-flex align-items-center" style={{ padding: "0px !important" }}>
-          <div className="mr-3">
-            <Card.Img
-              variant="left"
-              src={venue.photoUrl[0]}
-              style={{ width: '150px', height: '150px' }}
-              alt={`Venue ${venue.event_name}`}
-            />
-          </div>
-          <div id="card-body-details">
-            <Card.Title>{venue.event_name}</Card.Title>
-            <Card.Text>
-              Sport Type: {venue.sportType}
-              <br />
-              Pool Size: {venue.current_pool_size} players out of {venue.pool_size}
-              <br />
-              Venue: {venue.name}
-            </Card.Text>
-          </div>
-        </Card.Body>
-      </Card>
-    </Col>
-  );
-};
+const userPool = new CognitoUserPool({
+  UserPoolId: 'us-east-1_cPUiK1Y6C', // Replace with your User Pool Id
+  ClientId: '2gfac6rthhbsj9gf791rt85l7o', // Replace with your Client Id
+});
 
-const VenueList = ({ venues, isCreatedByUser }) => (
-  <Row>
-    {venues != null &&
-      venues.map((venue) => (
-        <VenueCard
-          key={venue.id}
-          venue={venue}
-          isCreatedByUser={isCreatedByUser}
-        />
-      ))}
-  </Row>
-);
-
-
-
-const HostButton = ({ loggedInUser, venuesData, setFilteredVenues, showMyCreatedEvents }) => {
-  const navigate = useNavigate();
-  const [showLiveEvents, setShowLiveEvents] = useState(true);
-  const [showMyEvents, setShowMyEvents] = useState(false);
-  // Remove the local state for showMyCreatedEvents here
-
-  const toggleEvents = (showLive, showMy, showMyCreated) => {
-    setShowLiveEvents(showLive);
-    setShowMyEvents(showMy);
-    // Remove the setShowMyCreatedEvents line
-    applyFilters(showLive, showMy, showMyCreated);
-  };
-
-  const handleMyEventsClick = () => {
-    // Set the URL and render the component
-    navigate('/myEvents'); // Update the URL as needed
-  };
-
-
-  const handleMyCreatedEventsClick = () => {
-    // Set the URL and render the component
-    navigate('/myHostedEvents'); // Update the URL as needed
-  };
-
-  const applyFilters = (showLive, showMy, showMyCreated) => {
-    let filteredResults;
-
-    if (showLive) {
-      filteredResults = venuesData;
-    } else if (showMy) {
-      filteredResults = venuesData.filter((venue) =>
-        venue.players && venue.players.includes(loggedInUser)
-      );
-    } else if (showMyCreated) {
-      filteredResults = venuesData.filter((venue) => venue.created_user === loggedInUser);
-    }
-
-    console.log("Filtered Results:", filteredResults);
-
-    setFilteredVenues(filteredResults);
-  };
-
-  return (
-    <div className="headingnButton">
-      <div className='ButtonLeftMargin'>
-        <Button
-          variant={showLiveEvents ? 'primary' : 'secondary'}
-          onClick={() => toggleEvents(true, false, false)}
-        >
-          Live Events
-        </Button>
-        <Button
-          variant={showMyEvents ? 'primary' : 'secondary'}
-          onClick={() => handleMyEventsClick()}
-        >
-          My Events
-        </Button>
-        <Button
-          variant={showMyCreatedEvents ? 'primary' : 'secondary'}
-          onClick={() => handleMyCreatedEventsClick()}
-        >
-          My Created Events
-        </Button>
-      </div>
-      <div>
-        <Button className="btn btn-success" onClick={() => navigate('/host-event')}>
-          Host an event
-        </Button>
-      </div>
-    </div>
-  );
-};
-
-const VenueFilter = ({ onSportTypeChange, onPoolSizeChange, onApplyFilters }) => (
-
-  <Form className="sticky-top bg-light p-3">
-    <h5>Event Filters</h5>
-    <Form.Group controlId="sportTypeFilter">
-      <Form.Label>Sport Type</Form.Label>
-      <Form.Control as="select" onChange={onSportTypeChange}>
-        <option value="">All</option>
-        <option value="Football">Football</option>
-        <option value="Bad minton">Badminton</option>
-        {/* Add more sport types as needed */}
-      </Form.Control>
-    </Form.Group>
-    <Form.Group controlId="poolSizeFilter">
-      <Form.Label>Pool Size</Form.Label>
-      <Form.Control
-        type="text"
-        placeholder="Enter number of players"
-        onChange={onPoolSizeChange}
-      />
-    </Form.Group>
-    
-    <Button className='d-flex' variant="primary" onClick={onApplyFilters} id="FilterSubmit">
-      Apply filters
-    </Button>
-  </Form>
-);
-
-
-
-const App = () => {
-  const [venuesData, setVenuesData] = useState(null);
-  const [filteredVenues, setFilteredVenues] = useState([]);
-  const [showMyCreatedEvents, setShowMyCreatedEvents] = useState(false); // Add state for My Created Events
-
-
-  const apiCalled = useRef(false);
-  useEffect(() => {
-    if (!apiCalled.current) {
-      async function fetchData() {
-        try {
-          const response = await fetch('http://localhost:3500/home/getAllEvents');
-          const result = await response.json();
-          setVenuesData(result);
-        } catch (error) {
-          console.error('Error fetching data:', error);
-        }
-        apiCalled.current = true;
-      }
-      fetchData();
-    }
-  }, []);
-
-     
-  const [sportTypeFilter, setSportTypeFilter] = useState('');
-  const [poolSizeFilter, setPoolSizeFilter] = useState('');
-
-  useEffect(() => {
-    setFilteredVenues(venuesData);
-},[venuesData])
-
-  const applyFilters = () => {
-    const filteredResults = venuesData.filter((venue) => {
-      const passSportTypeFilter = !sportTypeFilter || venue.sportType === sportTypeFilter;
-      const passPoolSizeFilter = !poolSizeFilter || venue.current_pool_size.toString() >= poolSizeFilter;
-      return passSportTypeFilter && passPoolSizeFilter;
-    });
-    setFilteredVenues(filteredResults);
-  };
-const loggedInUser = "john_doe";
-
+function AppWrapper() {
   return (
     <Router>
-      <div>
-        <Navbar bg="dark" variant="dark">
-        <Navbar.Brand as={Link} to="/" style={{marginLeft:"20px"}}>
-            PlayPals
-          </Navbar.Brand>
-          <Navbar.Collapse className="justify-content-end">
-            <Navbar.Text style={{marginRight:"20px"}}>
-              Logged in as: {loggedInUser}
-            </Navbar.Text>
-          </Navbar.Collapse>
-        </Navbar>
-        <Container fluid className="mt-4">
-          <Routes>
-            <Route
-              path="/"
-              element={
-                <div>
-                  <HostButton
-                    loggedInUser={loggedInUser}
-                    venuesData={venuesData}
-                    setFilteredVenues={setFilteredVenues}
-                    showMyCreatedEvents={showMyCreatedEvents}
-                  />
-                  <Row>
-                    <Col md={3}>
-                      <VenueFilter
-                        onSportTypeChange={(e) => setSportTypeFilter(e.target.value)}
-                        onPoolSizeChange={(e) => setPoolSizeFilter(e.target.value)}
-                        onApplyFilters={() => applyFilters()}
-                      />
-                    </Col>
-                    <Col md={9}>
-                    <VenueList venues={filteredVenues} isCreatedByUser={showMyCreatedEvents} />
-                    </Col>
-                  </Row>
-                </div>
-              }
-            />
-             <Route path="/event/:id" element={<EventDetails venues={venuesData} loggedInUser={loggedInUser}/>} />
-             <Route
-            path="/host-event"
-            element={<HostEvent />}
-          />
-            <Route
-              path="/myHostedEvents/"
-              element={<CreatedEvents loggedInUser={loggedInUser}/>}
-            />
-            <Route
-            path="/myEvents"
-            element={<MyEvents loggedInUser={loggedInUser}/>}
-            />
-            <Route
-          path="/myEvent/:id"
-          element={<MyEventDetails venues={venuesData} loggedInUser={loggedInUser}/>} />
-          <Route
-          path="/myHostedEvent/:id"
-          element={<EventHosted venues={venuesData} loggedInUser={loggedInUser}/>} />
-          </Routes>
-          
-        </Container>
-      </div>
+      <App />
     </Router>
   );
-};
+}
+
+function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userType, setUserType] = useState(null);
+  const [activeTab, setActiveTab] = useState('login');
+  const [venuesData, setVenuesData] = useState(null);
+  const [filteredVenues, setFilteredVenues] = useState([]);
+  const apiCalled = useRef(false);
+  const [showSignIn, setShowSignIn] = useState(true);
+  const [isVerificationRequired, setIsVerificationRequired] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
+  const [userData, setUserData] = useState({
+    username: '',
+    email: '',
+    password: '',
+    firstName: '',
+    lastName: '',
+    role: ''
+  });
+  const [showVerificationSuccess, setShowVerificationSuccess] = useState(false);
+  const toggleForms = () => setShowSignIn(!showSignIn);
+
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+  };
 
 
-export default App;
+
+  // Call this function upon successful registration
+  const handleRegistrationComplete = (username) => {
+    setIsVerificationRequired(true);
+    setCurrentUser(username);
+  };
+
+
+  // Call this function after the user has successfully verified their email
+  const handleVerificationComplete = async () => {
+    setIsVerificationRequired(true);
+    setShowVerificationSuccess(true);
+    //setIsAuthenticated(true);
+
+    
+    try {
+      const response = await fetch('http://localhost:3001/users/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(userData)
+      });
+  
+      const data = await response.json();
+      console.log('User created in database:', data);
+      // Handle success - maybe navigate to the home page or show a success message
+
+
+      // Fetch sports data here and store it in state
+
+    } catch (error) {
+      console.error('Error:', error);
+      // Handle error - show error message to user
+    }
+  };
+
+  const navigate = useNavigate();
+  const onUserSignIn = (username, roleType) => {
+    // Assume roleType comes from the sign-in response
+    setIsAuthenticated(true);
+    console.log(roleType);
+  
+    if (roleType === 'player') {
+      console.log('player login navigating');
+      navigate('/playerHome');
+    } else if (roleType === 'playarea owner') {
+      navigate('/ownerHome'); // You need to define the route for this as well
+    }
+  };
+
+const welcomeMessage = userData.role === 'player' ? 'Happy Playing!' : 'Happy Hosting!';
+return (
+    <div className="app-background">
+      {!isAuthenticated && !isVerificationRequired && (
+        <div className="form-container">
+          {showSignIn ? (
+            <div className="form-card">
+              <img src="/playpal_logo.png" alt="Playpal Logo" className="logo" />
+              <LoginForm onLogin={onUserSignIn} />
+              <button onClick={() => setShowSignIn(false)}>Sign Up</button>
+            </div>
+          ) : (
+            <div className="form-card">
+              <img src="/playpal_logo.png" alt="Playpal Logo" className="logo" />
+              <RegistrationForm onRegistrationComplete={handleRegistrationComplete} setUserData={setUserData}/>
+              <button onClick={() => setShowSignIn(true)}>Sign In</button>
+            </div>
+          )}
+        </div>
+      )}
+      {isVerificationRequired && !showVerificationSuccess && (
+        <EmailVerificationForm 
+          username={currentUser} 
+          userPool={userPool} 
+          onVerified={handleVerificationComplete} 
+        />
+      )}
+      {showVerificationSuccess && (
+        <div className="form-container">
+          <div className="form-card">
+            <img src="/playpal_logo.png" alt="Playpal Logo" className="logo" />
+            <p className="confirmation-message">We have confirmed your email.<br />
+            {welcomeMessage}</p>
+            <button onClick={() => {
+                setShowVerificationSuccess(false);
+                setShowSignIn(true);
+                setIsVerificationRequired(false);
+              }}>Sign In
+            </button>
+          </div>
+        </div>
+      )}
+      <Routes>
+        <Route path="/playerHome" element={<PlayerHome/>} />
+        {/* Define more routes as needed */}
+      </Routes>
+    </div>
+);
+
+
+}
+export default AppWrapper;
+
