@@ -167,3 +167,8 @@ button:hover {
     justify-content: space-between;
     margin-bottom: 10px;
   }
+
+  .confirmation-message {
+    text-align: center;
+  }
+  

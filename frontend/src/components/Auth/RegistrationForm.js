@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { CognitoUserPool, CognitoUserAttribute } from 'amazon-cognito-identity-js';
+import userPool from '../../config/cognitoConfig';
+// const poolData = {
+//   UserPoolId: 'us-east-1_cPUiK1Y6C',
+//   ClientId: '2gfac6rthhbsj9gf791rt85l7o'
+// };
 
-const poolData = {
-  UserPoolId: 'us-east-1_cPUiK1Y6C',
-  ClientId: '2gfac6rthhbsj9gf791rt85l7o'
-};
-
-const userPool = new CognitoUserPool(poolData);
+// const userPool = new CognitoUserPool(poolData);
 
 function RegistrationForm({ onRegistrationComplete, setUserData }) {
   const [formState, setFormState] = useState({

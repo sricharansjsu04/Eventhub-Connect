@@ -6,143 +6,23 @@ import './App.css';
 import { AuthenticationDetails, CognitoUser, CognitoUserPool } from 'amazon-cognito-identity-js';
 import LoginForm from './components/Auth/LoginForm';
 import RegistrationForm from './components/Auth/RegistrationForm';
-import EventDetails from './components/Events/EventDetails';
-import HostEvent from './components/Events/HostEvent';
 import EmailVerificationForm from './components/Auth/EmailVerificationForm';
-// Other imports if necessary
+import PlayerHome from './components/Events/PlayerHome';
+
+
 
 const userPool = new CognitoUserPool({
   UserPoolId: 'us-east-1_cPUiK1Y6C', // Replace with your User Pool Id
   ClientId: '2gfac6rthhbsj9gf791rt85l7o', // Replace with your Client Id
 });
 
-
-const VenueCard = ({ venue }) => {
-    const navigate = useNavigate(); // Hook to navigate programmatically
-
-    const handleCardClick = () => {
-      navigate(`/event/${venue.id}`); // Redirect to event details page with the corresponding id
-    };
-    return(
-    <Col md={12} className="mb-4">
-    <Card onClick={handleCardClick}>
-      <Card.Body className="d-flex align-items-center" style={{padding:"0px !important"}} >
-        <div className="mr-3">
-          <Card.Img
-            variant="left"
-            src={venue.photoUrl[1] }
-            style={{ width: '150px', height: '150px' }}
-            alt={`Venue ${venue.id}`}
-          />
-        </div>
-        <div id="card-body-details">
-          <Card.Title>{venue.name}</Card.Title>
-          <Card.Text> 
-            Sport Type: {venue.sportType}
-            <br />
-            Pool Size: {venue.poolSize} players
-            <br />
-            Venue: {venue.venueName}
-          </Card.Text>
-        </div>
-      </Card.Body>
-    </Card>
-  </Col>
-  );
-    
-};
-  
-const VenueList = ({ venues }) => (
-  <Row>
-
-    {venues!=null && venues.map((venue) => (
-      <VenueCard key={venue.id} venue={venue} />
-    ))}
-  </Row>
-);
-
-const HostButton = ({ loggedInUser, venuesData, setFilteredVenues }) => {
-  const navigate = useNavigate();
-  const [showLiveEvents, setShowLiveEvents] = useState(true);
-  const [sportTypeFilter, setSportTypeFilter] = useState('');
-  const [poolSizeFilter, setPoolSizeFilter] = useState('');
-
-  const toggleEvents = (showLive) => {
-    setShowLiveEvents(showLive);
-    setSportTypeFilter('');
-    setPoolSizeFilter('');
-    applyFilters(showLive); // Call applyFilters to update filteredVenues
-  };
-
-  const applyFilters = (showLive) => {
-    let filteredResults;
-    if (showLive) {
-      // Display all events for "Live Events"
-      filteredResults = venuesData;
-    } else {
-      // Display events where the logged-in user is present for "My Events"
-      filteredResults = venuesData.filter((venue) =>
-        venue.players && venue.players.includes(loggedInUser)
-      );
-    }
-  
-    console.log("Filtered Results:", filteredResults);
-  
-    setFilteredVenues(filteredResults);
-  };
+function AppWrapper() {
   return (
-    <div className="headingnButton">
-      <div className='ButtonLeftMargin'>
-        <Button
-          variant={showLiveEvents ? 'primary' : 'secondary'}
-          onClick={() => toggleEvents(true)}
-        >
-          Live Events
-        </Button>
-        <Button
-          variant={!showLiveEvents ? 'primary' : 'secondary'}
-          onClick={() => toggleEvents(false)}
-        >
-          My Events
-        </Button>
-      </div>
-      <div>
-        <Button className="btn btn-success" onClick={() => navigate('/host-event')}>
-          Host an event
-        </Button>
-      </div>
-    </div>
+    <Router>
+      <App />
+    </Router>
   );
-};
-
-const VenueFilter = ({ onSportTypeChange, onPoolSizeChange, onApplyFilters }) => (
-
-  <Form className="sticky-top bg-light p-3">
-    <h5>Event Filters</h5>
-    <Form.Group controlId="sportTypeFilter">
-      <Form.Label>Sport Type</Form.Label>
-      <Form.Control as="select" onChange={onSportTypeChange}>
-        <option value="">All</option>
-        <option value="Football">Football</option>
-        <option value="Basketball">Basketball</option>
-        {/* Add more sport types as needed */}
-      </Form.Control>
-    </Form.Group>
-    <Form.Group controlId="poolSizeFilter">
-      <Form.Label>Pool Size</Form.Label>
-      <Form.Control
-        type="text"
-        placeholder="Enter number of players"
-        onChange={onPoolSizeChange}
-      />
-    </Form.Group>
-    
-    <Button className='d-flex' variant="primary" onClick={onApplyFilters} id="FilterSubmit">
-      Apply filters
-    </Button>
-  </Form>
-);
-
+}
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -162,45 +42,13 @@ function App() {
     lastName: '',
     role: ''
   });
+  const [showVerificationSuccess, setShowVerificationSuccess] = useState(false);
+  const toggleForms = () => setShowSignIn(!showSignIn);
 
-  // Function to handle login
-  const handleLogin = (username, password) => {
-    const user = new CognitoUser({ Username: username, Pool: userPool });
-    const authenticationDetails = new AuthenticationDetails({ Username: username, Password: password });
-
-    user.authenticateUser(authenticationDetails, {
-      onSuccess: (session) => {
-        console.log('Authentication Successful!', session);
-        setIsAuthenticated(true);
-        setUserType('playpal user'); // Determine and set user type based on Cognito groups or other criteria
-      },
-      onFailure: (err) => {
-        console.error('Authentication Failed!', err);
-      }
-    });
-  };
-
-  // Function to switch between login and register tabs
   const handleTabChange = (tab) => {
     setActiveTab(tab);
   };
 
-  // Fetch data logic from your friend's code
-  useEffect(() => {
-    if (!apiCalled.current) {
-      async function fetchData() {
-        try {
-          const response = await fetch('http://localhost:3500/home');
-          const result = await response.json();
-          setVenuesData(result);
-        } catch (error) {
-          console.error('Error fetching data:', error);
-        }
-        apiCalled.current = true;
-      }
-      fetchData();
-    }
-  }, []);
 
   // Call this function upon successful registration
   const handleRegistrationComplete = (username) => {
@@ -210,8 +58,9 @@ function App() {
 
   // Call this function after the user has successfully verified their email
   const handleVerificationComplete = async () => {
-    setIsVerificationRequired(false);
-    setIsAuthenticated(true);
+    setIsVerificationRequired(true);
+    setShowVerificationSuccess(true);
+    //setIsAuthenticated(true);
     
     try {
       const response = await fetch('http://localhost:3001/users/register', {
@@ -223,115 +72,78 @@ function App() {
       const data = await response.json();
       console.log('User created in database:', data);
       // Handle success - maybe navigate to the home page or show a success message
+
+      // Fetch sports data here and store it in state
+
     } catch (error) {
       console.error('Error:', error);
       // Handle error - show error message to user
     }
   };
 
-  const [sportTypeFilter, setSportTypeFilter] = useState('');
-  const [poolSizeFilter, setPoolSizeFilter] = useState('');
-
-  const toggleForms = () => setShowSignIn(!showSignIn);
-
-  useEffect(() => {
-    setFilteredVenues(venuesData);
-  },[venuesData])
-
-  const applyFilters = () => {
-    const filteredResults = venuesData.filter((venue) => {
-      const passSportTypeFilter = !sportTypeFilter || venue.sportType === sportTypeFilter;
-      const passPoolSizeFilter = !poolSizeFilter || venue.poolSize.toString() === poolSizeFilter;
-      return passSportTypeFilter && passPoolSizeFilter;
-    });
-    setFilteredVenues(filteredResults);
+  const navigate = useNavigate();
+  const onUserSignIn = (username, roleType) => {
+    // Assume roleType comes from the sign-in response
+    setIsAuthenticated(true);
+    console.log(roleType);
+  
+    if (roleType === 'player') {
+      console.log('player login navigating');
+      navigate('/playerHome');
+    } else if (roleType === 'playarea owner') {
+      navigate('/ownerHome'); // You need to define the route for this as well
+    }
   };
-const loggedInUser = "me1";
 
+const welcomeMessage = userData.role === 'player' ? 'Happy Playing!' : 'Happy Hosting!';
 return (
-  <div className="app-background">
-    <Router>
-      {!isAuthenticated ? (
-        !isVerificationRequired ? (
-          <div className="form-container">
-            {showSignIn ? (
-              // Sign In Form
-              <div className="form-card">
-                <img src="/playpal_logo.png" alt="Playpal Logo" className="logo" />
-                  <LoginForm onLogin={handleLogin} />
-                <button onClick={toggleForms}>Sign Up</button>
-              </div>
-            ) : (
-              // Sign Up Form
-              <div className="form-card">
-                <img src="/playpal_logo.png" alt="Playpal Logo" className="logo" />
-                <RegistrationForm onRegistrationComplete={handleRegistrationComplete} setUserData={setUserData}/>
-                <button onClick={toggleForms}>Sign In</button>
-              </div>
-            )}
-          </div>
-        ) : (
-          // Email Verification Form
-          <EmailVerificationForm 
-            username={currentUser} 
-            userPool={userPool} 
-            onVerified={handleVerificationComplete} 
-          />
-        )
-      ) : (
-        <div>
-          <Navbar bg="dark" variant="dark">
-          <Navbar.Brand as={Link} to="/" style={{marginLeft:"20px"}}>
-              PlayPals
-            </Navbar.Brand>
-            <Navbar.Collapse className="justify-content-end">
-              <Navbar.Text style={{marginRight:"20px"}}>
-                Logged in as: {loggedInUser}
-              </Navbar.Text>
-            </Navbar.Collapse>
-          </Navbar>
-          <Container fluid className="mt-4">
-            <Routes>
-              <Route
-                path="/"
-                element={
-                  <div>
-                    <HostButton
-                      loggedInUser={loggedInUser}
-                      venuesData={venuesData}
-                      setFilteredVenues={setFilteredVenues}
-                    />
-                    <Row>
-                      <Col md={3}>
-                        <VenueFilter
-                          onSportTypeChange={(e) => setSportTypeFilter(e.target.value)}
-                          onPoolSizeChange={(e) => setPoolSizeFilter(e.target.value)}
-                          onApplyFilters={() => applyFilters()}
-                        />
-                      </Col>
-                      <Col md={9}>
-                        <VenueList venues={filteredVenues} />
-                      </Col>
-                    </Row>
-                  </div>
-                }
-              />
-               <Route path="/event/:id" element={<EventDetails venues={venuesData} />} />
-               <Route
-              path="/host-event"
-              element={<HostEvent />}
-            />
-            </Routes>
-          </Container>
+    <div className="app-background">
+      {!isAuthenticated && !isVerificationRequired && (
+        <div className="form-container">
+          {showSignIn ? (
+            <div className="form-card">
+              <img src="/playpal_logo.png" alt="Playpal Logo" className="logo" />
+              <LoginForm onLogin={onUserSignIn} />
+              <button onClick={() => setShowSignIn(false)}>Sign Up</button>
+            </div>
+          ) : (
+            <div className="form-card">
+              <img src="/playpal_logo.png" alt="Playpal Logo" className="logo" />
+              <RegistrationForm onRegistrationComplete={handleRegistrationComplete} setUserData={setUserData}/>
+              <button onClick={() => setShowSignIn(true)}>Sign In</button>
+            </div>
+          )}
         </div>
       )}
-    </Router>
-  </div>
+      {isVerificationRequired && !showVerificationSuccess && (
+        <EmailVerificationForm 
+          username={currentUser} 
+          userPool={userPool} 
+          onVerified={handleVerificationComplete} 
+        />
+      )}
+      {showVerificationSuccess && (
+        <div className="form-container">
+          <div className="form-card">
+            <img src="/playpal_logo.png" alt="Playpal Logo" className="logo" />
+            <p className="confirmation-message">We have confirmed your email.<br />
+            {welcomeMessage}</p>
+            <button onClick={() => {
+                setShowVerificationSuccess(false);
+                setShowSignIn(true);
+                setIsVerificationRequired(false);
+              }}>Sign In
+            </button>
+          </div>
+        </div>
+      )}
+      <Routes>
+        <Route path="/playerHome" element={<PlayerHome/>} />
+        {/* Define more routes as needed */}
+      </Routes>
+    </div>
 );
 
-
-
-
 }
-export default App;
+export default AppWrapper;
 
