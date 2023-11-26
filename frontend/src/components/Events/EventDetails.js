@@ -8,10 +8,12 @@ const EventDetails = ({ venues,loggedInUser }) => {
   const [events, setEvents] = useState(venues);
   const [error, setError] = useState(null); 
   const [successMessage, setSuccessMessage] = useState(null); 
+  const [disableJoinButton, setDisableJoinButton] = useState(false);
 
   useEffect(() => {
     if (venues) {
       setEvents(venues);
+
     }
   }, [venues]);
 
@@ -87,7 +89,9 @@ const EventDetails = ({ venues,loggedInUser }) => {
       <dd className="col-sm-8">{event.created_user}</dd>
 
       <dt className="col-sm-4">Current Pool Size:</dt>
-      <dd className="col-sm-8">{event.current_pool_size}</dd>
+      <dd className="col-sm-8" style={{ color: event.current_pool_size < event.pool_size * 0.5 ? 'green' : 'red' }}>
+        {event.current_pool_size} / {event.pool_size}
+      </dd>
 
       <dt className="col-sm-4">Players:</dt>
       <dd className="col-sm-8">{event.players.join(', ')}</dd>
@@ -95,7 +99,7 @@ const EventDetails = ({ venues,loggedInUser }) => {
       {/* Add more details as needed */}
     </dl>
 
-    <Button variant="primary" onClick={handleJoinEvent}>Request to Join the Event</Button>
+    <Button variant="primary" onClick={handleJoinEvent} disabled={event.current_pool_size === event.pool_size}>Request to Join the Event</Button>
   </div>
           </Col>
           <Col md={6}>

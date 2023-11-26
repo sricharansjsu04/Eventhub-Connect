@@ -2,6 +2,10 @@ const express = require("express");
 const app = express();
 const path = require("path");
 const cors = require('cors');
+const http = require('http');
+const socketIO = require('socket.io');
+const server = http.createServer(app);
+const io = socketIO(server);
 
 
 const PORT = process.env.PORT || 3500;
@@ -59,7 +63,6 @@ app.post("/hostEvent", function(req,res){
 })
 
 
-
-app.listen(PORT,()=>{
-    console.log(`Server running on PORT ${PORT}`);
+server.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });

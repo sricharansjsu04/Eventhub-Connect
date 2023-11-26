@@ -1,7 +1,10 @@
 var mysql = require('mysql2');
 var config = require("../config/mySql")
 
-var connection = mysql.createConnection(config.db);
+// var connection = mysql.createConnection(config.db);
+
+
+const pool = mysql.createPool(config.db);
 
 
 // connection.on('error', function(err) {
@@ -14,4 +17,4 @@ var connection = mysql.createConnection(config.db);
 //     }
 // });
 
-module.exports =  connection;
+module.exports =  pool;

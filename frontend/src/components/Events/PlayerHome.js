@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Button, Card, Container, Row, Col, Form, Navbar } from 'react-bootstrap';
-import { BrowserRouter as Router, Route, Routes, Link, useNavigate } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Link, useNavigate, Outlet } from 'react-router-dom';
 import '../../App.css';
 import CreatedEvents from "./CreatedEvents";
 import MyEvents from "./MyEvents";
 import MyEventDetails from "./MyEventDetails";
 import EventHosted from "./EventHosted";
+import EventDetails from "./EventDetails";
+import HostEvent from "./HostEvent";
 
 
 
@@ -15,7 +17,7 @@ const VenueCard = ({ venue, isCreatedByUser }) => {
 
   const handleCardClick = () => {
 
-      navigate(`/event/${venue.id}`);
+      navigate(`../event/${venue.id}`);
    
   };
 
@@ -77,13 +79,13 @@ const HostButton = ({ loggedInUser, venuesData, setFilteredVenues, showMyCreated
 
   const handleMyEventsClick = () => {
     // Set the URL and render the component
-    navigate('/myEvents'); // Update the URL as needed
+    navigate('../myEvents'); // Update the URL as needed
   };
 
 
   const handleMyCreatedEventsClick = () => {
     // Set the URL and render the component
-    navigate('/myHostedEvents'); // Update the URL as needed
+    navigate('../myHostedEvents'); // Update the URL as needed
   };
 
   const applyFilters = (showLive, showMy, showMyCreated) => {
@@ -123,11 +125,11 @@ const HostButton = ({ loggedInUser, venuesData, setFilteredVenues, showMyCreated
           variant={showMyCreatedEvents ? 'primary' : 'secondary'}
           onClick={() => handleMyCreatedEventsClick()}
         >
-          My Created Events
+          Hosted Events
         </Button>
       </div>
       <div>
-        <Button className="btn btn-success" onClick={() => navigate('/host-event')}>
+        <Button className="btn btn-success" onClick={() => navigate('../host-event')}>
           Host an event
         </Button>
       </div>
@@ -205,12 +207,15 @@ function PlayerHome() {
     setFilteredVenues(filteredResults);
   };
 const loggedInUser = "john_doe";
+// shir
+// john_doe
 
   return (
-    <Router>
+
       <div>
+   
         <Navbar bg="dark" variant="dark">
-        <Navbar.Brand as={Link} to="/" style={{marginLeft:"20px"}}>
+        <Navbar.Brand as={Link} to="/playerHome" style={{marginLeft:"20px"}}>
             PlayPals
           </Navbar.Brand>
           <Navbar.Collapse className="justify-content-end">
@@ -249,7 +254,7 @@ const loggedInUser = "john_doe";
              <Route path="/event/:id" element={<EventDetails venues={venuesData} loggedInUser={loggedInUser}/>} />
              <Route
             path="/host-event"
-            element={<HostEvent />}
+            element={<HostEvent loggedInUser={loggedInUser}/>}
           />
             <Route
               path="/myHostedEvents/"
@@ -269,7 +274,6 @@ const loggedInUser = "john_doe";
           
         </Container>
       </div>
-    </Router>
   );
 }
 

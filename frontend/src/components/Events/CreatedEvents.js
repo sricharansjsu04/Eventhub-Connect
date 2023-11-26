@@ -55,7 +55,7 @@ const CreatedEvents = ({loggedInUser}) => {
   
     const handleCardClick = (venueId) => {
       // Redirect to the detailed view of the clicked event
-      navigate(`/myHostedEvent/${venueId}`);
+      navigate(`../myHostedEvent/${venueId}`);
     };
   
     const VenueCard = ({ venue }) => (
@@ -102,7 +102,7 @@ const CreatedEvents = ({loggedInUser}) => {
               onClick={() => {
                 setActiveFilter('liveEvents');
                 // Navigate to the root path ('/') when "Live Events" is clicked
-                navigate('/');
+                navigate('/playerHome');
               }}
             >
               Live Events
@@ -112,7 +112,7 @@ const CreatedEvents = ({loggedInUser}) => {
               onClick={() => {
                 setActiveFilter('myEvents');
                 // Add logic to fetch and display user's events
-                navigate('/myEvents'); // Navigate to MyEvents path
+                navigate('../myEvents'); // Navigate to MyEvents path
               }}
             >
               My Events
@@ -124,11 +124,11 @@ const CreatedEvents = ({loggedInUser}) => {
                 // Add logic to fetch and display user's created events
               }}
             >
-              My Created Events
+              Hosted Events
             </Button>
           </div>
           <div>
-            <Button className="btn btn-success" onClick={() => navigate('/host-event')}>
+            <Button className="btn btn-success" onClick={() => navigate('../host-event')}>
               Host an event
             </Button>
           </div>

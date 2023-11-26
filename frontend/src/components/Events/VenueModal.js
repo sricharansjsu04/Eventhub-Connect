@@ -1,16 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Modal, Carousel, Row, Col } from 'react-bootstrap';
+import { Button, Modal, Carousel, Row, Col, Dropdown, Form  } from 'react-bootstrap';
 import Spinner from './spinner';
+import { Link } from 'react-router-dom';
 
-const VenueModal = ({ showModal, formData, selectedVenue, closeModal }) => {
+const VenueModal = ({ showModal, formData, selectedVenue, closeModal, loggedInUser}) => {
   const [loading, setLoading] = useState(false);
   const [response, setResponse] = useState(null);
   const [slots, setSlots] = useState([]);
   const [selectedSlot, setSelectedSlot] = useState('');
   const [selectedPoolSize, setSelectedPoolSize] = useState('');
   const [poolSizeError, setPoolSizeError] = useState('');
+  const [eventName, setEventName] = useState(''); 
 
   const [selectedCourt, setSelectedCourt] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+  const [eventId, seteventId] = useState('');
 
   // console.log(selectedVenue)
   useEffect(() => {
@@ -37,8 +42,19 @@ const VenueModal = ({ showModal, formData, selectedVenue, closeModal }) => {
     bookVenue();
   }, [selectedVenue, selectedCourt]);
 
-  const handleSlotChange = (event) => {
-    setSelectedSlot(event.target.value);
+
+  const handleSlotChange = (value) => {
+    setSelectedSlot((prevSelectedSlot) => {
+      if (prevSelectedSlot.includes(value)) {
+        return prevSelectedSlot.filter((slot) => slot !== value);
+      } else {
+        return [...prevSelectedSlot, value];
+      }
+    });
+  };
+
+  const handleEventNameChange = (event) => {
+    setEventName(event.target.value);
   };
 
   const handlePoolSizeChange = (event) => {
@@ -61,25 +77,38 @@ const VenueModal = ({ showModal, formData, selectedVenue, closeModal }) => {
         selectedVenue,
         selectedSlot,
         selectedPoolSize: parseInt(selectedPoolSize),
+        eventName: eventName, 
+        username: loggedInUser,
+        court: selectedCourt
       };
       console.log(requestData);
-      // Send POST request to the backend
-      fetch('http://localhost:3500/hostEvent', {
+
+      fetch('http://localhost:3500/venues/createEvent', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(requestData),
       })
-        .then((response) => response.json())
-        .then((data) => {
-          // Handle the response from the server
-          console.log('Server Response:', data);
-        })
-        .catch((error) => {
-          console.error('Error:', error);
-        });
-   
+      .then((response) => response.json())
+      .then((data) => {
+        // Handle the response from the server
+        console.log('Server Response:', data);
+
+        if (data.message && data.message.toLowerCase().includes('created')) {
+          setSuccessMessage('Event has been created, and venue is booked! for more details click ');
+          seteventId(data.event_id);
+          setErrorMessage('');
+        } else {
+          setErrorMessage(data.message || 'An error occurred. Please try again.');
+          setSuccessMessage('');
+        }
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+        setErrorMessage('An error occurred. Please try again.');
+        setSuccessMessage('');
+      });
   };
 
   const modalStyle = {
@@ -111,6 +140,12 @@ const VenueModal = ({ showModal, formData, selectedVenue, closeModal }) => {
         <Modal.Title>Venue Slot Booking</Modal.Title>
       </Modal.Header>
       <Modal.Body>
+      {successMessage && (
+        <div>
+          <p style={{ fontWeight: 'bold', color: 'green' }}>{successMessage} <Link to={`/playerHome/myHostedEvent/`+eventId}>here</Link>.</p>
+        </div>
+      )}
+        {errorMessage && <p style={{ fontWeight: 'bold', color: 'red' }}>{errorMessage}</p>}
           <Row>
             <Col xs={6}>
             {selectedVenue && selectedVenue.photoUrl && selectedVenue.photoUrl.length > 0 && (
@@ -128,45 +163,67 @@ const VenueModal = ({ showModal, formData, selectedVenue, closeModal }) => {
             <Col xs={6}>
             {selectedVenue && selectedVenue.courts ? (
               <div>
-
-              {console.log("This is the selected venue",selectedVenue)}
-              <label>Select a court:</label>
-                <select value={selectedCourt}  onChange={(e) => setSelectedCourt(e.target.value)}>
-                  <option value="">Select a court</option>
-                  {selectedVenue.courts.map((court, index) => (
-                    <option key={index} value={court}>
-                      {court}
-                    </option>
-                  ))}
-                </select>
-                <br />
+                <Form.Group controlId="selectCourt">
+                  <Form.Label>Select a court:</Form.Label>
+                  <Form.Control
+                    as="select"
+                    value={selectedCourt}
+                    onChange={(e) => setSelectedCourt(e.target.value)}
+                  >
+                    <option value="">Select a court</option>
+                    {selectedVenue.courts.map((court, index) => (
+                      <option key={index} value={court.id}>
+                        {court.name}
+                      </option>
+                    ))}
+                  </Form.Control>
+                </Form.Group>
                 {selectedCourt && (
                   <div>
-                <label>Select a slot:</label>
-                <select value={selectedSlot} onChange={handleSlotChange}>
-                  <option value="">Select a slot</option>
-                  {slots.map((slot, index) => (
-                    <option key={index} value={slot.startTime}>
-                      {slot.startTime} - {slot.endTime}
-                    </option>
-                  ))}
-                </select>
-                
-              
-                <br/>
+                    <Form.Group controlId="selectSlots">
+                      <Form.Label>Select slots:</Form.Label>
+                      <Dropdown>
+                        <Dropdown.Toggle variant="secondary" id="slotDropdown">
+                          Select slots
+                        </Dropdown.Toggle>
+                        <Dropdown.Menu style={{ maxHeight: '200px', overflowY: 'auto' }}>
+                          {slots.map((slot, index) => (
+                            <div className="form-check" key={index}>
+                              <Form.Check
+                                type="checkbox"
+                                label={`${slot.startTime} - ${slot.endTime}`}
+                                checked={selectedSlot.includes(slot.startTime)}
+                                onChange={() => handleSlotChange(slot.startTime)}
+                              />
+                            </div>
+                          ))}
+                        </Dropdown.Menu>
+                      </Dropdown>
+                    </Form.Group>
+                    <br/>
                 <label>Enter Pool Size:</label>
                 <input
                   type="number"
                   value={selectedPoolSize}
                   onChange={handlePoolSizeChange}
-                  placeholder={`Maximum ${selectedVenue.poolSize}`}
+                  placeholder={`Pool Size`}
                 />
-                </div>
-                )}
-               
+                <br/>
+                <label>Enter Event Name:</label>
+                <input
+                  type="text"
+                  value={eventName}
+                  onChange={handleEventNameChange}
+                  placeholder={`Event Name`}
+                />            
 
-              </div>):<p>No courts available</p>}
-            </Col>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <p>No courts available</p>
+            )}
+          </Col>
           </Row>
         
       </Modal.Body>

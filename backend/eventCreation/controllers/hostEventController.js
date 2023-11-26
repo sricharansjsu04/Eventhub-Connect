@@ -17,17 +17,17 @@ function queryAsync(sql, values) {
 
   function getPlayAreaCourts(venueId) {
     return new Promise((resolve, reject) => {
-    const query = "SELECT pac.name FROM play_area_courts AS pac INNER JOIN play_areas AS pa ON pac.play_area_id=pa.id WHERE pac.play_area_id = ?;"
+    const query = "SELECT pac.name,pac.id FROM play_area_courts AS pac INNER JOIN play_areas AS pa ON pac.play_area_id=pa.id WHERE pac.play_area_id = ?;"
   
         db.query(query, [venueId], function (err, result1) {
             if (err) {
               reject(err);
             } else {
                 
+              // console.log(result1);
+              // const arr = result1.map(item => (item.name));
               
-              const arr = result1.map(item => (item.name));
-              
-              resolve(arr);
+              resolve(result1);
             }
           });
     });
@@ -71,6 +71,7 @@ const getAllVenues = async (req, res) => {
       const promises2 = result.map(event => getPlayAreaCourts(event.id));
 
       const [sportArrays, s3UrlArrays, courtsArray] = await Promise.all([Promise.all(promises), Promise.all(promises1), Promise.all(promises2)]);
+      
       result.forEach((event, index) => {
         // console.log(sportArrays[index]);
         event.sports = sportArrays[index];
@@ -103,8 +104,45 @@ const getAllVenues = async (req, res) => {
 
   }
 
+  const addUserIntrest = async (userId, sportId) =>{
+    const query = await queryAsync('SELECT COUNT(*) AS record_count FROM `user_sports` WHERE `user_id` = ? AND `sport_id` = ?',[userId, sportId]);
+    if(query[0].record_count){
+      const count = await queryAsync("UPDATE `user_sports` SET `count` = `count` + 1 WHERE user_id = ? AND sport_id = ?;",[userId, sportId]);
+    }else{
+      const count = await queryAsync('INSERT INTO `user_sports` (`user_id`, `sport_id`, `count`) VALUES (?, ?, ?)',[userId, sportId, 1]);
+      
+    }
+    
+  }
+  
+
+
+  const createEvent = async (req,res) =>{
+    try{
+      const slotId = await queryAsync("select id from slots where start_time in (?);",[req.body.selectedSlot]);
+      const sportId = await queryAsync("select id from sports where name=?;",[req.body.formData.sportType]);
+      const userId =  await queryAsync("select id from users where username=?;",[req.body.username]);
+  
+      const insertEvent = await queryAsync("INSERT INTO `events` (`current_pool_size`, `pool_size`, `play_area_id`, `sport_id`, `created_by`, `booking_status`, `event_status`, `created_at`, `event_name`, `court_id`) VALUES (?, ?, ?, ?, ?, ?, ?, NOW(),?,?);",[1, req.body.selectedPoolSize, req.body.selectedVenue.id, sportId[0].id, userId[0].id, "Booked", "Confirmed",req.body.eventName, req.body.court]);
+      
+      slotId.forEach(async (element)=>{
+        
+        const eventSlots =  await queryAsync("INSERT INTO `event_slots` (`Date`, `slot_id`, `play_area_id`, `event_id`, `court_id`) VALUES (?, ?, ?, ?, ?);",[req.body.formData.date, element.id, req.body.selectedVenue.id, insertEvent.insertId, req.body.court]);
+      })
+      
+      const eventUsers =  await queryAsync("INSERT INTO `event_users` (`event_id`, `user_id`, `status`) VALUES (?, ?, 'Done');",[insertEvent.insertId,userId[0].id]);
+      addUserIntrest(userId[0].id, sportId[0].id);
+      res.status(200).json({message:"Event has been created",event_id:insertEvent.insertId});
+    }catch(err){
+      console.log(err);
+      res.status(400).json({message:err})
+    }
+
+  }
+
   module.exports = {
     getAllVenues,
-    getSports
+    getSports,
+    createEvent
 }
   

@@ -65,7 +65,7 @@ const MyEvents = ({loggedInUser}) => {
   
     const handleCardClick = (venueId) => {
       // Redirect to the detailed view of the clicked event
-      navigate(`/myEvent/${venueId}`);
+      navigate(`../myEvent/${venueId}`);
     };
   
     const VenueCard = ({ venue }) => (
@@ -112,7 +112,7 @@ const MyEvents = ({loggedInUser}) => {
               onClick={() => {
                 setActiveFilter('liveEvents');
                 // Navigate to the root path ('/') when "Live Events" is clicked
-                navigate('/');
+                navigate('../');
               }}
             >
               Live Events
@@ -122,7 +122,7 @@ const MyEvents = ({loggedInUser}) => {
               onClick={() => {
                 setActiveFilter('myEvents');
                 // Add logic to fetch and display user's events
-                navigate('/myEvents'); // Navigate to MyEvents path
+                navigate('../myEvents'); // Navigate to MyEvents path
               }}
             >
               My Events
@@ -131,14 +131,14 @@ const MyEvents = ({loggedInUser}) => {
               variant={activeFilter === 'myCreatedEvents' ? 'primary' : 'secondary'}
               onClick={() => {
                 setActiveFilter('myCreatedEvents');
-                navigate('/myHostedEvents'); 
+                navigate('../myHostedEvents'); 
               }}
             >
-              My Created Events
+              Hosted Events
             </Button>
           </div>
           <div>
-            <Button className="btn btn-success" onClick={() => navigate('/host-event')}>
+            <Button className="btn btn-success" onClick={() => navigate('../host-event')}>
               Host an event
             </Button>
           </div>

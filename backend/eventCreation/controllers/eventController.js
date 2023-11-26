@@ -2,7 +2,6 @@ const db = require("./dbConnect")
 
 
 
-
 function getPlayAreaDocs(playAreaId, isS3Url) {
   return new Promise((resolve, reject) => {
     const query = isS3Url
@@ -19,6 +18,7 @@ function getPlayAreaDocs(playAreaId, isS3Url) {
       }
     });
   });
+  
 }
 
 // Refactored getAllNotes function
@@ -99,6 +99,7 @@ const getCreatedEvents = async (req,res) => {
       event.players = playersArrays[index];
     });
     // console.log(result);
+     
     res.json(result);
   }
   catch(err){
@@ -154,11 +155,24 @@ const getMyEvents = async(req,res)=> {
       event.players = playersArrays[index];
     });
     // console.log(result);
+     
     res.json(result);
   }
   catch(err){
     console.log(err);
   }
+}
+
+
+const addUserIntrest = async (userId, sportId) =>{
+  const query = await queryAsync('SELECT COUNT(*) AS record_count FROM `user_sports` WHERE `user_id` = ? AND `sport_id` = ?',[userId, sportId]);
+  if(query[0].record_count){
+    const count = await queryAsync("UPDATE `user_sports` SET `count` = `count` + 1 WHERE user_id = ? AND sport_id = ?;",[userId, sportId]);
+  }else{
+    const count = await queryAsync('INSERT INTO `user_sports` (`user_id`, `sport_id`, `count`) VALUES (?, ?, ?)',[userId, sportId, 1]);
+    
+  }
+  
 }
 
 
@@ -169,7 +183,8 @@ const joinEvent = async (req,res) =>{
     const userId = await queryAsync("select id from users where username=?",[req.body.username]);
     const checkQuery = 'SELECT * FROM event_users WHERE event_id = ? AND user_id = ?';
     const checkResult = await queryAsync(checkQuery, [event_id, userId[0].id]);
-    
+    const sportId = await queryAsync("select sport_id from events where id=?",[event_id]);
+
     if (checkResult.length > 0) {
       
       if(checkResult[0].status=="Done")
@@ -179,8 +194,10 @@ const joinEvent = async (req,res) =>{
         return res.status(400).json({ error: 'User already requested to join in this event, waiting for the host to accept the request' });
       }
     }
+    addUserIntrest(userId[0].id, sportId[0].sport_id);
     const insertQuery = 'INSERT INTO event_users (event_id, user_id, status) VALUES (?, ?, ?)';
     const result = await queryAsync(insertQuery, [event_id, userId[0].id, status]);
+     
     res.status(200).json({ message: 'Successfully requested to join the event, will join the event once the host accepts the request' });
   }catch(err){
     console.log(err);
@@ -189,7 +206,7 @@ const joinEvent = async (req,res) =>{
 }
 
 
-const getWaitList = async (req,res) =>{
+const getWaitList = async ( req,res) =>{
   const event_id = req.params.id;
 
   // Step 1: Get user IDs from the event_users table
@@ -205,6 +222,7 @@ const getWaitList = async (req,res) =>{
     // userDetails now contains an array of user details for users in the Waitlist
     // console.log(userDetails);
     res.json(userDetails); // You can send this data as a response or process it further
+    // io.emit('waitlistChanged', userDetails);
   } else {
     // Handle the case where there are no user IDs
     console.log('No user IDs found');
@@ -225,6 +243,7 @@ const acceptReq = async (req,res) =>{
 
     // Check if the update was successful
     if (updateResult.affectedRows > 0) {
+       
       res.status(200).json({message:"Updated"});
     }else{
       res.status(400).json({message:"No Records Updated"});
@@ -246,6 +265,7 @@ const rejectReq = async (req,res) =>{
 
     // Check if the update was successful
     if (deleteResult.affectedRows > 0) {
+       
       res.status(200).json({message:"Removed from Waitlist"});
     }else{
       res.status(400).json({message:"No Records Updated"});

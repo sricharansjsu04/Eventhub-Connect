@@ -4,7 +4,10 @@ const config = {
         user: "root",
         password: "Lumberjack98",
         port: 3306,
-        database: "PlaypalDB"
+        database: "PlaypalDB",
+        waitForConnections: true,
+        connectionLimit: 10, 
+        queueLimit: 0
     }
 }
 

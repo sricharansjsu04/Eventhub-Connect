@@ -11,7 +11,9 @@ router.route('/getSports')
     // .post(eventController.createNewNote)
     // .patch(eventController.updateNote)
     // .delete(eventController.deleteNote)
-
+    
+router.route('/createEvent')
+    .post(hostController.createEvent)
 
 
 module.exports = router

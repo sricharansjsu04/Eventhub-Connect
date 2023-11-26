@@ -9,16 +9,12 @@ import RegistrationForm from './components/Auth/RegistrationForm';
 import EmailVerificationForm from './components/Auth/EmailVerificationForm';
 import PlayerHome from './components/Events/PlayerHome';
 
-const VenueCard = ({ venue, isCreatedByUser }) => {
-  const navigate = useNavigate();
-
-  const handleCardClick = () => {
-
 
 const userPool = new CognitoUserPool({
   UserPoolId: 'us-east-1_cPUiK1Y6C', // Replace with your User Pool Id
   ClientId: '2gfac6rthhbsj9gf791rt85l7o', // Replace with your Client Id
 });
+
 
 function AppWrapper() {
   return (
@@ -103,10 +99,10 @@ function App() {
     }
   };
 
-const welcomeMessage = userData.role === 'player' ? 'Happy Playing!' : 'Happy Hosting!';
-return (
-    <div className="app-background">
-      {!isAuthenticated && !isVerificationRequired && (
+  const LoginComp = () => {
+    return(
+      <div>
+              {!isAuthenticated && !isVerificationRequired && (
         <div className="form-container">
           {showSignIn ? (
             <div className="form-card">
@@ -145,14 +141,26 @@ return (
           </div>
         </div>
       )}
-      <Routes>
-        <Route path="/playerHome" element={<PlayerHome/>} />
+ 
+      </div>
+    )
+  }
+
+const welcomeMessage = userData.role === 'player' ? 'Happy Playing!' : 'Happy Hosting!';
+return (
+    <div className="app-background">
+     <Routes>
+        <Route path="/" element={<LoginComp/>}/>
+        <Route path="/playerHome/*" element={<PlayerHome/>} />
         {/* Define more routes as needed */}
       </Routes>
     </div>
-);
-
-
+);       
 }
 export default AppWrapper;
 
+
+
+/////////
+// Test909
+// Test@2023

@@ -21,7 +21,7 @@ import VenueModal from './VenueModal';
 // ];
 
 
-const EventForm = () => {
+const EventForm = ({loggedInUser}) => {
   const [venuesData, setVenuesData] = useState([]);
   const [selectedVenue, setSelectedVenue] = useState(null);
   const [showModal, setShowModal] = useState(false);
@@ -100,11 +100,18 @@ const EventForm = () => {
     setShowModal(false);
     setSelectedVenue(null);
   };
-  
+  const contentBoxStyles = {
+    backgroundColor: 'white',
+    padding: '20px',
+    borderRadius: '8px',
+    boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
+    /* Add any other styles as needed */
+  };
   return (
     <Container fluid className="mt-4">
+      
+      <div style={contentBoxStyles}>
       <h2>Host an Event</h2>
-      <h5>Filters</h5>
       <Form onSubmit={handleFormSubmit}>
         <Row>
           <Col>
@@ -143,11 +150,12 @@ const EventForm = () => {
           Find Venues
         </Button>
       </Form>
+      </div>
       {filteredVenues.length > 0 && (
       <Row className="mt-4">
         {filteredVenues.map((venue) => (
           <Col key={venue.id} md={4}>
-            <Card onClick={() => handleVenueClick(venue)} style={{ padding: '20px' }}>
+            <Card onClick={() => handleVenueClick(venue)} style={{ padding: '20px', margin: '5px' }}>
               <Card.Body>
                 <Card.Title>{venue.name}</Card.Title>
                 <Card.Text>
@@ -161,7 +169,7 @@ const EventForm = () => {
         ))}
       </Row>
       )}
-      <VenueModal showModal={showModal} formData={formData} selectedVenue={selectedVenue} closeModal={closeModal} />
+      <VenueModal showModal={showModal} formData={formData} selectedVenue={selectedVenue} closeModal={closeModal} loggedInUser={loggedInUser} />
     </Container>
   );
 };
