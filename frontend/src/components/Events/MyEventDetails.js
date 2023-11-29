@@ -55,7 +55,7 @@ const MyEventDetails = ({ venues,loggedInUser }) => {
       <dd className="col-sm-8">{event.created_user}</dd>
 
       <dt className="col-sm-4">Current Pool Size:</dt>
-      <dd className="col-sm-8" style={{ color: event.current_pool_size < event.pool_size * 0.5 ? 'green' : 'orange' }}>
+      <dd className="col-sm-8" style={{ color: event.current_pool_size < event.pool_size * 0.5 ? 'green' : 'red' }}>
         {event.current_pool_size} / {event.pool_size}
       </dd>
       <dt className="col-sm-4">Players:</dt>

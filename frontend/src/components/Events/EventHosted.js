@@ -32,6 +32,19 @@ const MyEventDetails = ({ venues,loggedInUser }) => {
   
   const event = events.find((venue) => venue.id === parseInt(id, 10));
 
+  if (!events) {
+    // Reload the page if events is null or undefined
+    window.location.reload();
+    return null; // This line might not be necessary, but included for clarity
+  }
+  
+  const handleRefresh = () => {
+    fetch(`http://localhost:3500/home/getWaitlist/${id}`)
+      .then((response) => response.json())
+      .then((data) => setWaitlistRequests(data))
+      .catch((error) => console.error('Error fetching waitlist requests:', error));
+  };
+
   const handleAccept = async (user) => {
     try {
         const response = await fetch('http://localhost:3500/home/acceptReq', {
@@ -121,7 +134,7 @@ const MyEventDetails = ({ venues,loggedInUser }) => {
       <dd className="col-sm-8">{event.created_user}</dd>
 
       <dt className="col-sm-4">Current Pool Size:</dt>
-      <dd className="col-sm-8" style={{ color: event.current_pool_size < event.pool_size * 0.5 ? 'green' : 'orange' }}>
+      <dd className="col-sm-8" style={{ color: event.current_pool_size < event.pool_size * 0.5 ? 'green' : 'red' }}>
         {event.current_pool_size} / {event.pool_size}
       </dd>
 
@@ -136,7 +149,16 @@ const MyEventDetails = ({ venues,loggedInUser }) => {
           </Col>
           <Col md={6}>
           <div className="requests-container p-4 rounded bg-light" style={{ height: '400px', overflowY: 'auto', borderRadius: '10px', border: '1px solid #ccc' }}>
-          <h4>Player Requests</h4>
+          <div className="d-flex justify-content-between mb-3">
+                <div className="col-9">
+                  <h4 className="mb-0">Player Requests</h4>
+                </div>
+                <div className="col-3">
+                  <Button variant="primary" size="sm" onClick={handleRefresh}>
+                    Refresh
+                  </Button>
+                </div>
+              </div>
           {waitlistRequests.length > 0 ? (
                 <ul className="list-group">
                   {waitlistRequests.map((user, index) => (

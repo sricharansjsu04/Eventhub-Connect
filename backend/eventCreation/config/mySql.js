@@ -1,8 +1,8 @@
 const config = {
     db:{
-        host: "clouddb.c9yc7iqlqitw.us-east-2.rds.amazonaws.com",
+        host: "database-1.c6sa5zn0zko5.us-east-2.rds.amazonaws.com",
         user: "root",
-        password: "Lumberjack98",
+        password: "e=mc2trooper",
         port: 3306,
         database: "PlaypalDB",
         waitForConnections: true,

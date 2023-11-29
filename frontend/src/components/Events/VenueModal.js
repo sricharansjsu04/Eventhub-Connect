@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Modal, Carousel, Row, Col, Dropdown, Form  } from 'react-bootstrap';
 import Spinner from './spinner';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const VenueModal = ({ showModal, formData, selectedVenue, closeModal, loggedInUser}) => {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [response, setResponse] = useState(null);
   const [slots, setSlots] = useState([]);
@@ -96,7 +97,7 @@ const VenueModal = ({ showModal, formData, selectedVenue, closeModal, loggedInUs
         console.log('Server Response:', data);
 
         if (data.message && data.message.toLowerCase().includes('created')) {
-          setSuccessMessage('Event has been created, and venue is booked! for more details click ');
+          setSuccessMessage('Event has been created, and venue is booked! ');
           seteventId(data.event_id);
           setErrorMessage('');
         } else {
@@ -110,7 +111,9 @@ const VenueModal = ({ showModal, formData, selectedVenue, closeModal, loggedInUs
         setSuccessMessage('');
       });
   };
-
+  const handleAClick = () =>{
+    navigate(`/playerHome/myHostedEvent/${eventId}`);
+  }
   const modalStyle = {
     maxWidth: '100%',
     width: '80%',
@@ -134,6 +137,7 @@ const VenueModal = ({ showModal, formData, selectedVenue, closeModal, loggedInUs
     display: 'block', // Ensure the image is treated as a block element
   };
 
+
   return (
     <Modal show={showModal} onHide={closeModal} size="lg" style={modalStyle}>
       <Modal.Header closeButton>
@@ -142,7 +146,7 @@ const VenueModal = ({ showModal, formData, selectedVenue, closeModal, loggedInUs
       <Modal.Body>
       {successMessage && (
         <div>
-          <p style={{ fontWeight: 'bold', color: 'green' }}>{successMessage} <Link to={`/playerHome/myHostedEvent/`+eventId}>here</Link>.</p>
+          <p style={{ fontWeight: 'bold', color: 'green' }}>{successMessage}</p>
         </div>
       )}
         {errorMessage && <p style={{ fontWeight: 'bold', color: 'red' }}>{errorMessage}</p>}

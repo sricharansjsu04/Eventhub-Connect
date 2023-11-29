@@ -10,7 +10,8 @@ const MyEvents = ({loggedInUser}) => {
     const [venuesData, setVenuesData] = useState(null);
     const [filteredVenues, setFilteredVenues] = useState([]);
     const [activeFilter, setActiveFilter] = useState('myEvents'); // Updated to 'myEvents'
-  
+    const [sportFilter, setSportFilter] = useState([]);
+
     const apiCalled = useRef(false);
     useEffect(() => {
       if (!apiCalled.current) {
@@ -24,7 +25,8 @@ const MyEvents = ({loggedInUser}) => {
         })
           .then((response) => response.json())
           .then((data) => {
-            setVenuesData(data);
+          setVenuesData(data.result);
+          setSportFilter(data.sports);
           })
           .catch((error) => {
             console.error('Error:', error);
@@ -46,6 +48,7 @@ const MyEvents = ({loggedInUser}) => {
   
     const [sportTypeFilter, setSportTypeFilter] = useState('');
     const [poolSizeFilter, setPoolSizeFilter] = useState('');
+    const [eventNameFilter, setEventNameFilter] = useState('');
   
     useEffect(() => {
       setFilteredVenues(venuesData);
@@ -56,7 +59,8 @@ const MyEvents = ({loggedInUser}) => {
         const passSportTypeFilter = !sportTypeFilter || venue.sportType === sportTypeFilter;
         const passPoolSizeFilter =
           !poolSizeFilter || venue.current_pool_size.toString() >= poolSizeFilter;
-        return passSportTypeFilter && passPoolSizeFilter;
+        const passEventNameFilter = !eventNameFilter || venue.event_name.toLowerCase().includes(eventNameFilter.toLowerCase());
+        return passSportTypeFilter && passPoolSizeFilter && passEventNameFilter;
       });
       setFilteredVenues(filteredResults);
     };
@@ -152,8 +156,12 @@ const MyEvents = ({loggedInUser}) => {
                 <Form.Label>Sport Type</Form.Label>
                 <Form.Control as="select" onChange={(e) => setSportTypeFilter(e.target.value)}>
                   <option value="">All</option>
-                  <option value="Football">Football</option>
-                  <option value="Badminton">Badminton</option>
+                  {sportFilter &&
+                    sportFilter.map((sport) => (
+                      <option key={sport.id} value={sport.name}>
+                        {sport.name}
+                      </option>
+                    ))}
                   {/* Add more sport types as needed */}
                 </Form.Control>
               </Form.Group>
@@ -165,6 +173,14 @@ const MyEvents = ({loggedInUser}) => {
                   onChange={(e) => setPoolSizeFilter(e.target.value)}
                 />
               </Form.Group>
+              <Form.Group controlId="eventNameFilter">
+              <Form.Label>Event Name</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter event name"
+                onChange={(e) => setEventNameFilter(e.target.value)}
+              />
+            </Form.Group>
               <Button className="d-flex" variant="primary" onClick={applyFilters} id="FilterSubmit">
                 Apply filters
               </Button>

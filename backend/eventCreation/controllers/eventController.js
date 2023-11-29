@@ -1,6 +1,14 @@
+const AWS = require("aws-sdk");
 const db = require("./dbConnect")
 
 
+AWS.config.update({
+  region: 'us-east-1',
+  accessKeyId: 'AKIAUNNHP27GU7RFSQVA',
+  secretAccessKey: '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',
+});
+
+const ses = new AWS.SES({ apiVersion: '2010-12-01' });
 
 function getPlayAreaDocs(playAreaId, isS3Url) {
   return new Promise((resolve, reject) => {
@@ -35,9 +43,10 @@ const getAllNotes = async (req, res) => {
       event.photoUrl = s3UrlArrays[index];
       event.players = playersArrays[index];
     });
-
+    const sports = await queryAsync("select name from sports;");
+    
     // console.log(result);
-    res.json(result);
+    res.json({result,sports});
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: 'Internal Server Error' });
@@ -99,8 +108,10 @@ const getCreatedEvents = async (req,res) => {
       event.players = playersArrays[index];
     });
     // console.log(result);
-     
-    res.json(result);
+    const sports = await queryAsync("select name from sports;");
+    
+    // console.log(result);
+    res.json({result,sports});
   }
   catch(err){
     console.log(err);
@@ -155,8 +166,10 @@ const getMyEvents = async(req,res)=> {
       event.players = playersArrays[index];
     });
     // console.log(result);
-     
-    res.json(result);
+    const sports = await queryAsync("select name from sports;");
+    
+    // console.log(result);
+    res.json({result,sports});
   }
   catch(err){
     console.log(err);
@@ -165,13 +178,8 @@ const getMyEvents = async(req,res)=> {
 
 
 const addUserIntrest = async (userId, sportId) =>{
-  const query = await queryAsync('SELECT COUNT(*) AS record_count FROM `user_sports` WHERE `user_id` = ? AND `sport_id` = ?',[userId, sportId]);
-  if(query[0].record_count){
-    const count = await queryAsync("UPDATE `user_sports` SET `count` = `count` + 1 WHERE user_id = ? AND sport_id = ?;",[userId, sportId]);
-  }else{
-    const count = await queryAsync('INSERT INTO `user_sports` (`user_id`, `sport_id`, `count`) VALUES (?, ?, ?)',[userId, sportId, 1]);
-    
-  }
+  const count = await queryAsync('INSERT INTO `user_sports` (`user_id`, `sport_id`) VALUES (?, ?)',[userId, sportId]);
+
   
 }
 
@@ -180,10 +188,10 @@ const joinEvent = async (req,res) =>{
   try{
     const { event_id, username, status } = req.body;
 
-    const userId = await queryAsync("select id from users where username=?",[req.body.username]);
+    const userId = await queryAsync("select * from users where username=?",[req.body.username]);
     const checkQuery = 'SELECT * FROM event_users WHERE event_id = ? AND user_id = ?';
     const checkResult = await queryAsync(checkQuery, [event_id, userId[0].id]);
-    const sportId = await queryAsync("select sport_id from events where id=?",[event_id]);
+    const sportId = await queryAsync("select * from events where id=?",[event_id]);
 
     if (checkResult.length > 0) {
       
@@ -197,7 +205,39 @@ const joinEvent = async (req,res) =>{
     addUserIntrest(userId[0].id, sportId[0].sport_id);
     const insertQuery = 'INSERT INTO event_users (event_id, user_id, status) VALUES (?, ?, ?)';
     const result = await queryAsync(insertQuery, [event_id, userId[0].id, status]);
-     
+    const email = await queryAsync("select u.email from events as e inner join users as u on u.id=e.created_by where e.id=? ;",[event_id]);
+    // console.log(email);
+    emailAddress = email[0].email;
+    // emailAddress = "satyaashish.veda@sjsu.edu";
+
+      const params = {
+        Destination: {
+          ToAddresses: [emailAddress],
+        },
+        Message: {
+          Body: {
+            Text: {
+              Charset: 'UTF-8',
+              Data: userId[0].username+' requested to join the event '+sportId[0].event_name,
+            },
+          },
+          Subject: {
+            Charset: 'UTF-8',
+            Data: 'A player requested to join the event',
+          },
+        },
+        Source: 'sjsucloudspecial2023@gmail.com', // Replace with your SES verified sender email
+      };
+      
+      try {
+        const data = await ses.sendEmail(params).promise();
+        console.log('Email sent:', data);
+        
+      } catch (error) {
+        console.error('Error sending email:', error);
+        throw error;
+      }
+    
     res.status(200).json({ message: 'Successfully requested to join the event, will join the event once the host accepts the request' });
   }catch(err){
     console.log(err);
