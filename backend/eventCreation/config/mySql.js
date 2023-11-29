@@ -1,10 +1,12 @@
+require('dotenv').config();
+
 const config = {
     db:{
-        host: "database-1.c6sa5zn0zko5.us-east-2.rds.amazonaws.com",
-        user: "root",
-        password: "e=mc2trooper",
-        port: 3306,
-        database: "PlaypalDB",
+        host: process.env.DB_HOST,
+        user: process.env.DB_USER,
+        password: process.env.DB_PASS,
+        port: process.env.DB_PORT,
+        database: process.env.DB_DB,
         waitForConnections: true,
         connectionLimit: 10, 
         queueLimit: 0

@@ -1,11 +1,11 @@
 const AWS = require("aws-sdk");
 const db = require("./dbConnect")
-
+require('dotenv').config();
 
 AWS.config.update({
   region: 'us-east-1',
-  accessKeyId: 'AKIAUNNHP27GU7RFSQVA',
-  secretAccessKey: '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',
+  accessKeyId: process.env.ACCESSKEYID,
+  secretAccessKey: process.env.SECRETACCESSKEY,
 });
 
 const ses = new AWS.SES({ apiVersion: '2010-12-01' });
