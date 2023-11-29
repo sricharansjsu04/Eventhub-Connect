@@ -2,15 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { Container, Form } from "react-bootstrap";
 import Select from "react-select";
 import "./Play_form.css"
-import Axios from 'axios'
-import usePlayFormStore from '../Zustand/PlayFormStore';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import {CreateData} from "../../Utils/Data"
+import { createUpdateApi, getApi } from '../../Utils/api.service';
+
 function Play_form(props) {
   const navigate = useNavigate()
   const [update,setUpdate] = useState(false)  
-  const [sports,setSports] = useState();
-  const [fileData,setFileData] = useState(null)
+  // const [updateData,setUpdateData] = useState(false)
+  const [sports,setSports] = useState('');
   const initialFormData = {
     name: '',
     address1: '',
@@ -23,27 +23,27 @@ function Play_form(props) {
     availableTimeSlots: '',
     sports: [],
     courts: '',
-    file: '',
+    files: '',
   };
+  const [files, setFiles] = useState([]);
 
 
   const [formData, setFormData] = useState(initialFormData);
+  let { playId } = useParams();
+
   useEffect(()=>{
-    if(props.dataIndex){
-        setFormData(playData[props.dataIndex])
-        console.log("worked")
-        setUpdate(true)
+    if(playId){
+     getApi()
+      .then(res=>{
+        const {data} = res;
+        const updateObj = data.filter((obj)=>  obj.id===Number(playId))[0];
+        debugger
+        // setUpdateData(updateObj)
+        setFormData(updateObj)
+      })
     }
-    if(props.dataIndex===0){
-        setFormData(playData[props.dataIndex])
-        console.log("worked")
-        setUpdate(true)
-    }
-    if(playData.length ===0 ){
-        setUpdate(false)
-    }
-    
-},[props.dataIndex])
+  },[])
+
   const form = [
     { name: 'name', type: 'text', value: formData.name, required: true },
     { name: 'address1', type: 'text', value: formData.address1, required: true },
@@ -81,9 +81,6 @@ function Play_form(props) {
     { value: "Badminton", label: "Badminton" },
   ];
 
-  
-  
-  const {addData,playData,editData} = usePlayFormStore(); 
 
   const formHandler = (event) => {
     const { name, value } = event.target;
@@ -93,13 +90,6 @@ function Play_form(props) {
     }));
   };
 
-  // const handleTimeChange = (selectedTimes) => {
-  //   const timeValues = selectedTimes.map((time) => time.value);
-  //   setFormData((prevFormData) => ({
-  //     ...prevFormData,
-  //     availableTimeSlots: selectedTimes,
-  //   }));
-  // };
 
   const handleTimeChange = (selectedTimes) => {
     // Convert selected times to a comma-separated string
@@ -120,93 +110,40 @@ function Play_form(props) {
     }));
   };
 
-  const handleCourt = (selectedCourts) => {
-    const courtValues = selectedCourts.map((court) => court.value);
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      courts: selectedCourts,
-    }));
-  };
+  // const handleCourt = (selectedCourts) => {
+  //   // const courtValues = selectedCourts.map((court) => court.value);
+  //   setFormData((prevFormData) => ({
+  //     ...prevFormData,
+  //     courts: selectedCourts,setSports
+  //   }));
+  // };
   const fileHandler = (event) => {
-    const file = event.target.files[0];
-    const newFileData = new FormData();
-    newFileData.append("file", file);
-    setFileData(newFileData);
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      file: file,
-    }));
+    event.preventDefault()
+    setFiles(event.target.files[0]);
   };
   
 
   
 const playFormHandler = (event) => {
   event.preventDefault();
-
   const data = {
-    ...CreateData,
-    name: formData.name,
-    city: formData.city,
-    owner: formData.owner,
-    address1: formData.address1,
-    address2: formData.address2,
-    state: formData.state,
-    country: formData.country,
-    zipcode: formData.zipcode,
-    courts: formData.courts,
-    sports: sports,
-    timings: formData.availableTimeSlots.value,
+    ...CreateData
   };
   console.log(data)
-
-  if (update) {
-    const updatedData = { ...formData };
-    const indexToUpdate = props.dataIndex;
-    editData(indexToUpdate, updatedData);
-    setFormData(initialFormData);
-    setUpdate(false);
-    props.removeindx(false);
-    navigate("/");
-
-    // write for update api 
-
-    const apiUrl = "https://0a5b-2601-646-9801-51f0-f4c8-c16e-a4bc-6800.ngrok.io/api/updatePlayArea";
-
-    Axios.post(apiUrl, data, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-      params: fileData,
-    })
-      .then(res =>{
-    addData(formData);
-    setFormData(initialFormData);
-    setFileData(null); 
-    navigate("/");
-      })
-      .catch(error => console.error('AxiosError:', error));
-
-  } else {
-
-    // write for create api code  
-    // create api is done
-    const apiUrl = "https://0a5b-2601-646-9801-51f0-f4c8-c16e-a4bc-6800.ngrok.io/api/createPlayArea";
-
-    Axios.post(apiUrl, data, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-      params: fileData,
-    })
+const formData = new FormData();
+formData.append("playAreaRequest", JSON.stringify(data));
+formData.append('files', files);
+if (playId) {
+  formData.append("playAreaId", playId);
+}
+   debugger
+    createUpdateApi((formData), playId ? playId : '')
       .then(res =>{
         console.log(res)
-    addData(formData);
     setFormData(initialFormData);
-    setFileData(null); 
     navigate("/");
       })
-      .catch(error => console.error('AxiosError:', error));
-  }
+      .catch(error => console.error('axiosError:', error));
 };
 
   return (
@@ -278,6 +215,7 @@ const playFormHandler = (event) => {
             <Form.Control
             type="file"
             name="file"
+            multiple="multiple"
             value={formData.value}
             onChange={fileHandler}
           />
