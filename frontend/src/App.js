@@ -8,6 +8,7 @@ import LoginForm from './components/Auth/LoginForm';
 import RegistrationForm from './components/Auth/RegistrationForm';
 import EmailVerificationForm from './components/Auth/EmailVerificationForm';
 import PlayerHome from './components/Events/PlayerHome';
+import PlayOwner from './components/Play_area';
 
 
 const userPool = new CognitoUserPool({
@@ -152,6 +153,8 @@ return (
      <Routes>
         <Route path="/" element={<LoginComp/>}/>
         <Route path="/playerHome/*" element={<PlayerHome/>} />
+        <Route path="/ownerHome/*" element={<PlayOwner/>} />
+
         {/* Define more routes as needed */}
       </Routes>
     </div>

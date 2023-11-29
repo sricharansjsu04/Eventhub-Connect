@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
-import Play_form from './components/Play_form/Play_form'
-import Form_list from './components/Play_form/Form_list'
-import usePlayFormStore from './components/Zustand/PlayFormStore'
+import Play_form from './Play_form/Play_form'
+import Form_list from './Play_form/Form_list'
+import usePlayFormStore from './Zustand/PlayFormStore'
 import { BrowserRouter, Route,  Routes } from 'react-router-dom'
 
 function App() {
