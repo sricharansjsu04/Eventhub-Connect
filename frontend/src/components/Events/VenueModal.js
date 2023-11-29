@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Button, Modal, Carousel, Row, Col, Dropdown, Form  } from 'react-bootstrap';
 import Spinner from './spinner';
 import { useNavigate } from 'react-router-dom';
+import * as urls from './config';
 
 const VenueModal = ({ showModal, formData, selectedVenue, closeModal, loggedInUser}) => {
   const navigate = useNavigate();
@@ -84,7 +85,7 @@ const VenueModal = ({ showModal, formData, selectedVenue, closeModal, loggedInUs
       };
       console.log(requestData);
 
-      fetch('http://localhost:3500/venues/createEvent', {
+      fetch(urls.createEvent, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

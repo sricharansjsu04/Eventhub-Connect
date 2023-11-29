@@ -3,7 +3,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { Button, Card, Container, Row, Col, Form } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import "../../App.css"
-
+import * as urls from './config';
 
 const CreatedEvents = ({loggedInUser}) => {
     const [venuesData, setVenuesData] = useState(null);
@@ -15,7 +15,7 @@ const CreatedEvents = ({loggedInUser}) => {
     useEffect(() => {
       if (!apiCalled.current) {
         async function fetchData() {
-            fetch('http://localhost:3500/home/myHostedEvents', {
+            fetch(urls.myHostedEvents, {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json',

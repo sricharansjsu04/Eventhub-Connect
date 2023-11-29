@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Container, Button, Row, Col, Carousel, Alert } from 'react-bootstrap';
 import { useParams } from 'react-router-dom';
+import * as urls from './config';
 
 const MyEventDetails = ({ venues,loggedInUser }) => {
 
@@ -20,7 +21,7 @@ const MyEventDetails = ({ venues,loggedInUser }) => {
   }, [waitlistRequests]);
 
   useEffect(() => {
-  fetch(`http://localhost:3500/home/getWaitlist/${id}`)
+  fetch(urls.getWaitlist+'${id}')
   .then((response) => response.json())
   .then((data) => setWaitlistRequests(data))
   .catch((error) => console.error('Error fetching waitlist requests:', error));
@@ -37,9 +38,9 @@ const MyEventDetails = ({ venues,loggedInUser }) => {
     window.location.reload();
     return null; // This line might not be necessary, but included for clarity
   }
-  
+
   const handleRefresh = () => {
-    fetch(`http://localhost:3500/home/getWaitlist/${id}`)
+    fetch(urls.getWaitlist+'${id}')
       .then((response) => response.json())
       .then((data) => setWaitlistRequests(data))
       .catch((error) => console.error('Error fetching waitlist requests:', error));
@@ -47,7 +48,7 @@ const MyEventDetails = ({ venues,loggedInUser }) => {
 
   const handleAccept = async (user) => {
     try {
-        const response = await fetch('http://localhost:3500/home/acceptReq', {
+        const response = await fetch(urls.acceptReq, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -74,7 +75,7 @@ const MyEventDetails = ({ venues,loggedInUser }) => {
 
   const handleReject = async (user) => {
     try {
-        const response = await fetch('http://localhost:3500/home/rejectReq', {
+        const response = await fetch(urls.rejectReq, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

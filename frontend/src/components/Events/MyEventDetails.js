@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Container, Button, Row, Col, Carousel, Alert } from 'react-bootstrap';
 import { useParams } from 'react-router-dom';
+import * as urls from './config';
 
 const MyEventDetails = ({ venues,loggedInUser }) => {
 

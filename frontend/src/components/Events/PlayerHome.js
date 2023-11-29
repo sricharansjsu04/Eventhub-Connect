@@ -10,6 +10,7 @@ import MyEventDetails from "./MyEventDetails";
 import EventHosted from "./EventHosted";
 import EventDetails from "./EventDetails";
 import HostEvent from "./HostEvent";
+import * as urls from './config';
 
 
 
@@ -190,7 +191,7 @@ function PlayerHome() {
     if (!apiCalled.current) {
       async function fetchData() {
         try {
-          const response = await fetch('http://localhost:3500/home/getAllEvents');
+          const response = await fetch(urls.getAllEvents);
           const result = await response.json();
         
           setVenuesData(result.result);
