@@ -12,7 +12,7 @@ function Play_form(props) {
   const [update,setUpdate] = useState(false)  
   // const [updateData,setUpdateData] = useState(false)
   const [sports,setSports] = useState('');
-  const { user } = useContext(AuthContext);
+  // const { user } = useContext(AuthContext);
   const initialFormData = {
     name: '',
     address1: '',
@@ -32,10 +32,12 @@ function Play_form(props) {
 
   const [formData, setFormData] = useState(initialFormData);
   let { playId } = useParams();
+  let {user}=useContext(AuthContext);
+
   
   useEffect(() => {
     if (playId) {
-      getApi()
+      getApi(user)
         .then(res => {
           const { data } = res;
           const updateObj = data.filter((obj) => obj.id === Number(playId))[0];

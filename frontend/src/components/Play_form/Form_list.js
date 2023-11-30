@@ -4,6 +4,7 @@ import "./Play_form.css";
 import { Link, useNavigate } from 'react-router-dom';
 import { deleteApi, getApi } from '../../Utils/api.service';
 import { AuthContext } from '../../contexts/AuthContext';
+import { useContext } from 'react'
 
 function Form_list(props) {
   const navigate = useNavigate();
@@ -12,11 +13,12 @@ function Form_list(props) {
     logout(); // Call logout from AuthContext
     navigate('/'); // Navigate back to the login page
   };
-  const { user } = useContext(AuthContext);
+  let {user}=useContext(AuthContext);
+
   const [dataList, setDatalist] = useState([])
   // const { playData, deleteData } = usePlayFormStore();
   useEffect(()=>{
-    getApi()
+    getApi(user)
     .then(res=> {
       const {data} = res
       console.log(data)
@@ -66,6 +68,11 @@ const deleteHandler = (id)=>{
       </div>
 
       {/* if there is data */}
+      {dataList.length > 0 && (
+          <div className="py-3">
+            <h2 className="text-center">Your Registered Play Areas</h2>
+          </div>
+        )}
 
       <div>
       <div className='row py-3'>
