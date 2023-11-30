@@ -8,11 +8,12 @@ import LoginForm from './components/Auth/LoginForm';
 import RegistrationForm from './components/Auth/RegistrationForm';
 import EmailVerificationForm from './components/Auth/EmailVerificationForm';
 import PlayerHome from './components/Events/PlayerHome';
+import PlayOwner from './components/Play_area';
 import AdminDashboard from './components/Admin/AdminDashboard';
 import { AuthProvider } from './contexts/AuthContext';
 import { AuthContext } from './contexts/AuthContext';
 import PlayareaDetails from './components/Admin/PlayareaDetails';
-import ProtectedRoute from './components/Auth/ProtectedRoute'
+import ProtectedRoute from './components/Auth/ProtectedRoute';
 
 
 const userPool = new CognitoUserPool({
@@ -102,7 +103,7 @@ function App() {
     if (roleType === 'player') {
       console.log('player login navigating');
       navigate('/playerHome');
-    } else if (roleType === 'playarea owner') {
+    } else if (roleType === 'owner') {
       navigate('/ownerHome'); // You need to define the route for this as well
     }
     else if(roleType === 'admin'){
@@ -177,8 +178,9 @@ return (
         </ProtectedRoute>
       }/>
       <Route path="/playareaHome/*" element={
-        <ProtectedRoute requiredRole="playarea owner">
-          {/* Your Owner Home Component */}
+        <ProtectedRoute requiredRole="owner">
+          <Route path="/ownerHome/*" element={<PlayOwner/>} />
+          <Route path="/createPlayArea" element={<PlayOwner/>}/>
         </ProtectedRoute>
       }/>
     </Routes>
