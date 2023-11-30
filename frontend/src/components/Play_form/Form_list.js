@@ -29,11 +29,11 @@ const deleteHandler = (id)=>{
             {/* booking slots*/}
             <div className='form' style={{background:"none", backgroundColor:"white"}}>
       <div className='pb-2 border-bottom'>
-        <h1 className='text-center py-2'>Level Up Your Fun</h1>
-        <p className='text-center py-3'>"Game On: Snag Your Gaming Slot Now for a Thrilling Experience!"</p>
+        <h1 className='text-center py-2'>Welcome</h1>
+        <p className='text-center py-3'>"Ready to host? Go ahead and apply"</p>
         <div className='d-flex justify-content-center'>
           <Link to="form">
-            <button className='btn btn-primary'>Book your New Slot</button>
+            <button className='btn btn-primary' style={{width:"70px"}}>Apply</button>
           </Link>
         </div>
       </div>

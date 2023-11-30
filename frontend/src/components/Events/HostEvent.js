@@ -30,6 +30,21 @@ const EventForm = ({loggedInUser}) => {
   const [sports,setSports] = useState([]);
   const [locations,setLocations] = useState([]);
 
+  const getTodayDate = () => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = (today.getMonth() + 1).toString().padStart(2, '0'); // Months are zero-based
+    const day = today.getDate().toString().padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+  
+  const [todayDate, setTodayDate] = useState(getTodayDate()); // Define getTodayDate function
+
+
+  useEffect(() => {
+    setTodayDate(getTodayDate());
+  }, []);
+
   const [formData, setFormData] = useState({
     sportType: '',
     poolSize: '',
@@ -145,7 +160,7 @@ const EventForm = ({loggedInUser}) => {
         </Row>
         <Form.Group controlId="date" style={{ width: '49.5%', marginBottom: '10px' }}>
           <Form.Label>Date</Form.Label>
-          <Form.Control type="date" name="date" onChange={handleFormChange} />
+          <Form.Control type="date" name="date" onChange={handleFormChange} min={todayDate}/>
         </Form.Group>
         <Button variant="primary" type="submit">
           Find Venues

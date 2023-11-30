@@ -172,10 +172,10 @@ return (
           <AdminDashboard />
         </ProtectedRoute>
       }/>
-      <Route path="/playareaHome/*" element={
+      <Route path="/ownerHome/*" element={
         <ProtectedRoute requiredRole="owner">
-          <Route path="/ownerHome/*" element={<PlayOwner/>} />
-          <Route path="/createPlayArea" element={<PlayOwner/>}/>
+          <PlayOwner/>
+          {/* <Route path="/createPlayArea" element={<PlayOwner/>}/> */}
         </ProtectedRoute>
       }/>
     </Routes>

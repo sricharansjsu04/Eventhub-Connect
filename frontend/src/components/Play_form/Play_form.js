@@ -1,69 +1,61 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { Container, Form } from "react-bootstrap";
 import Select from "react-select";
 import "./Play_form.css"
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import {CreateData} from "../../Utils/Data"
 import { createUpdateApi, getApi } from '../../Utils/api.service';
+import { AuthContext } from '../../contexts/AuthContext';
 
 function Play_form(props) {
   const navigate = useNavigate()
   const [update,setUpdate] = useState(false)  
   // const [updateData,setUpdateData] = useState(false)
   const [sports,setSports] = useState('');
+  const { user } = useContext(AuthContext);
   const initialFormData = {
     name: '',
     address1: '',
     address2: '',
-    owner:'',
     city: '',
     state: '',
     country: '',
     zipcode: '',
-    timings: '',
     sports: [],
-    courts: ''
+    courts: '',
+    startTime: '', 
+    endTime: '',  
   };
+ 
   const [files, setFiles] = useState([]);
 
 
   const [formData, setFormData] = useState(initialFormData);
   let { playId } = useParams();
   
-  useEffect(()=>{
-    if(playId){
-     getApi()
-      .then(res=>{
-        const {data} = res;
-        const updateObj = data.filter((obj)=>  obj.id===Number(playId))[0];
-        
-        // setUpdateData(updateObj)
-        setFormData(updateObj)
-      })
+  useEffect(() => {
+    if (playId) {
+      getApi()
+        .then(res => {
+          const { data } = res;
+          const updateObj = data.filter((obj) => obj.id === Number(playId))[0];
+          setFormData({ ...updateObj, owner: user }); // Set the owner to user
+        })
+    } else {
+      setFormData({ ...initialFormData, owner: user }); // Initialize with user as owner
     }
-  },[])
+  }, [playId, user])
 
   const form = [
     { name: 'name', type: 'text', value: formData.name, required: true },
     { name: 'address1', type: 'text', value: formData.address1, required: true },
     { name: 'address2', type: 'text', value: formData.address2, required: false },
-    { name: 'owner', type: 'text', value: formData.owner, required: true },
     { name: 'city', type: 'text', value: formData.city, required: true },
     { name: 'state', type: 'text', value: formData.state, required: true },
+    { name: 'owner', type: 'text', value: user, readOnly: true },
     { name: 'country', type: 'text', value: formData.country, required: true },
     { name: 'zipcode', type: 'text', value: formData.zipcode, required: true }
     
-
-  ];
-
-  const playTime = [
-    { value: 'Monday 8:00 to 19:00', label: 'Monday 8:00 to 19:00' },
-    { value: 'Tuesday 9:00 to 20:00', label: 'Tuesday 9:00 to 20:00' },
-    { value: 'Wednesday 10:00 to 18:00', label: 'Wednesday 10:00 to 18:00' },
-    { value: 'Thursday 05:00 to 16:00', label: 'Thursday 05:00 to 16:00' },
-    { value: 'Friday 10:00 to 23:00', label: 'Friday 10:00 to 23:00' },
-    { value: 'Saturday 06:00 to 20:00', label: 'Saturday 06:00 to 20:00' },
-    { value: 'Sunday 10:00 to 20:00', label: 'Sunday 10:00 to 20:00' },
 
   ];
 
@@ -72,7 +64,7 @@ function Play_form(props) {
     { value: "Football", label: "Football" },
     { value: "Tennis", label: "Tennis" },
     { value: "Volleyball", label: "Volleyball" },
-    { value: "golf", label: "golf" },
+    { value: "Golf", label: "Golf" },
     { value: "Squash", label: "Squash" },
     { value: "Soft ball", label: "Soft ball" },
     { value: "Pickle ball", label: "Pickle ball" },
@@ -118,6 +110,13 @@ function Play_form(props) {
   // };
   const fileHandler = (event) => {
     event.preventDefault()
+
+    // Validation for start and end times
+    if (parseInt(formData.endTime) <= parseInt(formData.startTime)) {
+      alert("End time must be after start time.");
+      return; // Stop the form submission
+    }
+
     setFiles(event.target.files[0]);
   };
 
@@ -127,7 +126,8 @@ function Play_form(props) {
     console.log("****")
     const data = {
       ...formData, // use formData state
-      sports: sports
+      sports: sports,
+      owner: user
        // Include sports as you're managing it separately
     };
     console.log(data);
@@ -189,8 +189,8 @@ function Play_form(props) {
       
       <form onSubmit={playFormHandler}>
 
-        <h2 className='text-center py-3'>Create New PlayArea !!</h2>
-        <div className='row'>
+        <h2 className='text-center py-3'>Application</h2>
+        {/* <div className='row'>
         {form.map((label, index) => {
           return (
             <Form.Group className='form_size col-md-6 col-12 py-2' key={index} >
@@ -201,24 +201,109 @@ function Play_form(props) {
                 value={formData[label.name]}
                 onChange={formHandler}
                 required={label.required}
+                readOnly={label.readOnly}
               />
             </Form.Group>
           );
         })}
-        </div>
+        </div> */}
        <div className='row'>
-       <Form.Group className='form_size col-md-6 col-12 py-2'>
-          <Form.Label>AvailableTimeSlots</Form.Label>
-          <Select
-            value={formData.availableTimeSlots}
-            name="timings"
-            options={playTime}
-            onChange={handleTimeChange}
-            isSearchable={true}
-          
+
+        <Form.Group className='form_size col-md-6 col-12 py-2' >
+          <Form.Label>Playarea Name</Form.Label>
+          <Form.Control
+            type="text"
+            name="name"
+            value={formData.name}
+            onChange={formHandler}
+            required="true"
+          />
+        </Form.Group>
+        <Form.Group className='form_size col-md-6 col-12 py-2' >
+          <Form.Label>Address Line-1</Form.Label>
+          <Form.Control
+            type="text"
+            name="address1"
+            value={formData.address1}
+            onChange={formHandler}
+            required="true"
+          />
+        </Form.Group>
+        <Form.Group className='form_size col-md-6 col-12 py-2' >
+          <Form.Label>Address Line-2</Form.Label>
+          <Form.Control
+            type="text"
+            name="address2"
+            value={formData.address2}
+            onChange={formHandler}
+          />
+        </Form.Group>
+        <Form.Group className='form_size col-md-6 col-12 py-2' >
+          <Form.Label>City</Form.Label>
+          <Form.Control
+            type="text"
+            name="city"
+            value={formData.city}
+            onChange={formHandler}
             required
           />
         </Form.Group>
+        <Form.Group className='form_size col-md-6 col-12 py-2' >
+          <Form.Label>State</Form.Label>
+          <Form.Control
+            type="text"
+            name="state"
+            value={formData.state}
+            onChange={formHandler}
+            required
+          />
+        </Form.Group>
+        <Form.Group className='form_size col-md-6 col-12 py-2' >
+          <Form.Label>Country</Form.Label>
+          <Form.Control
+            type="text"
+            name="country"
+            value={formData.country}
+            onChange={formHandler}
+            required
+          />
+        </Form.Group>
+        <Form.Group className='form_size col-md-6 col-12 py-2' >
+          <Form.Label>Zipcode</Form.Label>
+          <Form.Control
+            type="text"
+            name="zipcode"
+            value={formData.zipcode}
+            onChange={formHandler}
+            required
+          />
+        </Form.Group>
+        <Form.Group className='form_size col-md-6 col-12 py-2'>
+          <Form.Label>Start Time (Hour - 24H)</Form.Label>
+          <Form.Control
+            type="number"
+            name="startTime"
+            min="0"
+            max="23"
+            value={formData.startTime}
+            onChange={formHandler}
+            required
+          />
+        </Form.Group>
+
+        <Form.Group className='form_size col-md-6 col-12 py-2'>
+          <Form.Label>End Time (Hour - 24H)</Form.Label>
+          <Form.Control
+            type="number"
+            name="endTime"
+            min="0"
+            max="23"
+            value={formData.endTime}
+            onChange={formHandler}
+            required
+          />
+        </Form.Group>
+
         <Form.Group className='form_size col-md-6 col-12 py-2'>
           <Form.Label>Sports</Form.Label>
           <Select
@@ -232,7 +317,7 @@ function Play_form(props) {
           />
         </Form.Group>
         <Form.Group className='form_size col-md-6 col-12 py-2'>
-         <Form.Label>Court</Form.Label>
+         <Form.Label>No. of courts</Form.Label>
            <Form.Control
             type="number"  // Use type "number" for numeric input
             name="courts"
@@ -244,7 +329,7 @@ function Play_form(props) {
 
         
         <Form.Group className='form_size col-md-6 col-12 py-2' >
-            <Form.Label>File</Form.Label>
+            <Form.Label>Playarea Photos</Form.Label>
             <Form.Control
             type="file"
             name="file"
