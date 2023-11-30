@@ -3,18 +3,19 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { Button, Card, Container, Row, Col, Form } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import "../../App.css"
-
+import * as urls from './config';
 
 const CreatedEvents = ({loggedInUser}) => {
     const [venuesData, setVenuesData] = useState(null);
     const [filteredVenues, setFilteredVenues] = useState([]);
     const [activeFilter, setActiveFilter] = useState('myCreatedEvents'); // Default to My Created Events
+    const [sportFilter, setSportFilter] = useState([]);
   
     const apiCalled = useRef(false);
     useEffect(() => {
       if (!apiCalled.current) {
         async function fetchData() {
-            fetch('http://localhost:3500/home/myHostedEvents', {
+            fetch(urls.myHostedEvents, {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json',
@@ -23,7 +24,8 @@ const CreatedEvents = ({loggedInUser}) => {
               })
                 .then((response) => response.json())
                 .then((data) => {
-                  setVenuesData(data);
+                  setVenuesData(data.result);
+                  setSportFilter(data.sports);
                 })
                 .catch((error) => {
                   console.error('Error:', error);
@@ -36,6 +38,9 @@ const CreatedEvents = ({loggedInUser}) => {
   
     const [sportTypeFilter, setSportTypeFilter] = useState('');
     const [poolSizeFilter, setPoolSizeFilter] = useState('');
+    const [eventNameFilter, setEventNameFilter] = useState('');
+    const [dateFilter, setDateFilter] = useState('');
+  
   
     useEffect(() => {
       setFilteredVenues(venuesData);
@@ -46,7 +51,9 @@ const CreatedEvents = ({loggedInUser}) => {
         const passSportTypeFilter = !sportTypeFilter || venue.sportType === sportTypeFilter;
         const passPoolSizeFilter =
           !poolSizeFilter || venue.current_pool_size.toString() >= poolSizeFilter;
-        return passSportTypeFilter && passPoolSizeFilter;
+        const passEventNameFilter = !eventNameFilter || venue.event_name.toLowerCase().includes(eventNameFilter.toLowerCase());
+        const passDateFilter = !dateFilter || new Date(venue.event_slot_date).toISOString().split('T')[0] === dateFilter;
+        return passSportTypeFilter && passPoolSizeFilter && passEventNameFilter && passDateFilter;
       });
       setFilteredVenues(filteredResults);
     };
@@ -78,6 +85,8 @@ const CreatedEvents = ({loggedInUser}) => {
                 Pool Size: {venue.current_pool_size} players out of {venue.pool_size}
                 <br />
                 Venue: {venue.name}
+                <br />
+                Date: {new Date(venue.event_slot_date).toISOString().split('T')[0]}
               </Card.Text>
             </div>
           </Card.Body>
@@ -142,8 +151,12 @@ const CreatedEvents = ({loggedInUser}) => {
                 <Form.Label>Sport Type</Form.Label>
                 <Form.Control as="select" onChange={(e) => setSportTypeFilter(e.target.value)}>
                   <option value="">All</option>
-                  <option value="Football">Football</option>
-                  <option value="Badminton">Badminton</option>
+                  {sportFilter &&
+                    sportFilter.map((sport) => (
+                      <option key={sport.id} value={sport.name}>
+                        {sport.name}
+                      </option>
+                    ))}
                   {/* Add more sport types as needed */}
                 </Form.Control>
               </Form.Group>
@@ -155,6 +168,21 @@ const CreatedEvents = ({loggedInUser}) => {
                   onChange={(e) => setPoolSizeFilter(e.target.value)}
                 />
               </Form.Group>
+              <Form.Group controlId="dateFilter">
+                <Form.Label>Date</Form.Label>
+                <Form.Control
+                  type="date"
+                  onChange={(e) => setDateFilter(e.target.value)}
+                />
+              </Form.Group>
+              <Form.Group controlId="eventNameFilter">
+              <Form.Label>Event Name</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter event name"
+                onChange={(e) => setEventNameFilter(e.target.value)}
+              />
+            </Form.Group>
               <Button className="d-flex" variant="primary" onClick={applyFilters} id="FilterSubmit">
                 Apply filters
               </Button>

@@ -1,6 +1,14 @@
+const AWS = require("aws-sdk");
 const db = require("./dbConnect")
+require('dotenv').config();
 
+AWS.config.update({
+  region: 'us-east-1',
+  accessKeyId: process.env.ACCESSKEYID,
+  secretAccessKey: process.env.SECRETACCESSKEY,
+});
 
+const ses = new AWS.SES({ apiVersion: '2010-12-01' });
 
 function getPlayAreaDocs(playAreaId, isS3Url) {
   return new Promise((resolve, reject) => {
@@ -24,20 +32,19 @@ function getPlayAreaDocs(playAreaId, isS3Url) {
 // Refactored getAllNotes function
 const getAllNotes = async (req, res) => {
   try {
-    const result = await queryAsync("SELECT e.id, e.event_name, e.current_pool_size, e.pool_size, e.sport_id, e.created_by, u.username as created_user, e.court_id, p.name, p.address1, p.state, p.country, p.zipcode, p.id as play_area_id, s.name as sportType FROM events as e INNER JOIN play_areas as p ON e.play_area_id=p.id INNER JOIN users as u ON e.created_by=u.id INNER JOIN sports AS s ON e.sport_id=s.id WHERE e.event_status='Confirmed';");
-    
+    const result = await queryAsync("SELECT e.id, e.event_name, e.current_pool_size, e.pool_size, e.sport_id, e.created_by, u.username as created_user, e.court_id, p.name, p.address1, p.state, p.country, p.zipcode, p.id as play_area_id, s.name as sportType, DATE(es.date) AS event_slot_date FROM events as e INNER JOIN play_areas as p ON e.play_area_id=p.id INNER JOIN users as u ON e.created_by=u.id INNER JOIN sports AS s ON e.sport_id=s.id LEFT JOIN event_slots AS es ON e.id = es.event_id WHERE e.event_status='Confirmed' AND e.id IN (SELECT event_id FROM event_slots WHERE date > CURDATE()) GROUP BY  e.id;");
     const promises = result.map(event => getPlayAreaDocs(event.play_area_id, true));
     const promises1 = result.map(event => getPlayAreaDocs(event.id, false));
    
     const [s3UrlArrays, playersArrays] = await Promise.all([Promise.all(promises), Promise.all(promises1)]);
-   
     result.forEach((event, index) => {
       event.photoUrl = s3UrlArrays[index];
       event.players = playersArrays[index];
     });
-
+    const sports = await queryAsync("select name from sports;");
+    
     // console.log(result);
-    res.json(result);
+    res.json({result,sports});
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: 'Internal Server Error' });
@@ -73,15 +80,18 @@ const getCreatedEvents = async (req,res) => {
     p.country, 
     p.zipcode, 
     p.id as play_area_id, 
-    s.name as sportType 
+    s.name as sportType,
+    DATE(es.date) AS event_slot_date
   FROM 
     events as e 
     INNER JOIN play_areas as p ON e.play_area_id = p.id 
     INNER JOIN users as u ON e.created_by = u.id 
     INNER JOIN sports AS s ON e.sport_id = s.id 
+    LEFT JOIN event_slots AS es ON e.id = es.event_id 
   WHERE 
     
-    e.created_by = ?;
+    e.created_by = ?
+    AND e.id IN (SELECT event_id FROM event_slots WHERE date > CURDATE()) GROUP BY  e.id;
 `;
   try {
  
@@ -99,8 +109,10 @@ const getCreatedEvents = async (req,res) => {
       event.players = playersArrays[index];
     });
     // console.log(result);
-     
-    res.json(result);
+    const sports = await queryAsync("select name from sports;");
+    
+    // console.log(result);
+    res.json({result,sports});
   }
   catch(err){
     console.log(err);
@@ -126,17 +138,20 @@ const getMyEvents = async(req,res)=> {
       p.country, 
       p.zipcode, 
       p.id as play_area_id, 
-      s.name as sportType 
+      s.name as sportType, 
+      DATE(es.date) AS event_slot_date
     FROM 
       events as e 
       INNER JOIN play_areas as p ON e.play_area_id = p.id 
       INNER JOIN users as u ON e.created_by = u.id 
       INNER JOIN sports AS s ON e.sport_id = s.id 
       INNER JOIN event_users AS eu ON e.id = eu.event_id 
+      LEFT JOIN event_slots AS es ON e.id = es.event_id 
     WHERE 
       e.event_status = 'Confirmed' 
       AND eu.status='Done'
-      AND eu.user_id = ?;
+      AND eu.user_id = ?
+      AND e.id IN (SELECT event_id FROM event_slots WHERE date > CURDATE()) GROUP BY  e.id;
   `;
 
   try {
@@ -155,8 +170,10 @@ const getMyEvents = async(req,res)=> {
       event.players = playersArrays[index];
     });
     // console.log(result);
-     
-    res.json(result);
+    const sports = await queryAsync("select name from sports;");
+    
+    // console.log(result);
+    res.json({result,sports});
   }
   catch(err){
     console.log(err);
@@ -165,13 +182,8 @@ const getMyEvents = async(req,res)=> {
 
 
 const addUserIntrest = async (userId, sportId) =>{
-  const query = await queryAsync('SELECT COUNT(*) AS record_count FROM `user_sports` WHERE `user_id` = ? AND `sport_id` = ?',[userId, sportId]);
-  if(query[0].record_count){
-    const count = await queryAsync("UPDATE `user_sports` SET `count` = `count` + 1 WHERE user_id = ? AND sport_id = ?;",[userId, sportId]);
-  }else{
-    const count = await queryAsync('INSERT INTO `user_sports` (`user_id`, `sport_id`, `count`) VALUES (?, ?, ?)',[userId, sportId, 1]);
-    
-  }
+  const count = await queryAsync('INSERT INTO `user_sports` (`user_id`, `sport_id`) VALUES (?, ?)',[userId, sportId]);
+
   
 }
 
@@ -180,10 +192,10 @@ const joinEvent = async (req,res) =>{
   try{
     const { event_id, username, status } = req.body;
 
-    const userId = await queryAsync("select id from users where username=?",[req.body.username]);
+    const userId = await queryAsync("select * from users where username=?",[req.body.username]);
     const checkQuery = 'SELECT * FROM event_users WHERE event_id = ? AND user_id = ?';
     const checkResult = await queryAsync(checkQuery, [event_id, userId[0].id]);
-    const sportId = await queryAsync("select sport_id from events where id=?",[event_id]);
+    const sportId = await queryAsync("select * from events where id=?",[event_id]);
 
     if (checkResult.length > 0) {
       
@@ -197,7 +209,39 @@ const joinEvent = async (req,res) =>{
     addUserIntrest(userId[0].id, sportId[0].sport_id);
     const insertQuery = 'INSERT INTO event_users (event_id, user_id, status) VALUES (?, ?, ?)';
     const result = await queryAsync(insertQuery, [event_id, userId[0].id, status]);
-     
+    const email = await queryAsync("select u.email from events as e inner join users as u on u.id=e.created_by where e.id=? ;",[event_id]);
+    // console.log(email);
+    emailAddress = email[0].email;
+    // emailAddress = "satyaashish.veda@sjsu.edu";
+
+      const params = {
+        Destination: {
+          ToAddresses: [emailAddress],
+        },
+        Message: {
+          Body: {
+            Text: {
+              Charset: 'UTF-8',
+              Data: userId[0].username+' requested to join the event '+sportId[0].event_name,
+            },
+          },
+          Subject: {
+            Charset: 'UTF-8',
+            Data: 'A player requested to join the event',
+          },
+        },
+        Source: 'sjsucloudspecial2023@gmail.com', // Replace with your SES verified sender email
+      };
+      
+      try {
+        const data = await ses.sendEmail(params).promise();
+        console.log('Email sent:', data);
+        
+      } catch (error) {
+        console.error('Error sending email:', error);
+        throw error;
+      }
+    
     res.status(200).json({ message: 'Successfully requested to join the event, will join the event once the host accepts the request' });
   }catch(err){
     console.log(err);

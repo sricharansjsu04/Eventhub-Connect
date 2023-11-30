@@ -1,0 +1,11 @@
+export const HOST_EVENT = `http://localhost:3500/hostEvent`;
+export const myHostedEvents = `http://localhost:3500/home/myHostedEvents`;
+export const joinEvent = 'http://localhost:3500/home/joinEvent';
+export const getWaitlist = `http://localhost:3500/home/getWaitlist/`;
+export const acceptReq = 'http://localhost:3500/home/acceptReq';
+export const rejectReq = 'http://localhost:3500/home/rejectReq';
+export const getSports = `http://localhost:3500/venues/getSports`;
+export const getVenues = 'http://localhost:3500/venues/getVenues';
+export const myEvents = 'http://localhost:3500/home/myEvents';
+export const getAllEvents = 'http://localhost:3500/home/getAllEvents';
+export const createEvent = 'http://localhost:3500/venues/createEvent';

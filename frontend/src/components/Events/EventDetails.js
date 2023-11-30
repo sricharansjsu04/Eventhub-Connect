@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Container, Button, Row, Col, Carousel, Alert } from 'react-bootstrap';
 import { useParams } from 'react-router-dom';
+import * as urls from './config';
 
 const EventDetails = ({ venues,loggedInUser }) => {
 
@@ -22,7 +23,7 @@ const EventDetails = ({ venues,loggedInUser }) => {
   }
   const handleJoinEvent = async () => {
     try {
-      const response = await fetch('http://localhost:3500/home/joinEvent', {
+      const response = await fetch(urls.joinEvent, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -70,8 +71,8 @@ const EventDetails = ({ venues,loggedInUser }) => {
       <dt className="col-sm-4">Sport Type:</dt>
       <dd className="col-sm-8">{event.sportType}</dd>
 
-      <dt className="col-sm-4">Pool Size:</dt>
-      <dd className="col-sm-8">{event.pool_size} players</dd>
+      <dt className="col-sm-4">Date:</dt>
+      <dd className="col-sm-8">{new Date(event.event_slot_date).toISOString().split('T')[0]}</dd>
 
       <dt className="col-sm-4">Venue:</dt>
       <dd className="col-sm-8">{event.name}</dd>

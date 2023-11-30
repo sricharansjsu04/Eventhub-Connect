@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Container, Form, Button, Row, Col, Card } from 'react-bootstrap';
 import VenueModal from './VenueModal';
+import * as urls from './config';
 
 // const venuesData = [
 //   {
@@ -38,7 +39,7 @@ const EventForm = ({loggedInUser}) => {
   });
 
   useEffect(() => {
-    fetch(`http://localhost:3500/venues/getSports`)
+    fetch(urls.getSports)
       .then((response) => response.json())
       .then((data) => {
         console.log(data);
@@ -75,7 +76,7 @@ const EventForm = ({loggedInUser}) => {
     const { sportType, poolSize, location, date } = formData;
     
       // Perform POST request to fetch matching venues from the backend
-      fetch('http://localhost:3500/venues/getVenues', {
+      fetch(urls.getVenues, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
