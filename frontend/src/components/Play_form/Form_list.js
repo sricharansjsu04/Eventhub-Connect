@@ -4,7 +4,6 @@ import "./Play_form.css";
 import { Link, useNavigate } from 'react-router-dom';
 import { deleteApi, getApi } from '../../Utils/api.service';
 import { AuthContext } from '../../contexts/AuthContext';
-import { useContext } from 'react'
 
 function Form_list(props) {
   const navigate = useNavigate();
@@ -18,6 +17,7 @@ function Form_list(props) {
   const [dataList, setDatalist] = useState([])
   // const { playData, deleteData } = usePlayFormStore();
   useEffect(()=>{
+    console.log(user)
     getApi(user)
     .then(res=> {
       const {data} = res
@@ -38,7 +38,7 @@ const deleteHandler = (id)=>{
       {/* Navbar component */}
       <Navbar bg="dark" variant="dark" expand="lg">
         <Container fluid>
-          <Navbar.Brand as={Link} to="/admin">
+          <Navbar.Brand as={Link} to="/ownerHome">
             PlayPal
           </Navbar.Brand>
           <Navbar.Toggle aria-controls="navbar-dark-example" />
@@ -129,7 +129,7 @@ const deleteHandler = (id)=>{
       <div>
         {dataList?.length === 0 && (
           <div className='py-5 my-4 d-flex justify-content-center'>
-            <h4>No Play Areas are booked</h4>
+            <h4>No play areas are registered yet</h4>
           </div>
         )}
       </div>

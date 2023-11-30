@@ -16,28 +16,47 @@ import PlayareasDashboard from "./PlayareasDashboard";
 
 function AdminDashboard() {
   console.log('AdminDashboard rendering...');
-  const [playareasData, setPlayareasData] = useState([]);
+   const [playareasData, setPlayareasData] = useState([]);
+   const [filteredPlayareas, setFilteredPlayareas] = useState(playareasData);
 
-  useEffect(() => {
-    console.log("AdminDashboard is mounted");
-   
+   useEffect(() => {
     fetch(apiConfig.getPlayAreas)
       .then(response => {
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
-        console.log('response fetched', response);
         return response.json();
       })
-      .then(data => setPlayareasData(data))
+      .then(data => {
+        setPlayareasData(data);
+        setFilteredPlayareas(data);
+      })
       .catch(error => {
         console.error('There has been a problem with your fetch operation:', error);
       });
   }, []);
+  
 
-  useEffect(() => {
-    setFilteredPlayareas(playareasData);
-  }, [playareasData]);
+  // useEffect(() => {
+  //   console.log("AdminDashboard is mounted");
+   
+  //   fetch(apiConfig.getPlayAreas)
+  //     .then(response => {
+  //       if (!response.ok) {
+  //         throw new Error('Network response was not ok');
+  //       }
+  //       console.log('response fetched', response);
+  //       return response.json();
+  //     })
+  //     .then(data => setPlayareasData(data))
+  //     .catch(error => {
+  //       console.error('There has been a problem with your fetch operation:', error);
+  //     });
+  // }, []);
+
+  // useEffect(() => {
+  //   setFilteredPlayareas(playareasData);
+  // }, [playareasData]);
 
   // const playareasData = [
   //   {
@@ -124,7 +143,7 @@ function AdminDashboard() {
   //   ];
     
     
-  const [filteredPlayareas, setFilteredPlayareas] = useState(playareasData);
+ 
   const [playareas, setPlayareas] = useState(playareasData);
   const [activeTab, setActiveTab] = useState('allPlayareas');
 
@@ -140,8 +159,28 @@ function AdminDashboard() {
   
 
   // Function to apply filters based on sport type, city, and playarea name
+  // const applyFilters = (filters) => {
+  //   const filteredResults = playareas.filter((playarea) => {
+  //     console.log('playarea list', playarea);
+  //     console.log(filters);
+  //     const filterBySportType = filters.sportType ? playarea.sportType === filters.sportType : true;
+  //     const filterByCity = filters.city ? playarea.city.toLowerCase().includes(filters.city.toLowerCase()) : true;
+  //     const filterByPlayareaName = filters.playareaName ? playarea.name.toLowerCase().includes(filters.playareaName.toLowerCase()) : true;
+  //     const matchStatus = Object.entries(statusFilters).some(([status, checked]) => 
+  //       checked && playarea.status.toLowerCase() === status.toLowerCase()
+  //     );
+  
+  //     // Exclude playareas with 'Requested' status for 'All Playareas' tab
+  //     console.log(playarea.name, playarea.status);
+  //     const isNotRequested = activeTab !== 'requests' ? playarea.status.toLowerCase() !== 'requested' : true;
+  
+  //     return filterBySportType && filterByCity && filterByPlayareaName && (matchStatus || Object.values(statusFilters).every(val => !val)) && isNotRequested;
+  //   });
+  //   setFilteredPlayareas(filteredResults);
+  // };
+
   const applyFilters = (filters) => {
-    const filteredResults = playareas.filter((playarea) => {
+    const filteredResults = playareasData.filter(playarea => {
       const filterBySportType = filters.sportType ? playarea.sportType === filters.sportType : true;
       const filterByCity = filters.city ? playarea.city.toLowerCase().includes(filters.city.toLowerCase()) : true;
       const filterByPlayareaName = filters.playareaName ? playarea.name.toLowerCase().includes(filters.playareaName.toLowerCase()) : true;
@@ -149,8 +188,6 @@ function AdminDashboard() {
         checked && playarea.status.toLowerCase() === status.toLowerCase()
       );
   
-      // Exclude playareas with 'Requested' status for 'All Playareas' tab
-      console.log(playarea.name, playarea.status);
       const isNotRequested = activeTab !== 'requests' ? playarea.status.toLowerCase() !== 'requested' : true;
   
       return filterBySportType && filterByCity && filterByPlayareaName && (matchStatus || Object.values(statusFilters).every(val => !val)) && isNotRequested;

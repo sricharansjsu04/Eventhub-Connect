@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { Container, Form } from "react-bootstrap";
+import { Container, Form, Navbar, Nav, Button } from "react-bootstrap";
 import Select from "react-select";
 import "./Play_form.css"
 import { Link, useNavigate, useParams } from 'react-router-dom';
@@ -8,7 +8,12 @@ import { createUpdateApi, getApi } from '../../Utils/api.service';
 import { AuthContext } from '../../contexts/AuthContext';
 
 function Play_form(props) {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const { logout } = useContext(AuthContext);
+  const handleLogout = () => {
+    logout(); // Call logout from AuthContext
+    navigate('/'); // Navigate back to the login page
+  };
   const [update,setUpdate] = useState(false)  
   // const [updateData,setUpdateData] = useState(false)
   const [sports,setSports] = useState('');
@@ -180,18 +185,38 @@ function Play_form(props) {
 
 
   return (
+    <>
+      {/* Navbar component */}
+      <Navbar bg="dark" variant="dark" expand="lg">
+        <Container fluid>
+          <Navbar.Brand as={Link} to="/ownerHome">
+            PlayPal
+          </Navbar.Brand>
+          <Navbar.Toggle aria-controls="navbar-dark-example" />
+          <Navbar.Collapse id="navbar-dark-example">
+            <Nav className="ms-auto">
+              <Navbar.Text className="me-3">
+                Logged in as: {user}
+              </Navbar.Text>
+              <Button variant="outline-danger" size="sm" onClick={handleLogout}>
+                Logout
+              </Button>
+            </Nav>
+          </Navbar.Collapse>
+        </Container>
+      </Navbar>
     <Container>
       <div style={{background:"none", backgroundColor:"white", padding:"0px 20px"}}>
     <div className='py-2 border-bottom'>
         <div className='d-flex justify-content-end'>
-          <Link to="./../"><button className='btn btn-primary'>view Bookings</button></Link>
+          <Link to="./../"><button className='btn btn-primary'>View Play Areas</button></Link>
         </div>
       </div>
     <div className='d-flex justify-content-center'>
       
       <form onSubmit={playFormHandler}>
 
-        <h2 className='text-center py-3'>Application</h2>
+        <h2 className='text-center py-3'>Application Form</h2>
         {/* <div className='row'>
         {form.map((label, index) => {
           return (
@@ -348,6 +373,7 @@ function Play_form(props) {
     </div>
     </div>
     </Container>
+    </>
   );
 }
 
