@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import * as urls from './config';
 
 const BookForm = ({ slotsData, formData, selectedVenue }) => {
   const [slots, setSlots] = useState(slotsData);
@@ -38,7 +39,7 @@ const BookForm = ({ slotsData, formData, selectedVenue }) => {
       };
 
       // Send POST request to the backend
-      fetch('http://localhost:3500/hostEvent', {
+      fetch(urls.HOST_EVENT, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

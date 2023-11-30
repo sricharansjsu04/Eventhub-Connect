@@ -1,0 +1,39 @@
+#FilterSubmit {
+    margin-top: 2%;
+  }
+  
+  .card-body {
+    flex: 1 1 auto;
+    padding: 0px;
+    color: var(--bs-card-color);
+  }
+  
+  #card-body-details {
+    margin-left: 1%;
+  }
+  
+  #WelcomeText {
+    flex: 1;
+    margin-left: 380px;
+  }
+  
+  .card:hover {
+    box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.5);
+  }
+  
+  .ButtonLeftMargin {
+    margin-left: 25.4%;
+  }
+  
+  .headingnButton {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  
+  /* Add the following styles for button container */
+  .headingnButton > div {
+    display: flex;
+    gap: 10px; /* Adjust the gap as needed */
+  }
+  

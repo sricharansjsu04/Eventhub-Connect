@@ -2,13 +2,15 @@ import React, { useState, useEffect, useRef, useContext } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Button, Card, Container, Row, Col, Form, Navbar, Nav } from 'react-bootstrap';
 import { BrowserRouter as Router, Route, Routes, Link, useNavigate, Outlet } from 'react-router-dom';
-import '../../App.css';
+import './PlayerHome.css';
+import "../../App.css"
 import CreatedEvents from "./CreatedEvents";
 import MyEvents from "./MyEvents";
 import MyEventDetails from "./MyEventDetails";
 import EventHosted from "./EventHosted";
 import EventDetails from "./EventDetails";
 import HostEvent from "./HostEvent";
+import * as urls from './config';
 import { AuthContext } from '../../contexts/AuthContext';
 
 
@@ -111,36 +113,36 @@ const HostButton = ({ loggedInUser, venuesData, setFilteredVenues, showMyCreated
 
   return (
     <div className="headingnButton">
-      <div className='ButtonLeftMargin'>
-        <Button
-          variant={showLiveEvents ? 'primary' : 'secondary'}
-          onClick={() => toggleEvents(true, false, false)}
-        >
-          Live Events
-        </Button>
-        <Button
-          variant={showMyEvents ? 'primary' : 'secondary'}
-          onClick={() => handleMyEventsClick()}
-        >
-          My Events
-        </Button>
-        <Button
-          variant={showMyCreatedEvents ? 'primary' : 'secondary'}
-          onClick={() => handleMyCreatedEventsClick()}
-        >
-          Hosted Events
-        </Button>
-      </div>
-      <div>
-        <Button className="btn btn-success" onClick={() => navigate('../host-event')}>
-          Host an event
-        </Button>
-      </div>
+    <div className='ButtonLeftMargin'>
+      <Button
+        variant={showLiveEvents ? 'primary' : 'secondary'}
+        onClick={() => toggleEvents(true, false, false)}
+      >
+        Live Events
+      </Button>
+      <Button
+        variant={showMyEvents ? 'primary' : 'secondary'}
+        onClick={() => handleMyEventsClick()}
+      >
+        My Events
+      </Button>
+      <Button
+        variant={showMyCreatedEvents ? 'primary' : 'secondary'}
+        onClick={() => handleMyCreatedEventsClick()}
+      >
+        Hosted Events
+      </Button>
     </div>
+    <div>
+      <Button className="btn btn-success" onClick={() => navigate('../host-event')}>
+        Host an event
+      </Button>
+    </div>
+  </div>
   );
 };
 
-const VenueFilter = ({ onSportTypeChange, onPoolSizeChange, onApplyFilters }) => (
+const VenueFilter = ({ onSportTypeChange, onPoolSizeChange, onApplyFilters, onEventNameChange, sportFilter }) => (
 
   <Form className="sticky-top bg-light p-3">
     <h5>Event Filters</h5>
@@ -148,8 +150,12 @@ const VenueFilter = ({ onSportTypeChange, onPoolSizeChange, onApplyFilters }) =>
       <Form.Label>Sport Type</Form.Label>
       <Form.Control as="select" onChange={onSportTypeChange}>
         <option value="">All</option>
-        <option value="Football">Football</option>
-        <option value="Bad minton">Badminton</option>
+        {sportFilter &&
+          sportFilter.map((sport) => (
+            <option key={sport.id} value={sport.name}>
+              {sport.name}
+            </option>
+          ))}
         {/* Add more sport types as needed */}
       </Form.Control>
     </Form.Group>
@@ -161,7 +167,14 @@ const VenueFilter = ({ onSportTypeChange, onPoolSizeChange, onApplyFilters }) =>
         onChange={onPoolSizeChange}
       />
     </Form.Group>
-    
+    <Form.Group controlId="eventNameFilter">
+      <Form.Label>Event Name</Form.Label>
+      <Form.Control
+        type="text"
+        placeholder="Enter event name"
+        onChange={onEventNameChange}
+      />
+    </Form.Group>
     <Button className='d-flex' variant="primary" onClick={onApplyFilters} id="FilterSubmit">
       Apply filters
     </Button>
@@ -174,7 +187,7 @@ function PlayerHome() {
   const [venuesData, setVenuesData] = useState(null);
   const [filteredVenues, setFilteredVenues] = useState([]);
   const [showMyCreatedEvents, setShowMyCreatedEvents] = useState(false); // Add state for My Created Events
-  const { logout } = useContext(AuthContext);
+  const [sportFilter, setSportFilter] = useState([]);  const { logout } = useContext(AuthContext);
   const navigate = useNavigate();
   const handleLogout = () => {
     logout(); // Call logout from AuthContext
@@ -188,9 +201,11 @@ function PlayerHome() {
     if (!apiCalled.current) {
       async function fetchData() {
         try {
-          const response = await fetch('http://localhost:3500/home/getAllEvents');
+          const response = await fetch(urls.getAllEvents);
           const result = await response.json();
-          setVenuesData(result);
+        
+          setVenuesData(result.result);
+          setSportFilter(result.sports);
         } catch (error) {
           console.error('Error fetching data:', error);
         }
@@ -204,6 +219,7 @@ function PlayerHome() {
      
   const [sportTypeFilter, setSportTypeFilter] = useState('');
   const [poolSizeFilter, setPoolSizeFilter] = useState('');
+  const [eventNameFilter, setEventNameFilter] = useState('');
 
   useEffect(() => {
     setFilteredVenues(venuesData);
@@ -213,12 +229,13 @@ function PlayerHome() {
     const filteredResults = venuesData.filter((venue) => {
       const passSportTypeFilter = !sportTypeFilter || venue.sportType === sportTypeFilter;
       const passPoolSizeFilter = !poolSizeFilter || venue.current_pool_size.toString() >= poolSizeFilter;
-      return passSportTypeFilter && passPoolSizeFilter;
+      const passEventNameFilter = !eventNameFilter || venue.event_name.toLowerCase().includes(eventNameFilter.toLowerCase());
+      return passSportTypeFilter && passPoolSizeFilter && passEventNameFilter;
     });
     setFilteredVenues(filteredResults);
   };
-const loggedInUser = "john_doe";
-// shir
+const loggedInUser = "shireesh20";
+// shireesh20
 // john_doe
 
   return (
@@ -260,7 +277,9 @@ const loggedInUser = "john_doe";
                       <VenueFilter
                         onSportTypeChange={(e) => setSportTypeFilter(e.target.value)}
                         onPoolSizeChange={(e) => setPoolSizeFilter(e.target.value)}
+                        onEventNameChange={(e) => setEventNameFilter(e.target.value)}
                         onApplyFilters={() => applyFilters()}
+                        sportFilter = {sportFilter}
                       />
                     </Col>
                     <Col md={9}>
