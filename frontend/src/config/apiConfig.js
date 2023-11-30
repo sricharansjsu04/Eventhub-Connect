@@ -1,6 +1,7 @@
 const apiConfig = {
-    requestedPlayArea: 'https://a321-2601-646-8081-a780-9991-7605-427c-10f9.ngrok.io/api/requestedPlayArea',
-    // Add other API endpoints here
+    getPlayAreas: 'https://pbh79m29ck.execute-api.us-east-2.amazonaws.com/api/getPlayAreas',
+    registerUser: 'http://eventuseralb-1046506387.us-east-2.elb.amazonaws.com/users/register',
+    updateStatusBaseUrl: 'http://eventuseralb-1046506387.us-east-2.elb.amazonaws.com' 
   };
   
   export default apiConfig;

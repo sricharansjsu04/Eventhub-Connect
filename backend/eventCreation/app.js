@@ -27,6 +27,10 @@ app.post("/book-venue", function(req,res){
 
     })
 
+app.get('/health', (req, res) => {
+      res.status(200).send('OK');
+  });
+
 app.post("/hostEvent", function(req,res){
     console.log("Hi");
     console.log(req.body)

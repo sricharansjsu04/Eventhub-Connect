@@ -116,7 +116,9 @@ const getAllVenues = async (req, res) => {
       const slotId = await queryAsync("select id from slots where start_time in (?);",[req.body.selectedSlot]);
       const sportId = await queryAsync("select id from sports where name=?;",[req.body.formData.sportType]);
       const userId =  await queryAsync("select id from users where username=?;",[req.body.username]);
-     
+      console.log(req.body.username);
+     console.log('sport id',sportId[0]);
+     console.log('user id',userId);
       const insertEvent = await queryAsync("INSERT INTO `events` (`current_pool_size`, `pool_size`, `play_area_id`, `sport_id`, `created_by`, `booking_status`, `event_status`, `created_at`, `event_name`, `court_id`) VALUES (?, ?, ?, ?, ?, ?, ?, NOW(),?,?);",[1, req.body.selectedPoolSize, req.body.selectedVenue.id, sportId[0].id, userId[0].id, "Booked", "Confirmed",req.body.eventName, req.body.court]);
       
       slotId.forEach(async (element)=>{

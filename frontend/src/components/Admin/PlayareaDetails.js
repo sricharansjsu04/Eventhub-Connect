@@ -169,10 +169,9 @@ if (confirmMessage || errorMessage) {
     <Col md={6} className="mb-4">
     <div className="details-container p-4 rounded bg-light">
     
-<h3>{playarea.name}</h3>
+<h3 style={{ textTransform: 'uppercase'}}>{playarea.name}</h3>
 <dl className="row mt-4">
-<dt className="col-sm-4">Playarea Name:</dt>
-<dd className="col-sm-8">{playarea.name}</dd>
+
 
 <dt className="col-sm-4">Owner:</dt>
 <dd className="col-sm-8">{playarea.owner}</dd>

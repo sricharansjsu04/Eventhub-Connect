@@ -25,7 +25,25 @@ const PlayareasDashboard = ({ applyFilters, filteredPlayareas, activeTab, setAct
           />
           </Col>
           <Col md={9}>
-          <ButtonGroup className="mb-3">
+
+          {/* <div className="headingnButton">
+            <div className='ButtonLeftMargin'>
+                <Button
+                    variant={activeTab === 'allPlayareas' ? 'primary' : 'secondary'}
+                    onClick={() => setActiveTab('allPlayareas')}>
+                    All Playareas
+                </Button>
+                <Button
+                    variant={activeTab === 'requests' ? 'primary' : 'secondary'}
+                    onClick={() => setActiveTab('requests')}>
+                    Requests
+                </Button>
+             </div>
+            </div> */}
+
+
+
+          <ButtonGroup className="mb-3" style={{gap: "10px"}}>
               <Button
                 variant={activeTab === 'allPlayareas' ? 'primary' : 'secondary'}
                 onClick={() => setActiveTab('allPlayareas')}>

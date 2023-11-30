@@ -13,12 +13,8 @@ import { AuthProvider } from './contexts/AuthContext';
 import { AuthContext } from './contexts/AuthContext';
 import PlayareaDetails from './components/Admin/PlayareaDetails';
 import ProtectedRoute from './components/Auth/ProtectedRoute'
-
-
-const userPool = new CognitoUserPool({
-  UserPoolId: 'us-east-1_cPUiK1Y6C', // Replace with your User Pool Id
-  ClientId: '2gfac6rthhbsj9gf791rt85l7o', // Replace with your Client Id
-});
+import apiConfig from './config/apiConfig';
+import userPool from './config/cognitoConfig';
 
 
 function AppWrapper() {
@@ -72,7 +68,7 @@ function App() {
     setShowVerificationSuccess(true);
 
     try {
-      const response = await fetch('http://localhost:3001/users/register', {
+      const response = await fetch(apiConfig.registerUser, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(userData)
@@ -97,7 +93,6 @@ function App() {
     //setIsAuthenticated(true);
     console.log('in onUserSignIn method with roleType: ',roleType);
     login(username, roleType);
-    console.log('below login', roleType);
   
     if (roleType === 'player') {
       console.log('player login navigating');

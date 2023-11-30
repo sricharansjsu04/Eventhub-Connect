@@ -206,6 +206,7 @@ function PlayerHome() {
     navigate('/'); // Navigate back to the login page
   };
   const { user } = useContext(AuthContext);
+  const [loggedInUser, setLoggedInUser] = useState(user);
 
 
   const apiCalled = useRef(false);
@@ -248,7 +249,7 @@ function PlayerHome() {
     });
     setFilteredVenues(filteredResults);
   };
-const loggedInUser = "shireesh20";
+//const loggedInUser = "shireesh20";
 // shireesh20
 // john_doe
 
@@ -265,7 +266,7 @@ const loggedInUser = "shireesh20";
     <Navbar.Collapse id="navbar-dark-example">
       <Nav className="ms-auto">
         <Navbar.Text className="me-3">
-          Logged in as: admin
+          Logged in as: {loggedInUser}
         </Navbar.Text>
         <Button variant="outline-danger" size="sm" onClick={handleLogout}>
           Logout

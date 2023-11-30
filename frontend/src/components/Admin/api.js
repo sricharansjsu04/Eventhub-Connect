@@ -1,4 +1,5 @@
-const API_BASE_URL = 'http://localhost:3002'; // Replace with the actual base URL of your microservice
+import apiConfig from "../../config/apiConfig";
+const API_BASE_URL = apiConfig.updateStatusBaseUrl; // Replace with the actual base URL of your microservice
 
 export const updatePlayareaStatus = async (playareaId, newStatus, comments) => {
   try {

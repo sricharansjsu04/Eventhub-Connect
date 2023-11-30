@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './VerificationSuccess.css';
 
+
 function VerificationSuccess({ selectedSports, setSelectedSports, onDone }) {
   const [sports, setSports] = useState([]);
 

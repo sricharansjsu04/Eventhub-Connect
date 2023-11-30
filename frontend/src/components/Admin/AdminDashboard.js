@@ -16,112 +16,112 @@ import PlayareasDashboard from "./PlayareasDashboard";
 
 function AdminDashboard() {
   console.log('AdminDashboard rendering...');
-  // const [playareasData, setPlayareasData] = useState([]);
+  const [playareasData, setPlayareasData] = useState([]);
 
-  // useEffect(() => {
-  //   console.log("AdminDashboard is mounted");
+  useEffect(() => {
+    console.log("AdminDashboard is mounted");
    
-  //   fetch(apiConfig.requestedPlayArea)
-  //     .then(response => {
-  //       if (!response.ok) {
-  //         throw new Error('Network response was not ok');
-  //       }
-  //       console.log('response fetched', response);
-  //       return response.json();
-  //     })
-  //     .then(data => setPlayareasData(data))
-  //     .catch(error => {
-  //       console.error('There has been a problem with your fetch operation:', error);
-  //     });
-  // }, []);
+    fetch(apiConfig.getPlayAreas)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        console.log('response fetched', response);
+        return response.json();
+      })
+      .then(data => setPlayareasData(data))
+      .catch(error => {
+        console.error('There has been a problem with your fetch operation:', error);
+      });
+  }, []);
 
-  // useEffect(() => {
-  //   setFilteredPlayareas(playareasData);
-  // }, [playareasData]);
+  useEffect(() => {
+    setFilteredPlayareas(playareasData);
+  }, [playareasData]);
 
-  const playareasData = [
-    {
-      "id": 5,
-      "name": "john_doe",
-      "owner": 2,
-      "address1": "sdghb",
-      "address2": "dcbhn",
-      "city": "gurgaon",
-      "state": "Delhi",
-      "country": "india",
-      "zipcode": null,
-      "status": "Rejected",
-      "comments": null,
-      "docUrls": [
-        "https://picsum.photos/id/96/200/300",
-        "https://picsum.photos/id/94/2133/1200"]
-    },
-    {
-      "id": 7,
-      "name": "john_doe",
-      "owner": 2,
-      "address1": "sdc",
-      "address2": "dcbhn",
-      "city": "gurgaon",
-      "state": "Delhi",
-      "country": "india",
-      "zipcode": null,
-      "status": "Requested",
-      "comments": null,
-      "docUrls": [
-        "https://picsum.photos/id/96/200/300",
-        "https://picsum.photos/id/94/2133/1200"]
-    },
-    {
-      "id": 8,
-      "name": "john_doe",
-      "owner": 2,
-      "address1": "sdc",
-      "address2": "dcbhn",
-      "city": "gurgaon",
-      "state": "Delhi",
-      "country": "india",
-      "zipcode": null,
-      "status": "Requested",
-      "comments": null,
-      "docUrls": [
-        "https://picsum.photos/id/96/200/300",
-        "https://picsum.photos/id/94/2133/1200"]
-    },
-    {
-      "id": 9,
-      "name": "p2",
-      "owner": 3,
-      "address1": "Address 1",
-      "address2": "Address 2",
-      "city": "san jose",
-      "state": "CA",
-      "country": "USA",
-      "zipcode": "12345",
-      "status": "Requested",
-      "comments": null,
-      "docUrls": [
-        "https://picsum.photos/id/96/200/300",
-        "https://picsum.photos/id/94/2133/1200"]
-    },
-    {
-      "id": 10,
-      "name": "john_doe",
-      "owner": 2,
-      "address1": "sdc",
-      "address2": "dcbhn",
-      "city": "gurgaon",
-      "state": "Delhi",
-      "country": "india",
-      "zipcode": null,
-      "status": "Requested",
-      "comments": null,
-      "docUrls": [
-        "https://picsum.photos/id/96/200/300",
-        "https://picsum.photos/id/94/2133/1200"]
+  // const playareasData = [
+  //   {
+  //     "id": 5,
+  //     "name": "john_doe",
+  //     "owner": 2,
+  //     "address1": "sdghb",
+  //     "address2": "dcbhn",
+  //     "city": "gurgaon",
+  //     "state": "Delhi",
+  //     "country": "india",
+  //     "zipcode": null,
+  //     "status": "Rejected",
+  //     "comments": null,
+  //     "docUrls": [
+  //       "https://picsum.photos/id/96/200/300",
+  //       "https://picsum.photos/id/94/2133/1200"]
+  //   },
+  //   {
+  //     "id": 7,
+  //     "name": "john_doe",
+  //     "owner": 2,
+  //     "address1": "sdc",
+  //     "address2": "dcbhn",
+  //     "city": "gurgaon",
+  //     "state": "Delhi",
+  //     "country": "india",
+  //     "zipcode": null,
+  //     "status": "Requested",
+  //     "comments": null,
+  //     "docUrls": [
+  //       "https://picsum.photos/id/96/200/300",
+  //       "https://picsum.photos/id/94/2133/1200"]
+  //   },
+  //   {
+  //     "id": 8,
+  //     "name": "john_doe",
+  //     "owner": 2,
+  //     "address1": "sdc",
+  //     "address2": "dcbhn",
+  //     "city": "gurgaon",
+  //     "state": "Delhi",
+  //     "country": "india",
+  //     "zipcode": null,
+  //     "status": "Requested",
+  //     "comments": null,
+  //     "docUrls": [
+  //       "https://picsum.photos/id/96/200/300",
+  //       "https://picsum.photos/id/94/2133/1200"]
+  //   },
+  //   {
+  //     "id": 9,
+  //     "name": "p2",
+  //     "owner": 3,
+  //     "address1": "Address 1",
+  //     "address2": "Address 2",
+  //     "city": "san jose",
+  //     "state": "CA",
+  //     "country": "USA",
+  //     "zipcode": "12345",
+  //     "status": "Requested",
+  //     "comments": null,
+  //     "docUrls": [
+  //       "https://picsum.photos/id/96/200/300",
+  //       "https://picsum.photos/id/94/2133/1200"]
+  //   },
+  //   {
+  //     "id": 10,
+  //     "name": "john_doe",
+  //     "owner": 2,
+  //     "address1": "sdc",
+  //     "address2": "dcbhn",
+  //     "city": "gurgaon",
+  //     "state": "Delhi",
+  //     "country": "india",
+  //     "zipcode": null,
+  //     "status": "Requested",
+  //     "comments": null,
+  //     "docUrls": [
+  //       "https://picsum.photos/id/96/200/300",
+  //       "https://picsum.photos/id/94/2133/1200"]
       
-    }
-    ];
+  //   }
+  //   ];
     
     
   const [filteredPlayareas, setFilteredPlayareas] = useState(playareasData);
