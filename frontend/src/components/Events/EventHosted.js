@@ -116,8 +116,8 @@ const MyEventDetails = ({ venues,loggedInUser }) => {
       <dt className="col-sm-4">Sport Type:</dt>
       <dd className="col-sm-8">{event.sportType}</dd>
 
-      <dt className="col-sm-4">Pool Size:</dt>
-      <dd className="col-sm-8">{event.pool_size} players</dd>
+      <dt className="col-sm-4">Date:</dt>
+      <dd className="col-sm-8">{new Date(event.event_slot_date).toISOString().split('T')[0]}</dd>
 
       <dt className="col-sm-4">Venue:</dt>
       <dd className="col-sm-8">{event.name}</dd>

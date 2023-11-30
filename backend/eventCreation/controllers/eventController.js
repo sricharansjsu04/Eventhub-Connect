@@ -32,13 +32,11 @@ function getPlayAreaDocs(playAreaId, isS3Url) {
 // Refactored getAllNotes function
 const getAllNotes = async (req, res) => {
   try {
-    const result = await queryAsync("SELECT e.id, e.event_name, e.current_pool_size, e.pool_size, e.sport_id, e.created_by, u.username as created_user, e.court_id, p.name, p.address1, p.state, p.country, p.zipcode, p.id as play_area_id, s.name as sportType FROM events as e INNER JOIN play_areas as p ON e.play_area_id=p.id INNER JOIN users as u ON e.created_by=u.id INNER JOIN sports AS s ON e.sport_id=s.id WHERE e.event_status='Confirmed';");
-    
+    const result = await queryAsync("SELECT e.id, e.event_name, e.current_pool_size, e.pool_size, e.sport_id, e.created_by, u.username as created_user, e.court_id, p.name, p.address1, p.state, p.country, p.zipcode, p.id as play_area_id, s.name as sportType, DATE(es.date) AS event_slot_date FROM events as e INNER JOIN play_areas as p ON e.play_area_id=p.id INNER JOIN users as u ON e.created_by=u.id INNER JOIN sports AS s ON e.sport_id=s.id LEFT JOIN event_slots AS es ON e.id = es.event_id WHERE e.event_status='Confirmed' AND e.id IN (SELECT event_id FROM event_slots WHERE date > CURDATE()) GROUP BY  e.id;");
     const promises = result.map(event => getPlayAreaDocs(event.play_area_id, true));
     const promises1 = result.map(event => getPlayAreaDocs(event.id, false));
    
     const [s3UrlArrays, playersArrays] = await Promise.all([Promise.all(promises), Promise.all(promises1)]);
-   
     result.forEach((event, index) => {
       event.photoUrl = s3UrlArrays[index];
       event.players = playersArrays[index];
@@ -82,15 +80,18 @@ const getCreatedEvents = async (req,res) => {
     p.country, 
     p.zipcode, 
     p.id as play_area_id, 
-    s.name as sportType 
+    s.name as sportType,
+    DATE(es.date) AS event_slot_date
   FROM 
     events as e 
     INNER JOIN play_areas as p ON e.play_area_id = p.id 
     INNER JOIN users as u ON e.created_by = u.id 
     INNER JOIN sports AS s ON e.sport_id = s.id 
+    LEFT JOIN event_slots AS es ON e.id = es.event_id 
   WHERE 
     
-    e.created_by = ?;
+    e.created_by = ?
+    AND e.id IN (SELECT event_id FROM event_slots WHERE date > CURDATE()) GROUP BY  e.id;
 `;
   try {
  
@@ -137,17 +138,20 @@ const getMyEvents = async(req,res)=> {
       p.country, 
       p.zipcode, 
       p.id as play_area_id, 
-      s.name as sportType 
+      s.name as sportType, 
+      DATE(es.date) AS event_slot_date
     FROM 
       events as e 
       INNER JOIN play_areas as p ON e.play_area_id = p.id 
       INNER JOIN users as u ON e.created_by = u.id 
       INNER JOIN sports AS s ON e.sport_id = s.id 
       INNER JOIN event_users AS eu ON e.id = eu.event_id 
+      LEFT JOIN event_slots AS es ON e.id = es.event_id 
     WHERE 
       e.event_status = 'Confirmed' 
       AND eu.status='Done'
-      AND eu.user_id = ?;
+      AND eu.user_id = ?
+      AND e.id IN (SELECT event_id FROM event_slots WHERE date > CURDATE()) GROUP BY  e.id;
   `;
 
   try {

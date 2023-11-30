@@ -39,6 +39,7 @@ const CreatedEvents = ({loggedInUser}) => {
     const [sportTypeFilter, setSportTypeFilter] = useState('');
     const [poolSizeFilter, setPoolSizeFilter] = useState('');
     const [eventNameFilter, setEventNameFilter] = useState('');
+    const [dateFilter, setDateFilter] = useState('');
   
   
     useEffect(() => {
@@ -51,7 +52,8 @@ const CreatedEvents = ({loggedInUser}) => {
         const passPoolSizeFilter =
           !poolSizeFilter || venue.current_pool_size.toString() >= poolSizeFilter;
         const passEventNameFilter = !eventNameFilter || venue.event_name.toLowerCase().includes(eventNameFilter.toLowerCase());
-        return passSportTypeFilter && passPoolSizeFilter && passEventNameFilter;
+        const passDateFilter = !dateFilter || new Date(venue.event_slot_date).toISOString().split('T')[0] === dateFilter;
+        return passSportTypeFilter && passPoolSizeFilter && passEventNameFilter && passDateFilter;
       });
       setFilteredVenues(filteredResults);
     };
@@ -83,6 +85,8 @@ const CreatedEvents = ({loggedInUser}) => {
                 Pool Size: {venue.current_pool_size} players out of {venue.pool_size}
                 <br />
                 Venue: {venue.name}
+                <br />
+                Date: {new Date(venue.event_slot_date).toISOString().split('T')[0]}
               </Card.Text>
             </div>
           </Card.Body>
@@ -162,6 +166,13 @@ const CreatedEvents = ({loggedInUser}) => {
                   type="text"
                   placeholder="Enter number of players"
                   onChange={(e) => setPoolSizeFilter(e.target.value)}
+                />
+              </Form.Group>
+              <Form.Group controlId="dateFilter">
+                <Form.Label>Date</Form.Label>
+                <Form.Control
+                  type="date"
+                  onChange={(e) => setDateFilter(e.target.value)}
                 />
               </Form.Group>
               <Form.Group controlId="eventNameFilter">

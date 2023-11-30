@@ -43,6 +43,8 @@ const VenueCard = ({ venue, isCreatedByUser }) => {
               Pool Size: {venue.current_pool_size} players out of {venue.pool_size}
               <br />
               Venue: {venue.name}
+              <br />
+              Date: {new Date(venue.event_slot_date).toISOString().split('T')[0]}
             </Card.Text>
           </div>
         </Card.Body>
@@ -53,6 +55,7 @@ const VenueCard = ({ venue, isCreatedByUser }) => {
 
 const VenueList = ({ venues, isCreatedByUser }) => (
   <Row>
+    {console.log(venues)}
     {venues != null &&
       venues.map((venue) => (
         <VenueCard
@@ -139,17 +142,19 @@ const HostButton = ({ loggedInUser, venuesData, setFilteredVenues, showMyCreated
   );
 };
 
-const VenueFilter = ({ onSportTypeChange, onPoolSizeChange, onApplyFilters, onEventNameChange, sportFilter }) => (
 
+const VenueFilter = ({ onSportTypeChange, onPoolSizeChange, onApplyFilters, onEventNameChange, sportFilter, onDateChange}) => (
+ 
   <Form className="sticky-top bg-light p-3">
     <h5>Event Filters</h5>
     <Form.Group controlId="sportTypeFilter">
       <Form.Label>Sport Type</Form.Label>
       <Form.Control as="select" onChange={onSportTypeChange}>
         <option value="">All</option>
+        {console.log(sportFilter)}
         {sportFilter &&
           sportFilter.map((sport) => (
-            <option key={sport.id} value={sport.name}>
+            <option key={sport.name} value={sport.name}>
               {sport.name}
             </option>
           ))}
@@ -162,6 +167,13 @@ const VenueFilter = ({ onSportTypeChange, onPoolSizeChange, onApplyFilters, onEv
         type="text"
         placeholder="Enter number of players"
         onChange={onPoolSizeChange}
+      />
+    </Form.Group>
+    <Form.Group controlId="dateFilter">
+      <Form.Label>Date</Form.Label>
+      <Form.Control
+        type="date"
+        onChange={onDateChange}
       />
     </Form.Group>
     <Form.Group controlId="eventNameFilter">
@@ -209,6 +221,7 @@ function PlayerHome() {
   const [sportTypeFilter, setSportTypeFilter] = useState('');
   const [poolSizeFilter, setPoolSizeFilter] = useState('');
   const [eventNameFilter, setEventNameFilter] = useState('');
+  const [dateFilter, setDateFilter] = useState('');
 
   useEffect(() => {
     setFilteredVenues(venuesData);
@@ -219,7 +232,8 @@ function PlayerHome() {
       const passSportTypeFilter = !sportTypeFilter || venue.sportType === sportTypeFilter;
       const passPoolSizeFilter = !poolSizeFilter || venue.current_pool_size.toString() >= poolSizeFilter;
       const passEventNameFilter = !eventNameFilter || venue.event_name.toLowerCase().includes(eventNameFilter.toLowerCase());
-      return passSportTypeFilter && passPoolSizeFilter && passEventNameFilter;
+      const passDateFilter = !dateFilter || new Date(venue.event_slot_date).toISOString().split('T')[0] === dateFilter;
+      return passSportTypeFilter && passPoolSizeFilter && passEventNameFilter && passDateFilter;
     });
     setFilteredVenues(filteredResults);
   };
@@ -230,10 +244,9 @@ const loggedInUser = "shireesh20";
   return (
 
       <div>
-   
         <Navbar bg="dark" variant="dark">
         <Navbar.Brand as={Link} to="/playerHome" style={{marginLeft:"20px"}}>
-            PlayPals
+            PlayPal
           </Navbar.Brand>
           <Navbar.Collapse className="justify-content-end">
             <Navbar.Text style={{marginRight:"20px"}}>
@@ -259,6 +272,7 @@ const loggedInUser = "shireesh20";
                         onSportTypeChange={(e) => setSportTypeFilter(e.target.value)}
                         onPoolSizeChange={(e) => setPoolSizeFilter(e.target.value)}
                         onEventNameChange={(e) => setEventNameFilter(e.target.value)}
+                        onDateChange={(e) => setDateFilter(e.target.value)}
                         onApplyFilters={() => applyFilters()}
                         sportFilter = {sportFilter}
                       />
