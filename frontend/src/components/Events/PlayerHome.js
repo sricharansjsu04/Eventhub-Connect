@@ -12,7 +12,7 @@ import EventDetails from "./EventDetails";
 import HostEvent from "./HostEvent";
 import * as urls from './config';
 import { AuthContext } from '../../contexts/AuthContext';
-
+import ChatRoom from "../ChatRoom/ChatRoom"
 
 
 const VenueCard = ({ venue, isCreatedByUser }) => {
@@ -259,7 +259,7 @@ function PlayerHome() {
    
    <Navbar bg="dark" variant="dark" expand="lg">
   <Container fluid>
-    <Navbar.Brand as={Link} to="/admin">
+    <Navbar.Brand as={Link} to="/playerHome">
       PlayPal
     </Navbar.Brand>
     <Navbar.Toggle aria-controls="navbar-dark-example" />
@@ -324,6 +324,9 @@ function PlayerHome() {
           <Route
           path="/myHostedEvent/:id"
           element={<EventHosted venues={venuesData} loggedInUser={loggedInUser}/>} />
+          <Route
+          path="/myEvent/:id/chatRoom/:chatRoomId"
+          element={<ChatRoom loggedInUser={loggedInUser}/>} />
           </Routes>
           
         </Container>

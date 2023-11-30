@@ -8,6 +8,7 @@ const MyEventDetails = ({ venues,loggedInUser }) => {
 
   const { id } = useParams();
   const [events, setEvents] = useState(venues);
+  const [chatRoomId, setChatRoomId] = useState();
   const navigate = useNavigate();
   useEffect(() => {
     if (venues) {
@@ -21,10 +22,10 @@ const MyEventDetails = ({ venues,loggedInUser }) => {
   
   const event = events.find((venue) => venue.id === parseInt(id, 10));
   
-  const chatRoomId="6d19f14e-a9a8-4b11-9b54-746feb790fd4";
+  // const chatRoomId="6d19f14e-a9a8-4b11-9b54-746feb790fd4";
   const handleCardClick = (chatRoomId) => {
     // Redirect to the detailed view of the clicked event
-    console.log("success");
+    console.log("success",chatRoomId);
     navigate(`./ChatRoom/${chatRoomId}`);
   };
   return (
@@ -35,7 +36,7 @@ const MyEventDetails = ({ venues,loggedInUser }) => {
 
           <Col md={6} className="mb-4">
           <div className="details-container p-4 rounded bg-light">
-          
+    {console.log(event)}
     <h3>{event.name}</h3>
     <dl className="row mt-4">
       <dt className="col-sm-4">Event Name:</dt>
@@ -71,7 +72,7 @@ const MyEventDetails = ({ venues,loggedInUser }) => {
 
       {/* Add more details as needed */}
     </dl>
-    <Button variant="primary" onClick={()=>handleCardClick(chatRoomId)}>ChatRoom</Button>
+    <Button variant="primary" onClick={()=>handleCardClick(event.chatroomId)}>ChatRoom</Button>
     
   </div>
           </Col>
