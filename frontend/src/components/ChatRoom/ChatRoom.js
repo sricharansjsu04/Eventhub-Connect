@@ -97,7 +97,7 @@ const ChatRoom = ({loggedInUser}) => {
           {messages.map((message) => (
             <div key={message.id} className={message.user === loggedInUser ? 'message me' : 'message'}>
               <div className="message-header">
-                <strong>{message.user}:</strong>
+                <b style={{color:"#212529"}}>{message.user}:</b>
               </div>
               <div className="message-body">{message.body}</div>
             </div>

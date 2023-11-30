@@ -25,6 +25,7 @@ const MyEvents = ({loggedInUser}) => {
         })
           .then((response) => response.json())
           .then((data) => {
+            console.log(data.result)
           setVenuesData(data.result);
           setSportFilter(data.sports);
           })

@@ -32,7 +32,7 @@ function getPlayAreaDocs(playAreaId, isS3Url) {
 // Refactored getAllNotes function
 const getAllNotes = async (req, res) => {
   try {
-    const result = await queryAsync("SELECT e.id, e.event_name, e.current_pool_size, e.pool_size, e.sport_id, e.created_by, u.username as created_user, e.court_id, p.name, p.address1, p.state, p.country, p.zipcode, p.id as play_area_id, s.name as sportType, DATE(es.date) AS event_slot_date FROM events as e INNER JOIN play_areas as p ON e.play_area_id=p.id INNER JOIN users as u ON e.created_by=u.id INNER JOIN sports AS s ON e.sport_id=s.id LEFT JOIN event_slots AS es ON e.id = es.event_id WHERE e.event_status='Confirmed' AND e.id IN (SELECT event_id FROM event_slots WHERE date > CURDATE()) GROUP BY  e.id;");
+    const result = await queryAsync("SELECT e.id, e.chatroomId, e.event_name, e.current_pool_size, e.pool_size, e.sport_id, e.created_by, u.username as created_user, e.court_id, p.name, p.address1, p.state, p.country, p.zipcode, p.id as play_area_id, s.name as sportType, DATE(es.date) AS event_slot_date FROM events as e INNER JOIN play_areas as p ON e.play_area_id=p.id INNER JOIN users as u ON e.created_by=u.id INNER JOIN sports AS s ON e.sport_id=s.id LEFT JOIN event_slots AS es ON e.id = es.event_id WHERE e.event_status='Confirmed' AND e.id IN (SELECT event_id FROM event_slots WHERE date > CURDATE()) GROUP BY  e.id;");
     const promises = result.map(event => getPlayAreaDocs(event.play_area_id, true));
     const promises1 = result.map(event => getPlayAreaDocs(event.id, false));
    
@@ -132,6 +132,7 @@ const getMyEvents = async(req,res)=> {
       e.created_by, 
       u.username as created_user, 
       e.court_id, 
+      e.chatroomId,
       p.name, 
       p.address1, 
       p.state, 
@@ -239,6 +240,7 @@ const joinEvent = async (req,res) =>{
         
       } catch (error) {
         console.error('Error sending email:', error);
+        res.status(200).json({ message: 'Successfully requested to join the event, will join the event once the host accepts the request' });
         throw error;
       }
     
@@ -256,7 +258,7 @@ const getWaitList = async ( req,res) =>{
   // Step 1: Get user IDs from the event_users table
   const checkQuery = 'SELECT user_id FROM event_users WHERE event_id = ? AND status="Waitlist"';
   const userIDs = await queryAsync(checkQuery, [event_id]);
-  
+  // console.log(userIDs.length,event_id);
   // Check if there are user IDs before proceeding
   if (userIDs.length > 0) {
     // Step 2: Get user details based on the obtained user IDs

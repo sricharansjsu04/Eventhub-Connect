@@ -21,7 +21,7 @@ const MyEventDetails = ({ venues,loggedInUser }) => {
   }, [waitlistRequests]);
 
   useEffect(() => {
-  fetch(urls.getWaitlist+'${id}')
+  fetch(`${urls.getWaitlist}${id}`)
   .then((response) => response.json())
   .then((data) => setWaitlistRequests(data))
   .catch((error) => console.error('Error fetching waitlist requests:', error));
@@ -40,7 +40,8 @@ const MyEventDetails = ({ venues,loggedInUser }) => {
   }
 
   const handleRefresh = () => {
-    fetch(urls.getWaitlist+'${id}')
+    console.log(urls.getWaitlist+id)
+    fetch(`${urls.getWaitlist}${id}`)
       .then((response) => response.json())
       .then((data) => setWaitlistRequests(data))
       .catch((error) => console.error('Error fetching waitlist requests:', error));
