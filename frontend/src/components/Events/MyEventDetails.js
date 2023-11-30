@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { Container, Button, Row, Col, Carousel, Alert } from 'react-bootstrap';
 import { useParams } from 'react-router-dom';
-import * as urls from './config';
+import { useNavigate } from 'react-router-dom';
+import ChatRoom from '../ChatRoom/ChatRoom.js'
 
 const MyEventDetails = ({ venues,loggedInUser }) => {
 
   const { id } = useParams();
   const [events, setEvents] = useState(venues);
-
+  const navigate = useNavigate();
   useEffect(() => {
     if (venues) {
       setEvents(venues);
@@ -19,7 +20,13 @@ const MyEventDetails = ({ venues,loggedInUser }) => {
   }
   
   const event = events.find((venue) => venue.id === parseInt(id, 10));
-
+  
+  const chatRoomId="6d19f14e-a9a8-4b11-9b54-746feb790fd4";
+  const handleCardClick = (chatRoomId) => {
+    // Redirect to the detailed view of the clicked event
+    console.log("success");
+    navigate(`./ChatRoom/${chatRoomId}`);
+  };
   return (
     <Container fluid className="mt-4">
       <Container className="main-container rounded p-4 bg-light" style={{ maxWidth: '80%', margin: 'auto' }}>
@@ -64,7 +71,7 @@ const MyEventDetails = ({ venues,loggedInUser }) => {
 
       {/* Add more details as needed */}
     </dl>
-
+    <Button variant="primary" onClick={()=>handleCardClick(chatRoomId)}>ChatRoom</Button>
     
   </div>
           </Col>

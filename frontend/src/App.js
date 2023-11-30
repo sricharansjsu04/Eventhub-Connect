@@ -16,6 +16,7 @@ import PlayareaDetails from './components/Admin/PlayareaDetails';
 import ProtectedRoute from './components/Auth/ProtectedRoute'
 import apiConfig from './config/apiConfig';
 import userPool from './config/cognitoConfig';
+import { Amplify } from '@aws-amplify/core';
 
 
 function AppWrapper() {

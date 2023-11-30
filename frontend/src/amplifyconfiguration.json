@@ -1,0 +1,7 @@
+{
+  "aws_project_region": "us-east-2",
+  "aws_appsync_graphqlEndpoint": "https://kmzlckkhyrc2hmdcdlld2rrbsm.appsync-api.us-east-2.amazonaws.com/graphql",
+  "aws_appsync_region": "us-east-2",
+  "aws_appsync_authenticationType": "API_KEY",
+  "aws_appsync_apiKey": "da2-zxczife76faqhpzpv4btbr5i5i"
+}

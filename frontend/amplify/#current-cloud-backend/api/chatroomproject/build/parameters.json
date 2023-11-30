@@ -1,0 +1,7 @@
+{
+    "AppSyncApiName": "chatroomproject",
+    "DynamoDBBillingMode": "PAY_PER_REQUEST",
+    "DynamoDBEnableServerSideEncryption": false,
+    "S3DeploymentBucket": "amplify-chatroomproject-dev-152935-deployment",
+    "S3DeploymentRootKey": "amplify-appsync-files/a8b626a3adeaefe5827d7e951ae19ed0f06085c4"
+}
