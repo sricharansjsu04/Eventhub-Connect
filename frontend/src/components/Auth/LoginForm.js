@@ -1,13 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { CognitoUser, AuthenticationDetails } from 'amazon-cognito-identity-js';
 import userPool from '../../config/cognitoConfig';
+import { AuthContext } from '../../contexts/AuthContext';
 
 function LoginForm({ onLogin }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState(null);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setError(null);
 
     const cognitoUser = new CognitoUser({
       Username: username,
@@ -23,13 +26,13 @@ function LoginForm({ onLogin }) {
       onSuccess: (session) => {
         // Extract role type from the token
         const roleType = session.getIdToken().payload['custom:user_type']; // Adjust the key based on your token structure
-        console.log(session.getAccessToken());
-        console.log(session.getIdToken());
+        const idToken = session.getIdToken().getJwtToken();
         onLogin(username, roleType);
+        console.log(idToken);
       },
       onFailure: (err) => {
         console.error('Authentication failed:', err);
-        // Handle error (e.g., show error message)
+        setError(err.message || 'Login failed. Please try again.');
       }
     });
   };
@@ -37,6 +40,7 @@ function LoginForm({ onLogin }) {
   return (
     <div className="login-form">
       <h2>Sign In</h2>
+      {error && <div className="alert alert-danger">{error}</div>}
       <form onSubmit={handleSubmit}>
         <input
           type="text"

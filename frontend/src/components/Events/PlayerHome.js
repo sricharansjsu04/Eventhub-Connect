@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Button, Card, Container, Row, Col, Form, Navbar } from 'react-bootstrap';
+import { Button, Card, Container, Row, Col, Form, Navbar, Nav } from 'react-bootstrap';
 import { BrowserRouter as Router, Route, Routes, Link, useNavigate, Outlet } from 'react-router-dom';
 import '../../App.css';
 import CreatedEvents from "./CreatedEvents";
@@ -9,6 +9,7 @@ import MyEventDetails from "./MyEventDetails";
 import EventHosted from "./EventHosted";
 import EventDetails from "./EventDetails";
 import HostEvent from "./HostEvent";
+import { AuthContext } from '../../contexts/AuthContext';
 
 
 
@@ -20,6 +21,8 @@ const VenueCard = ({ venue, isCreatedByUser }) => {
       navigate(`../event/${venue.id}`);
    
   };
+
+
 
   return (
     <Col md={12} className="mb-4">
@@ -171,6 +174,13 @@ function PlayerHome() {
   const [venuesData, setVenuesData] = useState(null);
   const [filteredVenues, setFilteredVenues] = useState([]);
   const [showMyCreatedEvents, setShowMyCreatedEvents] = useState(false); // Add state for My Created Events
+  const { logout } = useContext(AuthContext);
+  const navigate = useNavigate();
+  const handleLogout = () => {
+    logout(); // Call logout from AuthContext
+    navigate('/'); // Navigate back to the login page
+  };
+  const { user } = useContext(AuthContext);
 
 
   const apiCalled = useRef(false);
@@ -189,6 +199,7 @@ function PlayerHome() {
       fetchData();
     }
   }, []);
+
 
      
   const [sportTypeFilter, setSportTypeFilter] = useState('');
@@ -214,16 +225,24 @@ const loggedInUser = "john_doe";
 
       <div>
    
-        <Navbar bg="dark" variant="dark">
-        <Navbar.Brand as={Link} to="/playerHome" style={{marginLeft:"20px"}}>
-            PlayPals
-          </Navbar.Brand>
-          <Navbar.Collapse className="justify-content-end">
-            <Navbar.Text style={{marginRight:"20px"}}>
-              Logged in as: {loggedInUser}
-            </Navbar.Text>
-          </Navbar.Collapse>
-        </Navbar>
+   <Navbar bg="dark" variant="dark" expand="lg">
+  <Container fluid>
+    <Navbar.Brand as={Link} to="/admin">
+      PlayPal
+    </Navbar.Brand>
+    <Navbar.Toggle aria-controls="navbar-dark-example" />
+    <Navbar.Collapse id="navbar-dark-example">
+      <Nav className="ms-auto">
+        <Navbar.Text className="me-3">
+          Logged in as: admin
+        </Navbar.Text>
+        <Button variant="outline-danger" size="sm" onClick={handleLogout}>
+          Logout
+        </Button>
+      </Nav>
+    </Navbar.Collapse>
+  </Container>
+</Navbar>
         <Container fluid className="mt-4">
           <Routes>
             <Route
