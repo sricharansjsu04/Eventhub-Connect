@@ -12,7 +12,7 @@ import EventDetails from "./EventDetails";
 import HostEvent from "./HostEvent";
 import * as urls from './config';
 import { AuthContext } from '../../contexts/AuthContext';
-
+import ChatRoom from '../ChatRoom/ChatRoom';
 
 
 const VenueCard = ({ venue, isCreatedByUser }) => {
@@ -318,6 +318,9 @@ function PlayerHome() {
             path="/myEvents"
             element={<MyEvents loggedInUser={loggedInUser}/>}
             />
+            <Route
+          path="/myEvent/:id/chatRoom/:chatRoomId"
+          element={<ChatRoom loggedInUser={loggedInUser}/>} />
             <Route
           path="/myEvent/:id"
           element={<MyEventDetails venues={venuesData} loggedInUser={loggedInUser}/>} />

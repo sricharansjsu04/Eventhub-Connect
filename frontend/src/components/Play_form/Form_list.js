@@ -1,11 +1,18 @@
-import React, { useEffect, useState } from 'react';
-import { Container } from 'react-bootstrap';
+import React, { useEffect, useState, useContext } from 'react';
+import { Container, Navbar, Nav, Button } from 'react-bootstrap';
 import "./Play_form.css";
 import { Link, useNavigate } from 'react-router-dom';
 import { deleteApi, getApi } from '../../Utils/api.service';
+import { AuthContext } from '../../contexts/AuthContext';
 
 function Form_list(props) {
   const navigate = useNavigate();
+  const { logout } = useContext(AuthContext);
+  const handleLogout = () => {
+    logout(); // Call logout from AuthContext
+    navigate('/'); // Navigate back to the login page
+  };
+  const { user } = useContext(AuthContext);
   const [dataList, setDatalist] = useState([])
   // const { playData, deleteData } = usePlayFormStore();
   useEffect(()=>{
@@ -25,6 +32,26 @@ const deleteHandler = (id)=>{
   .catch(err=>console.log(err))
 }
   return (
+    <>
+      {/* Navbar component */}
+      <Navbar bg="dark" variant="dark" expand="lg">
+        <Container fluid>
+          <Navbar.Brand as={Link} to="/admin">
+            PlayPal
+          </Navbar.Brand>
+          <Navbar.Toggle aria-controls="navbar-dark-example" />
+          <Navbar.Collapse id="navbar-dark-example">
+            <Nav className="ms-auto">
+              <Navbar.Text className="me-3">
+                Logged in as: {user}
+              </Navbar.Text>
+              <Button variant="outline-danger" size="sm" onClick={handleLogout}>
+                Logout
+              </Button>
+            </Nav>
+          </Navbar.Collapse>
+        </Container>
+      </Navbar>
     <Container>
             {/* booking slots*/}
             <div className='form' style={{background:"none", backgroundColor:"white"}}>
@@ -149,6 +176,7 @@ const deleteHandler = (id)=>{
       </div> */}
       </div>
     </Container>
+    </>
   );
 }
 
