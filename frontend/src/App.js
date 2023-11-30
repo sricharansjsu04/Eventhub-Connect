@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { BrowserRouter as Router, Route, Routes, Link, useNavigate } from 'react-router-dom';
 import { Button, Card, Container, Row, Col, Form, Navbar } from 'react-bootstrap';
@@ -8,6 +8,11 @@ import LoginForm from './components/Auth/LoginForm';
 import RegistrationForm from './components/Auth/RegistrationForm';
 import EmailVerificationForm from './components/Auth/EmailVerificationForm';
 import PlayerHome from './components/Events/PlayerHome';
+import AdminDashboard from './components/Admin/AdminDashboard';
+import { AuthProvider } from './contexts/AuthContext';
+import { AuthContext } from './contexts/AuthContext';
+import PlayareaDetails from './components/Admin/PlayareaDetails';
+import ProtectedRoute from './components/Auth/ProtectedRoute'
 
 
 const userPool = new CognitoUserPool({
@@ -18,9 +23,11 @@ const userPool = new CognitoUserPool({
 
 function AppWrapper() {
   return (
+    <AuthProvider>
     <Router>
       <App />
     </Router>
+    </AuthProvider>
   );
 }
 
@@ -48,6 +55,7 @@ function App() {
   const handleTabChange = (tab) => {
     setActiveTab(tab);
   };
+  const { login } = useContext(AuthContext);
 
 
 
@@ -62,9 +70,7 @@ function App() {
   const handleVerificationComplete = async () => {
     setIsVerificationRequired(true);
     setShowVerificationSuccess(true);
-    //setIsAuthenticated(true);
 
-    
     try {
       const response = await fetch('http://localhost:3001/users/register', {
         method: 'POST',
@@ -88,8 +94,10 @@ function App() {
   const navigate = useNavigate();
   const onUserSignIn = (username, roleType) => {
     // Assume roleType comes from the sign-in response
-    setIsAuthenticated(true);
-    console.log(roleType);
+    //setIsAuthenticated(true);
+    console.log('in onUserSignIn method with roleType: ',roleType);
+    login(username, roleType);
+    console.log('below login', roleType);
   
     if (roleType === 'player') {
       console.log('player login navigating');
@@ -97,12 +105,17 @@ function App() {
     } else if (roleType === 'playarea owner') {
       navigate('/ownerHome'); // You need to define the route for this as well
     }
+    else if(roleType === 'admin'){
+      console.log('navigating to admin');
+      navigate('/admin');
+    }
   };
+  
 
   const LoginComp = () => {
     return(
       <div>
-              {!isAuthenticated && !isVerificationRequired && (
+              {!isVerificationRequired && (
         <div className="form-container">
           {showSignIn ? (
             <div className="form-card">
@@ -148,19 +161,30 @@ function App() {
 
 const welcomeMessage = userData.role === 'player' ? 'Happy Playing!' : 'Happy Hosting!';
 return (
+  <>
+  <div className="background-blur"></div>
     <div className="app-background">
      <Routes>
-        <Route path="/" element={<LoginComp/>}/>
-        <Route path="/playerHome/*" element={<PlayerHome/>} />
-        {/* Define more routes as needed */}
-      </Routes>
+      <Route path="/" element={<LoginComp/>}/>
+      <Route path="/playerHome/*" element={
+        <ProtectedRoute requiredRole="player">
+          <PlayerHome/>
+        </ProtectedRoute>
+      }/>
+      <Route path="/admin/*" element={
+       <ProtectedRoute requiredRole="admin"> 
+          <AdminDashboard />
+        </ProtectedRoute>
+      }/>
+      <Route path="/playareaHome/*" element={
+        <ProtectedRoute requiredRole="playarea owner">
+          {/* Your Owner Home Component */}
+        </ProtectedRoute>
+      }/>
+    </Routes>
     </div>
+  </>
+    
 );       
 }
 export default AppWrapper;
-
-
-
-/////////
-// Test909
-// Test@2023
