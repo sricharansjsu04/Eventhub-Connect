@@ -27,7 +27,7 @@ const deleteHandler = (id)=>{
   return (
     <Container>
             {/* booking slots*/}
-
+            <div className='form' style={{background:"none", backgroundColor:"white"}}>
       <div className='pb-2 border-bottom'>
         <h1 className='text-center py-2'>Level Up Your Fun</h1>
         <p className='text-center py-3'>"Game On: Snag Your Gaming Slot Now for a Thrilling Experience!"</p>
@@ -57,7 +57,7 @@ const deleteHandler = (id)=>{
                 <p>{data?.country},</p>
                 <p>{data?.zipcode}</p>
               </div>
-              <h4>AvailableTimeSlots</h4>
+              {/* <h4>AvailableTimeSlots</h4>
               <div>
                 {data?.availableTimeSlots && data?.availableTimeSlots.label ? <p>{data?.availableTimeSlots.label}</p> : 'N/A'}
               </div>
@@ -76,11 +76,11 @@ const deleteHandler = (id)=>{
                       <p key={cindex}>{court.label}</p>
                     ))
                   : (data?.courts && data?.courts ? <p>{data?.courts}</p> : 'N/A')}
-              </div>
+              </div> */}
               <div className='d-flex'>
                 <button
                   className='btn btn-primary rounded-pill px-4'
-                  onClick={()=>{ navigate(`/form/${data?.id}`) }}
+                  onClick={()=>{ navigate(`/ownerHome/form/${data?.id}`) }}
                 >
                   Edit
                 </button>
@@ -95,7 +95,7 @@ const deleteHandler = (id)=>{
       <div>
         {dataList?.length === 0 && (
           <div className='py-5 my-4 d-flex justify-content-center'>
-            <h4>No slots are Booked</h4>
+            <h4>No Play Areas are booked</h4>
           </div>
         )}
       </div>
@@ -147,6 +147,7 @@ const deleteHandler = (id)=>{
           </div>
         ))}
       </div> */}
+      </div>
     </Container>
   );
 }

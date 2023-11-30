@@ -1,6 +1,6 @@
 import axios from "axios"
 
-const apiPath = "https://fc1c-2601-646-8081-a780-9991-7605-427c-10f9.ngrok.io/api"
+const apiPath = "https://pbh79m29ck.execute-api.us-east-2.amazonaws.com/Dev/api"
 export const getApi = () => {
   return  axios.get(`${apiPath}/getPlayAreas`)
     .then(res=> {

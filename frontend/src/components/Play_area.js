@@ -1,30 +1,32 @@
 import React, { useState } from 'react'
 import Play_form from './Play_form/Play_form'
 import Form_list from './Play_form/Form_list'
+import './Play_form/Play_form.css'; // Add this line to import your CSS
+
 import usePlayFormStore from './Zustand/PlayFormStore'
 import { BrowserRouter, Route,  Routes } from 'react-router-dom'
 
-function App() {
-  const {playData} =usePlayFormStore()
-  const [editindex, setEditIndex] = useState(null)
-  const editHandler =(index)=>{
-    console.log(index,playData[index])
-    setEditIndex(index)
-  }
-  const removeIndex = (data)=>{
-    setEditIndex(data)
-  }
+function PlayerArea() {
+  // const {playData} =usePlayFormStore()
+  // const [editindex, setEditIndex] = useState(null)
+  // const editHandler =(index)=>{
+  //   console.log(index,playData[index])
+  //   setEditIndex(index)
+  // }
+  // const removeIndex = (data)=>{
+  //   setEditIndex(data)
+  // }
   return (
-    <BrowserRouter>
+    // <BrowserRouter>
     <Routes>
-      <Route path="/" element={<Form_list editHand={editHandler}/>} />
-      <Route path="form"  element={<Play_form dataIndex={editindex} removeindx={removeIndex} />} />
+      <Route path="/" element={<Form_list />} />
+      <Route path="form"  element={<Play_form  />} />
+      <Route path="form/:playId"  element={<Play_form  />} />
+
     </Routes>
-    {/* <Play_form dataIndex={editindex} removeindx={removeIndex} />
-    <Form_list editHand={editHandler}/> */}
-    </BrowserRouter>
+    // </BrowserRouter>
     
   )
 }
 
-export default App
+export default PlayerArea;

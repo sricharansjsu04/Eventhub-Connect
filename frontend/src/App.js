@@ -95,7 +95,7 @@ function App() {
     if (roleType === 'player') {
       console.log('player login navigating');
       navigate('/playerHome');
-    } else if (roleType === 'playarea owner') {
+    } else if (roleType === 'owner') {
       navigate('/ownerHome'); // You need to define the route for this as well
     }
   };
@@ -154,6 +154,8 @@ return (
         <Route path="/" element={<LoginComp/>}/>
         <Route path="/playerHome/*" element={<PlayerHome/>} />
         <Route path="/ownerHome/*" element={<PlayOwner/>} />
+        <Route path="/createPlayArea" element={<PlayOwner/>} />
+
 
         {/* Define more routes as needed */}
       </Routes>

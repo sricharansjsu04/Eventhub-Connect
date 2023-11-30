@@ -20,24 +20,23 @@ function Play_form(props) {
     state: '',
     country: '',
     zipcode: '',
-    availableTimeSlots: '',
+    timings: '',
     sports: [],
-    courts: '',
-    files: '',
+    courts: ''
   };
   const [files, setFiles] = useState([]);
 
 
   const [formData, setFormData] = useState(initialFormData);
   let { playId } = useParams();
-
+  
   useEffect(()=>{
     if(playId){
      getApi()
       .then(res=>{
         const {data} = res;
         const updateObj = data.filter((obj)=>  obj.id===Number(playId))[0];
-        debugger
+        
         // setUpdateData(updateObj)
         setFormData(updateObj)
       })
@@ -97,7 +96,7 @@ function Play_form(props) {
     console.log(selectedTimes.value)
     setFormData((prevFormData) => ({
       ...prevFormData,
-      availableTimeSlots: timeString,
+      timings: timeString.value,
     }));
   };
 
@@ -121,42 +120,76 @@ function Play_form(props) {
     event.preventDefault()
     setFiles(event.target.files[0]);
   };
+
+  const playFormHandler = (event) => {
+    
+    event.preventDefault();
+    console.log("****")
+    const data = {
+      ...formData, // use formData state
+      sports: sports
+       // Include sports as you're managing it separately
+    };
+    console.log(data);
+  
+    const formPayload = new FormData(); // Renamed from formData to formPayload
+    formPayload.append("playAreaRequest", JSON.stringify(data));
+    formPayload.append('files', files);
+  
+    if (playId) {
+      formPayload.append("playAreaId", playId);
+    }
+
+    createUpdateApi(formPayload, playId ? playId : '')
+      .then(res => {
+        console.log(res)
+        setFormData(initialFormData);
+        navigate("/ownerHome/");
+      })
+      .catch(error => console.error('axiosError:', error));
+  };
+  
+  
   
 
   
-const playFormHandler = (event) => {
-  event.preventDefault();
-  const data = {
-    ...CreateData
-  };
-  console.log(data)
-const formData = new FormData();
-formData.append("playAreaRequest", JSON.stringify(data));
-formData.append('files', files);
-if (playId) {
-  formData.append("playAreaId", playId);
-}
-   debugger
-    createUpdateApi((formData), playId ? playId : '')
-      .then(res =>{
-        console.log(res)
-    setFormData(initialFormData);
-    navigate("/");
-      })
-      .catch(error => console.error('axiosError:', error));
-};
+// const playFormHandler = (event) => {
+//   event.preventDefault();
+//   const data = {
+//     ...CreateData
+//   };
+//   console.log(data)
+// const formData = new FormData();
+// formData.append("playAreaRequest", JSON.stringify(data));
+// formData.append('files', files);
+// if (playId) {
+//   formData.append("playAreaId", playId);
+// }
+
+//     createUpdateApi((formData), playId ? playId : '')
+//       .then(res =>{
+//         console.log(res)
+//     setFormData(initialFormData);
+//     navigate("/");
+//       })
+//       .catch(error => console.error('axiosError:', error));
+// };
+
+
 
   return (
     <Container>
+      <div style={{background:"none", backgroundColor:"white", padding:"0px 20px"}}>
     <div className='py-2 border-bottom'>
         <div className='d-flex justify-content-end'>
-          <Link to="/"><button className='btn btn-primary'>My slots</button></Link>
+          <Link to="./../"><button className='btn btn-primary'>view Bookings</button></Link>
         </div>
       </div>
     <div className='d-flex justify-content-center'>
       
       <form onSubmit={playFormHandler}>
-        <h2 className='text-center py-3'>Book your Slot</h2>
+
+        <h2 className='text-center py-3'>Create New PlayArea !!</h2>
         <div className='row'>
         {form.map((label, index) => {
           return (
@@ -178,7 +211,7 @@ if (playId) {
           <Form.Label>AvailableTimeSlots</Form.Label>
           <Select
             value={formData.availableTimeSlots}
-            name="availableTimeSlots"
+            name="timings"
             options={playTime}
             onChange={handleTimeChange}
             isSearchable={true}
@@ -225,6 +258,7 @@ if (playId) {
           {update && <button type="submit" onClick={()=>setUpdate(false)} className='btn btn-primary my-4 py-2'>cancel</button> }
            {!update && <button type="submit" className='btn btn-primary my-4 py-2'>Submit</button>}
       </form>
+    </div>
     </div>
     </Container>
   );
