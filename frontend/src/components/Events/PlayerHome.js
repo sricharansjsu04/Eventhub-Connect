@@ -354,6 +354,9 @@ function PlayerHome() {
             element={<MyEvents loggedInUser={loggedInUser}/>}
             />
             <Route
+          path="/myEvent/:id/chatRoom/:chatRoomId"
+          element={<ChatRoom loggedInUser={loggedInUser}/>} />
+            <Route
           path="/myEvent/:id"
           element={<MyEventDetails venues={venuesData} loggedInUser={loggedInUser}/>} />
           <Route

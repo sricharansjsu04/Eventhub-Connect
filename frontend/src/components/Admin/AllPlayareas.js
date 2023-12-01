@@ -26,7 +26,7 @@ const PlayareaCard = ({ playarea }) => {
           <div className="mr-3">
             <Card.Img
               variant="left"
-              src="https://www.eye.co.jp/projects/examples/img/sports/spb15/1_l.jpg"
+              src={playarea.docUrls[0]}
               style={{ width: '150px', height: '150px' }}
               alt={playarea.name}
             />

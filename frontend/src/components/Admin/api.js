@@ -10,6 +10,7 @@ export const updatePlayareaStatus = async (playareaId, newStatus, comments) => {
       },
       body: JSON.stringify({ id: playareaId, status: newStatus, comments: comments })
     });
+    console.log('reesponse ',response);
     if (!response.ok) throw new Error('Network response was not ok.');
     return await response.json();
   } catch (error) {

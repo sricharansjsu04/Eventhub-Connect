@@ -1,13 +1,24 @@
 import axios from "axios"
 
-const apiPath = "https://pbh79m29ck.execute-api.us-east-2.amazonaws.com/Dev/api"
-export const getApi = () => {
-  return  axios.get(`${apiPath}/getPlayAreas`)
-    .then(res=> {
-      return res
-    })
-    .catch(err=>console.log(err))
-}
+// const apiPath = "https://pbh79m29ck.execute-api.us-east-2.amazonaws.com/Dev/api"
+// export const getApi = () => {
+//   return  axios.get(`${apiPath}/getPlayAreas`)
+//     .then(res=> {
+//       return res
+//     })
+//     .catch(err=>console.log(err))
+// }
+
+const apiPath = 'https://pbh79m29ck.execute-api.us-east-2.amazonaws.com/Dev/api'
+
+export const getApi = (userName) => {
+  const url = `${apiPath}/getPlayAreas?userName=${userName}`;
+  return axios.get(url)
+      .then(res => {
+          return res.data; // Assuming the API returns the filtered data
+      })
+      .catch(err => console.log(err));
+};
 
 export const deleteApi = (id) => {
     return axios.delete(`${apiPath}/deletePlayArea/${id}`)

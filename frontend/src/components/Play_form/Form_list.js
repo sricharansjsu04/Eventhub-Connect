@@ -1,15 +1,24 @@
-import React, { useEffect, useState } from 'react';
-import { Container } from 'react-bootstrap';
+import React, { useEffect, useState, useContext } from 'react';
+import { Container, Navbar, Nav, Button } from 'react-bootstrap';
 import "./Play_form.css";
 import { Link, useNavigate } from 'react-router-dom';
 import { deleteApi, getApi } from '../../Utils/api.service';
+import { AuthContext } from '../../contexts/AuthContext';
 
 function Form_list(props) {
   const navigate = useNavigate();
+  const { logout } = useContext(AuthContext);
+  const handleLogout = () => {
+    logout(); // Call logout from AuthContext
+    navigate('/'); // Navigate back to the login page
+  };
+  let {user}=useContext(AuthContext);
+
   const [dataList, setDatalist] = useState([])
   // const { playData, deleteData } = usePlayFormStore();
   useEffect(()=>{
-    getApi()
+    console.log(user)
+    getApi(user)
     .then(res=> {
       const {data} = res
       console.log(data)
@@ -25,6 +34,26 @@ const deleteHandler = (id)=>{
   .catch(err=>console.log(err))
 }
   return (
+    <>
+      {/* Navbar component */}
+      <Navbar bg="dark" variant="dark" expand="lg">
+        <Container fluid>
+          <Navbar.Brand as={Link} to="/ownerHome">
+            PlayPal
+          </Navbar.Brand>
+          <Navbar.Toggle aria-controls="navbar-dark-example" />
+          <Navbar.Collapse id="navbar-dark-example">
+            <Nav className="ms-auto">
+              <Navbar.Text className="me-3">
+                Logged in as: {user}
+              </Navbar.Text>
+              <Button variant="outline-danger" size="sm" onClick={handleLogout}>
+                Logout
+              </Button>
+            </Nav>
+          </Navbar.Collapse>
+        </Container>
+      </Navbar>
     <Container>
             {/* booking slots*/}
             <div className='form' style={{background:"none", backgroundColor:"white"}}>
@@ -39,6 +68,11 @@ const deleteHandler = (id)=>{
       </div>
 
       {/* if there is data */}
+      {dataList.length > 0 && (
+          <div className="py-3">
+            <h2 className="text-center">Your Registered Play Areas</h2>
+          </div>
+        )}
 
       <div>
       <div className='row py-3'>
@@ -95,7 +129,7 @@ const deleteHandler = (id)=>{
       <div>
         {dataList?.length === 0 && (
           <div className='py-5 my-4 d-flex justify-content-center'>
-            <h4>No Play Areas are booked</h4>
+            <h4>No play areas are registered yet</h4>
           </div>
         )}
       </div>
@@ -149,6 +183,7 @@ const deleteHandler = (id)=>{
       </div> */}
       </div>
     </Container>
+    </>
   );
 }
 
