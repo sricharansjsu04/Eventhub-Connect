@@ -1,5 +1,7 @@
 const AWS = require("aws-sdk");
 const db = require("./dbConnect")
+// const { spawnSync } = require('child_process');
+const axios = require('axios');
 require('dotenv').config();
 
 AWS.config.update({
@@ -32,7 +34,7 @@ function getPlayAreaDocs(playAreaId, isS3Url) {
 // Refactored getAllNotes function
 const getAllNotes = async (req, res) => {
   try {
-    const result = await queryAsync("SELECT e.id, e.chatroomId, e.event_name, e.current_pool_size, e.pool_size, e.sport_id, e.created_by, u.username as created_user, e.court_id, p.name, p.address1, p.state, p.country, p.zipcode, p.id as play_area_id, s.name as sportType, DATE(es.date) AS event_slot_date FROM events as e INNER JOIN play_areas as p ON e.play_area_id=p.id INNER JOIN users as u ON e.created_by=u.id INNER JOIN sports AS s ON e.sport_id=s.id LEFT JOIN event_slots AS es ON e.id = es.event_id WHERE e.event_status='Confirmed' AND e.id IN (SELECT event_id FROM event_slots WHERE date > CURDATE()) GROUP BY  e.id;");
+    const result = await queryAsync("SELECT e.id, e.event_name, e.current_pool_size, e.pool_size, e.sport_id, e.created_by, u.username as created_user, e.court_id, p.name, p.address1, p.state, p.country, p.zipcode, p.id as play_area_id, s.name as sportType, DATE(es.date) AS event_slot_date FROM events as e INNER JOIN play_areas as p ON e.play_area_id=p.id INNER JOIN users as u ON e.created_by=u.id INNER JOIN sports AS s ON e.sport_id=s.id LEFT JOIN event_slots AS es ON e.id = es.event_id WHERE e.event_status='Confirmed' AND e.id IN (SELECT event_id FROM event_slots WHERE date > CURDATE()) GROUP BY  e.id;");
     const promises = result.map(event => getPlayAreaDocs(event.play_area_id, true));
     const promises1 = result.map(event => getPlayAreaDocs(event.id, false));
    
@@ -42,7 +44,27 @@ const getAllNotes = async (req, res) => {
       event.players = playersArrays[index];
     });
     const sports = await queryAsync("select name from sports;");
-    
+    const lambda = new AWS.Lambda();
+
+    // Your parameter to be sent to the Lambda function
+    const yourParameter = 'someValue';
+
+    const params = {
+      FunctionName: 'getMLRecommendations',
+      InvocationType: 'RequestResponse',
+      Payload: JSON.stringify({ parameter: result }),
+    };
+
+    lambda.invoke(params, (err, data) => {
+      if (err) {
+        console.error(err);
+        // Handle error
+      } else {
+        const lambdaResult = JSON.parse(data.Payload);
+        console.log('Lambda function result:', lambdaResult);
+        // Continue with your Node.js logic
+      }
+    });
     // console.log(result);
     res.json({result,sports});
   } catch (error) {
@@ -50,6 +72,7 @@ const getAllNotes = async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
+
 
 function queryAsync(sql, values) {
   return new Promise((resolve, reject) => {

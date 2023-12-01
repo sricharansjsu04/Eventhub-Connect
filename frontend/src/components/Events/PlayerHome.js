@@ -15,7 +15,7 @@ import { AuthContext } from '../../contexts/AuthContext';
 import ChatRoom from "../ChatRoom/ChatRoom"
 
 
-const VenueCard = ({ venue, isCreatedByUser }) => {
+const VenueCard = ({ venue, isCreatedByUser, recData}) => {
   const navigate = useNavigate();
 
   const handleCardClick = () => {
@@ -56,19 +56,51 @@ const VenueCard = ({ venue, isCreatedByUser }) => {
   );
 };
 
-const VenueList = ({ venues, isCreatedByUser }) => (
+const VenueList = ({ venues, isCreatedByUser, recData }) => {
+  const navigate = useNavigate();
+
+  const handleCardClick = (redData) => {
+      // console.log("This what u are looking for: ",redData.body[0].event_id)
+      navigate(`../event/${redData.body[0].event_id}`);
+   
+  };
+  return(
   <Row>
-    {console.log(venues)}
+    <Col md={12} className="mb-4">
+      <Card onClick={() => handleCardClick(recData)} className="mb-4">
+      <Card.Body style={{ padding: "0px !important" }}>
+        {recData && recData.body && recData.body.length > 0 && (
+          <div>
+            <h4>{recData.body[0].event_name}</h4>
+            {/* Add more details as needed */}
+            {/* <p>Sport Type: {recData.body[0].sportType}</p> */}
+            <p>Pool Size: {recData.body[0].current_pool_size} players out of {recData.body[0].pool_size}</p>
+            {/* <p>Venue: {recData.body[0].name}</p>
+            <p>Date: {new Date(recData.body[0].event_slot_date).toISOString().split('T')[0]}</p> */}
+          </div>
+        )}
+
+      </Card.Body>
+      <Card.Footer className="text-end">
+
+    <small className="text-muted">Recommended Event</small>
+    </Card.Footer>
+    </Card>
+    
+    {/* {console.log(venues)} */}
     {venues != null &&
       venues.map((venue) => (
         <VenueCard
           key={venue.id}
           venue={venue}
           isCreatedByUser={isCreatedByUser}
+          recData={recData}
         />
       ))}
+      </Col>
   </Row>
-);
+  );
+};
 
 
 
@@ -197,6 +229,7 @@ const VenueFilter = ({ onSportTypeChange, onPoolSizeChange, onApplyFilters, onEv
 
 function PlayerHome() {
   const [venuesData, setVenuesData] = useState(null);
+  const [recData, setRecData] = useState(null);
   const [filteredVenues, setFilteredVenues] = useState([]);
   const [showMyCreatedEvents, setShowMyCreatedEvents] = useState(false); // Add state for My Created Events
   const [sportFilter, setSportFilter] = useState([]);  const { logout } = useContext(AuthContext);
@@ -218,6 +251,7 @@ function PlayerHome() {
           const result = await response.json();
         
           setVenuesData(result.result);
+          setRecData(result.recommend);
           setSportFilter(result.sports);
         } catch (error) {
           console.error('Error fetching data:', error);
@@ -276,6 +310,7 @@ function PlayerHome() {
   </Container>
 </Navbar>
         <Container fluid className="mt-4">
+
           <Routes>
             <Route
               path="/"
@@ -299,7 +334,7 @@ function PlayerHome() {
                       />
                     </Col>
                     <Col md={9}>
-                    <VenueList venues={filteredVenues} isCreatedByUser={showMyCreatedEvents} />
+                    <VenueList venues={filteredVenues} isCreatedByUser={showMyCreatedEvents} recData={recData} />
                     </Col>
                   </Row>
                 </div>
