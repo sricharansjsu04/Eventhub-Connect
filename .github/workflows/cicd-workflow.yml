@@ -33,4 +33,4 @@ jobs:
       - name: Delete old container
         run: docker rm -f playpal
       - name: Run docker container
-        run: docker run -d -p 3500:3500 --name playpal public.ecr.aws/r2n9m4w8/playpal_event_service:latest
+        run: docker run -d -p 3500:3500 --name playpal --log-driver=awslogs --log-opt awslogs-group=eventService-log-group --log-opt awslogs-region=us-east-1 public.ecr.aws/r2n9m4w8/playpal_event_service:latest
