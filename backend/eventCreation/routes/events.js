@@ -3,6 +3,7 @@ const router = express.Router()
 const eventController = require('../controllers/eventController')
 
 
+
 router.route('/myHostedEvents')
     .post(eventController.getCreatedEvents)
 
