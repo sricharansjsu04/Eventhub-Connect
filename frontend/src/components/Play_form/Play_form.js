@@ -4,7 +4,7 @@ import Select from "react-select";
 import "./Play_form.css"
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import {CreateData} from "../../Utils/Data"
-import { createUpdateApi, getApi } from '../../Utils/api.service';
+import { createUpdateApi, getApi,getRequestsApi } from '../../Utils/api.service';
 import { AuthContext } from '../../contexts/AuthContext';
 
 function Play_form(props) {
@@ -40,18 +40,48 @@ function Play_form(props) {
   let {user}=useContext(AuthContext);
 
   
+  // useEffect(() => {
+  //   if (playId) {
+  //     getApi(user)
+  //       .then(res => {
+  //         const { data } = res;
+  //         const updateObj = data.filter((obj) => obj.id === Number(playId))[0];
+  //         setFormData({ ...updateObj, owner: user }); // Set the owner to user
+  //       })
+  //   } else {
+  //     setFormData({ ...initialFormData, owner: user }); // Initialize with user as owner
+  //   }
+  // }, [playId, user])
+
+
+
   useEffect(() => {
     if (playId) {
-      getApi(user)
-        .then(res => {
-          const { data } = res;
-          const updateObj = data.filter((obj) => obj.id === Number(playId))[0];
-          setFormData({ ...updateObj, owner: user }); // Set the owner to user
-        })
+        getRequestsApi(user)
+            .then(res => {
+                if (res) {
+                    const updateObj = res.filter((obj) => obj.id === Number(playId))[0];
+                    if (updateObj) {
+                      console.log("updateOBj",updateObj);
+                        setFormData({ ...updateObj, owner: user }); // Set the owner to user
+                    }
+                }
+            })
+            .catch(err => {
+                console.error('Error fetching data:', err);
+            });
     } else {
-      setFormData({ ...initialFormData, owner: user }); // Initialize with user as owner
+        setFormData({ ...initialFormData, owner: user }); // Initialize with user as owner
     }
-  }, [playId, user])
+}, [playId, user]);
+
+console.log("formData"+formData);
+
+
+
+
+
+  
 
   const form = [
     { name: 'name', type: 'text', value: formData.name, required: true },
@@ -61,7 +91,11 @@ function Play_form(props) {
     { name: 'state', type: 'text', value: formData.state, required: true },
     { name: 'owner', type: 'text', value: user, readOnly: true },
     { name: 'country', type: 'text', value: formData.country, required: true },
-    { name: 'zipcode', type: 'text', value: formData.zipcode, required: true }
+    { name: 'zipcode', type: 'text', value: formData.zipcode, required: true },
+    { name: 'startTime', type: 'text', value: formData.startTime, required: true },
+    { name: 'endTime', type: 'text', value: formData.endTime, required: true }
+
+
     
 
   ];

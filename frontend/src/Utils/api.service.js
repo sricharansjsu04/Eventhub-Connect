@@ -9,10 +9,21 @@ import axios from "axios"
 //     .catch(err=>console.log(err))
 // }
 
-const apiPath = 'https://pbh79m29ck.execute-api.us-east-2.amazonaws.com/Dev/api'
+// const apiPath = 'https://pbh79m29ck.execute-api.us-east-2.amazonaws.com/Dev/api'
+const apiPath = 'http://localhost:8080/api'
+
 
 export const getApi = (userName) => {
   const url = `${apiPath}/getPlayAreas?userName=${userName}`;
+  return axios.get(url)
+      .then(res => {
+          return res.data; // Assuming the API returns the filtered data
+      })
+      .catch(err => console.log(err));
+};
+
+export const getRequestsApi = (userName) => {
+  const url = `${apiPath}/getPlayAreaRequests?userName=${userName}`;
   return axios.get(url)
       .then(res => {
           return res.data; // Assuming the API returns the filtered data
