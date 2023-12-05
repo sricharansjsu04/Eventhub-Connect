@@ -10,20 +10,27 @@ jobs:
     steps:
       - name: Checkout source
         uses: actions/checkout@v3
-      - name: Login to docker hub
-        run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-2
+      - name: Login to Amazon ECR
+        id: login-ecr
+        run: aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin your-account-id.dkr.ecr.your-aws-region.amazonaws.com
       - name: Build docker image
-        run: docker build -t ashishvedasjsu/playpal -f backend/eventCreation/Dockerfile backend/eventCreation
+        run: docker build -t public.ecr.aws/r2n9m4w8/playpal_event_service:latest -f backend/eventCreation/Dockerfile backend/eventCreation
       - name: Publish image to docker hub
-        run: docker push ashishvedasjsu/playpal:latest
+        run: docker push public.ecr.aws/r2n9m4w8/playpal_event_service:latest
 
   deploy:
     needs: build
     runs-on: self-hosted
     steps:
       - name: Pull image from docker hub
-        run: docker pull ashishvedasjsu/playpal:latest
+        run: docker pull public.ecr.aws/r2n9m4w8/playpal_event_service:latest
       - name: Delete old container
         run: docker rm -f playpal
       - name: Run docker container
-        run: docker run -d -p 3500:3500 --name playpal ashishvedasjsu/playpal
+        run: docker run -d -p 3500:3500 --name playpal public.ecr.aws/r2n9m4w8/playpal_event_service:latest
