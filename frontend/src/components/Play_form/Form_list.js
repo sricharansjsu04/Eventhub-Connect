@@ -25,7 +25,7 @@ function Form_list(props) {
       setDatalist([...data])
     })
     .catch(err=>console.log(err))
-  },[])
+  },[user])
 
 console.log(dataList)
 const deleteHandler = (id)=>{
@@ -67,7 +67,7 @@ const deleteHandler = (id)=>{
         </div>
       </div>
 
-      {/* if there is data */}
+      
       {dataList.length > 0 && (
           <div className="py-3">
             <h2 className="text-center">Your Registered Play Areas</h2>
@@ -76,15 +76,18 @@ const deleteHandler = (id)=>{
 
       <div>
       <div className='row py-3'>
+        {console.log("ikkada ",dataList)}
         {dataList.length >0 &&  dataList.map((data)=>{
+          
           return (
+            
             <div key={data?.id} className='col-lg-4 col-md-6 col-12 playCard'>
             <div className='p-3'>
               <h2 className='py-1'>{data.name}</h2>
-              <h3>{data?.owner}</h3>
-              <h4>Address1</h4>
+              {/* <h3>{data?.owner}</h3> */}
+              <h4>address1</h4>
               <p>{data.address1}</p>
-              <h4>Address2</h4>
+              <h4>address2</h4>
               <p>{data?.address2}</p>
               <div className='d-flex'>
                 <p>{data?.city},</p>
