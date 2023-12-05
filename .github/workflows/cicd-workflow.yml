@@ -18,7 +18,7 @@ jobs:
           aws-region: us-east-2
       - name: Login to Amazon ECR
         id: login-ecr
-        run: aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin your-account-id.dkr.ecr.your-aws-region.amazonaws.com
+        run: aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/r2n9m4w8
       - name: Build docker image
         run: docker build -t public.ecr.aws/r2n9m4w8/playpal_event_service:latest -f backend/eventCreation/Dockerfile backend/eventCreation
       - name: Publish image to docker hub
