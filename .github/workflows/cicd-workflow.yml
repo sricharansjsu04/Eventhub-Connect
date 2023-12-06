@@ -57,8 +57,6 @@ jobs:
     steps:
       - name: Pull image from docker hub
         run: docker pull public.ecr.aws/r2n9m4w8/playpal_event_service:latest
-      - name: Configure Docker with AWS credentials
-        run: aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }} && aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }} && aws configure set region us-east-1
       - name: Delete old container
         run: docker rm -f playpal
       - name: Run docker container
@@ -70,8 +68,6 @@ jobs:
     steps:
       - name: Pull image from docker hub
         run: docker pull public.ecr.aws/r2n9m4w8/playpal_ml_repo:latest
-      - name: Configure Docker with AWS credentials
-        run: aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }} && aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }} && aws configure set region us-east-1
       - name: Delete old container
         run: docker rm -f playpal-ml
       - name: Run docker container
