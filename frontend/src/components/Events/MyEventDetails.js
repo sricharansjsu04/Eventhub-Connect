@@ -32,11 +32,25 @@ const MyEventDetails = ({ venues,loggedInUser }) => {
     <Container fluid className="mt-4">
       <Container className="main-container rounded p-4 bg-light" style={{ maxWidth: '80%', margin: 'auto' }}>
         <h2 className="mb-4">Event Details</h2>
-        <Row>
-
+          <Row>
           <Col md={6} className="mb-4">
-          <div className="details-container p-4 rounded bg-light">
-    {console.log(event)}
+          <div style={{ width: '400px', height: '300px', overflow: 'hidden', borderRadius: '10px' }}>
+              <Carousel interval={null} style={{ width: '100%', height: '100%' }}>
+                {event.photoUrl.map((url, index) => (
+                  <Carousel.Item key={index}>
+                    <img
+                      className="d-block w-100 img-fluid rounded"
+                      src={url}
+                      alt={`Photo ${index + 1}`}
+                      style={{ objectFit: 'cover', width: '100%', height: '100%', borderRadius: '10px' }}
+                    />
+                  </Carousel.Item>
+                ))}
+              </Carousel>
+            </div>
+            <br/>          
+            <div className="details-container rounded bg-light">
+          
     <h3>{event.name}</h3>
     <dl className="row mt-4">
       <dt className="col-sm-4">Event Name:</dt>
@@ -72,26 +86,13 @@ const MyEventDetails = ({ venues,loggedInUser }) => {
 
       {/* Add more details as needed */}
     </dl>
-    <Button variant="primary" onClick={()=>handleCardClick(event.chatroomId)}>ChatRoom</Button>
+    <Button variant="primary" onClick={()=>handleCardClick(chatRoomId)}>ChatRoom</Button>
     
   </div>
           </Col>
-          <Col md={6}>
-            <div style={{ width: '400px', height: '400px', overflow: 'hidden', borderRadius: '10px' }}>
-              <Carousel interval={null} style={{ width: '100%', height: '100%' }}>
-                {event.photoUrl.map((url, index) => (
-                  <Carousel.Item key={index}>
-                    <img
-                      className="d-block w-100 img-fluid rounded"
-                      src={url}
-                      alt={`Photo ${index + 1}`}
-                      style={{ objectFit: 'cover', width: '100%', height: '100%', borderRadius: '10px' }}
-                    />
-                  </Carousel.Item>
-                ))}
-              </Carousel>
-            </div>
-          </Col>
+        <Col md={6} className="mb-4">
+        <ChatRoom chatRoomId={chatRoomId} loggedInUser={loggedInUser}></ChatRoom>
+        </Col>  
         </Row>
       </Container>
     </Container>
