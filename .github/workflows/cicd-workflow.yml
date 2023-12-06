@@ -47,7 +47,7 @@ jobs:
         id: login-ecr
         run: aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/r2n9m4w8
       - name: Build docker image
-        run: docker build -t public.ecr.aws/r2n9m4w8/playpal_ml_repo:latest -f backend/eventCreation/Dockerfile backend/eventCreation
+        run: docker build -t public.ecr.aws/r2n9m4w8/playpal_ml_repo:latest -f backend/mlService/Dockerfile backend/mlService
       - name: Publish image to docker hub
         run: docker push public.ecr.aws/r2n9m4w8/playpal_ml_repo:latest
 
