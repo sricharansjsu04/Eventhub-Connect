@@ -47,11 +47,24 @@ const PlayareaCard = ({ playarea }) => {
 
 const AllPlayareas = ({ playareas }) => {
   return (
-    <Row>
-      {playareas.map(playarea => (
-        <PlayareaCard key={playarea.id} playarea={playarea} />
-      ))}
-    </Row>
+  //   <Row>
+  //     {playareas.map(playarea => (
+  //       <PlayareaCard key={playarea.id} playarea={playarea} />
+  //     ))}
+  //   </Row>
+  // );
+
+  <>
+      {playareas.length > 0 ? (
+        <Row>
+          {playareas.map(playarea => (
+            <PlayareaCard key={playarea.id} playarea={playarea} />
+          ))}
+        </Row>
+      ) : (
+        <div>No venues available</div>
+      )}
+    </>
   );
 };
 
