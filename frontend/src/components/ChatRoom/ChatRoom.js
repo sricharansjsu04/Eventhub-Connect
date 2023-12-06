@@ -10,8 +10,8 @@ import config from '../../amplifyconfiguration.json';
 
 Amplify.configure(config);
 const client = generateClient();
-const ChatRoom = ({loggedInUser}) => {
-    const { chatRoomId } = useParams();
+const ChatRoom = ({loggedInUser,chatRoomId}) => {
+    
     
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');

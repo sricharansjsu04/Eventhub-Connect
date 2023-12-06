@@ -34,7 +34,7 @@ const VenueCard = ({ venue, isCreatedByUser, recData}) => {
             <Card.Img
               variant="left"
               src={venue.photoUrl[0]}
-              style={{ width: '150px', height: '150px' }}
+              style={{ width: '150px', height: '150px' ,borderRadius:"6px"}}
               alt={`Venue ${venue.event_name}`}
             />
           </div>
@@ -61,24 +61,26 @@ const VenueList = ({ venues, isCreatedByUser, recData }) => {
 
   const handleCardClick = (redData) => {
       // console.log("This what u are looking for: ",redData.body[0].event_id)
-      navigate(`../event/${redData.body[0].event_id}`);
+      navigate(`../event/${redData.event_id}`);
    
   };
   return(
   <Row>
     <Col md={12} className="mb-4">
-      <Card onClick={() => handleCardClick(recData)} className="mb-4">
+    {console.log('recData:', recData)}
+    {recData && (
+      <Card onClick={() => handleCardClick(recData)} className="mb-4" style={{ padding: "10px" }}>
       <Card.Body style={{ padding: "0px !important" }}>
-        {recData && recData.body && recData.body.length > 0 && (
+        
           <div>
-            <h4>{recData.body[0].event_name}</h4>
+            <h4>{recData.event_name}</h4>
             {/* Add more details as needed */}
             {/* <p>Sport Type: {recData.body[0].sportType}</p> */}
-            <p>Pool Size: {recData.body[0].current_pool_size} players out of {recData.body[0].pool_size}</p>
+            <p>Pool Size: {recData.current_pool_size} players out of {recData.pool_size}</p>
             {/* <p>Venue: {recData.body[0].name}</p>
             <p>Date: {new Date(recData.body[0].event_slot_date).toISOString().split('T')[0]}</p> */}
           </div>
-        )}
+      
 
       </Card.Body>
       <Card.Footer className="text-end">
@@ -86,6 +88,7 @@ const VenueList = ({ venues, isCreatedByUser, recData }) => {
     <small className="text-muted">Recommended Event</small>
     </Card.Footer>
     </Card>
+    )}
     
     {/* {console.log(venues)} */}
     {venues != null &&
@@ -180,7 +183,7 @@ const HostButton = ({ loggedInUser, venuesData, setFilteredVenues, showMyCreated
 
 const VenueFilter = ({ onSportTypeChange, onPoolSizeChange, onApplyFilters, onEventNameChange, sportFilter, onDateChange}) => (
  
-  <Form className="sticky-top bg-light p-3">
+  <Form className="sticky-top bg-light p-3" style={{borderRadius:"16px"}}>
     <h5>Event Filters</h5>
     <Form.Group controlId="sportTypeFilter">
       <Form.Label>Sport Type</Form.Label>
@@ -249,10 +252,12 @@ function PlayerHome() {
         try {
           const response = await fetch(urls.getAllEvents);
           const result = await response.json();
-        
+          console.log(result)
           setVenuesData(result.result);
-          setRecData(result.recommend);
+          setRecData(result.temp);
           setSportFilter(result.sports);
+          console.log(result.temp)
+          console.log("Here Look here",recData)
         } catch (error) {
           console.error('Error fetching data:', error);
         }
@@ -261,7 +266,6 @@ function PlayerHome() {
       fetchData();
     }
   }, []);
-
 
      
   const [sportTypeFilter, setSportTypeFilter] = useState('');

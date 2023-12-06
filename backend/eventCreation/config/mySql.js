@@ -7,9 +7,9 @@ const config = {
         password: process.env.DB_PASS,
         port: process.env.DB_PORT,
         database: process.env.DB_DB,
-        waitForConnections: true,
-        connectionLimit: 10, 
-        queueLimit: 0
+        // waitForConnections: true,
+        // connectionLimit: 10, 
+        // queueLimit: 0
     }
 }
 

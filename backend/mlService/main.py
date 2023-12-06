@@ -22,10 +22,11 @@ async def recommend(user_id: int):
     try:
         # TODO implement
         # Specify the endpoint name of your SageMaker deployment
-        aws_access_key_id = os.getenv('AWS_ACCESS_KEY_ID')
-        aws_secret_access_key = os.getenv('AWS_SECRET_ACCESS_KEY')
-        endpoint_name = os.getenv('SAGEMAKER_ENDPOINT_NAME')
+        aws_access_key_id = os.getenv('ACCESSKEYID')
+        aws_secret_access_key = os.getenv('SECRETACCESSKEY')
+        endpoint_name = "model-endpoint35"
         aws_region = 'us-east-2'
+
         # Data prep
         sports_list = {
             'Cricket': 22,

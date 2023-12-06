@@ -27,5 +27,8 @@ router.route('/acceptReq')
 router.route('/rejectReq')
     .post(eventController.rejectReq)
 
+router.route('/leaveEvent')
+    .post(eventController.leaveEvent) 
+
 
 module.exports = router

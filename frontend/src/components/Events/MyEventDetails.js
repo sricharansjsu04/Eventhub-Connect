@@ -3,6 +3,7 @@ import { Container, Button, Row, Col, Carousel, Alert } from 'react-bootstrap';
 import { useParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import ChatRoom from '../ChatRoom/ChatRoom.js'
+import * as urls from './config';
 
 const MyEventDetails = ({ venues,loggedInUser }) => {
 
@@ -13,6 +14,7 @@ const MyEventDetails = ({ venues,loggedInUser }) => {
   useEffect(() => {
     if (venues) {
       setEvents(venues);
+      console.log("Ikkada ", events)
     }
   }, [venues]);
 
@@ -23,11 +25,35 @@ const MyEventDetails = ({ venues,loggedInUser }) => {
   const event = events.find((venue) => venue.id === parseInt(id, 10));
   
   // const chatRoomId="6d19f14e-a9a8-4b11-9b54-746feb790fd4";
-  const handleCardClick = (chatRoomId) => {
-    // Redirect to the detailed view of the clicked event
-    console.log("success",chatRoomId);
-    navigate(`./ChatRoom/${chatRoomId}`);
+
+
+  const handleLeaveEvent = async () => {
+    try {
+      console.log(id, loggedInUser)
+      const response = await fetch(urls.leaveEvent, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          event_id: id,
+          user_id: loggedInUser,
+        }),
+      });
+
+      if (response.ok) {
+        // Handle successful leave event logic, e.g., refresh the page or update state
+        console.log('Successfully left the event');
+        navigate('/playerHome/myEvents');
+      } else {
+        console.error('Error leaving the event:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Error leaving the event:', error);
+    }
   };
+
+
   return (
     <Container fluid className="mt-4">
       <Container className="main-container rounded p-4 bg-light" style={{ maxWidth: '80%', margin: 'auto' }}>
@@ -86,12 +112,13 @@ const MyEventDetails = ({ venues,loggedInUser }) => {
 
       {/* Add more details as needed */}
     </dl>
-    <Button variant="primary" onClick={()=>handleCardClick(chatRoomId)}>ChatRoom</Button>
+    <Button variant="danger" disabled={event.created_user === loggedInUser} onClick={handleLeaveEvent}>Leave the event</Button>
     
   </div>
           </Col>
         <Col md={6} className="mb-4">
-        <ChatRoom chatRoomId={chatRoomId} loggedInUser={loggedInUser}></ChatRoom>
+          {console.log("What u want is here ",event.chatroomId)}
+        <ChatRoom chatRoomId={event.chatroomId} loggedInUser={loggedInUser}></ChatRoom>
         </Col>  
         </Row>
       </Container>

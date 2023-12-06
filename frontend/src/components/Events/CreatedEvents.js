@@ -73,7 +73,7 @@ const CreatedEvents = ({loggedInUser}) => {
               <Card.Img
                 variant="left"
                 src={venue.photoUrl[0]}
-                style={{ width: '150px', height: '150px' }}
+                style={{ width: '150px', height: '150px' ,borderRadius:"6px"}}
                 alt={`Venue ${venue.event_name}`}
               />
             </div>
@@ -145,7 +145,7 @@ const CreatedEvents = ({loggedInUser}) => {
   
         <Row>
           <Col md={3}>
-            <Form className="sticky-top bg-light p-3">
+            <Form className="sticky-top bg-light p-3" style={{borderRadius:"16px"}}>
               <h5>Event Filters</h5>
               <Form.Group controlId="sportTypeFilter">
                 <Form.Label>Sport Type</Form.Label>

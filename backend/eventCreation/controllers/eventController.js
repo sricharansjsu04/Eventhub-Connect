@@ -34,7 +34,7 @@ function getPlayAreaDocs(playAreaId, isS3Url) {
 // Refactored getAllNotes function
 const getAllNotes = async (req, res) => {
   try {
-    const result = await queryAsync("SELECT e.id, e.event_name, e.current_pool_size, e.pool_size, e.sport_id, e.created_by, u.username as created_user, e.court_id, p.name, p.address1, p.state, p.country, p.zipcode, p.id as play_area_id, s.name as sportType, DATE(es.date) AS event_slot_date FROM events as e INNER JOIN play_areas as p ON e.play_area_id=p.id INNER JOIN users as u ON e.created_by=u.id INNER JOIN sports AS s ON e.sport_id=s.id LEFT JOIN event_slots AS es ON e.id = es.event_id WHERE e.event_status='Confirmed' AND e.id IN (SELECT event_id FROM event_slots WHERE date > CURDATE()) GROUP BY  e.id;");
+    const result = await queryAsync("SELECT e.id, e.event_name, e.current_pool_size, e.chatroomId, e.pool_size, e.sport_id, e.created_by, u.username as created_user, e.court_id, p.name, p.address1, p.state, p.country, p.zipcode, p.id as play_area_id, s.name as sportType, DATE(es.date) AS event_slot_date FROM events as e INNER JOIN play_areas as p ON e.play_area_id=p.id INNER JOIN users as u ON e.created_by=u.id INNER JOIN sports AS s ON e.sport_id=s.id LEFT JOIN event_slots AS es ON e.id = es.event_id WHERE e.event_status='Confirmed' AND e.id IN (SELECT event_id FROM event_slots WHERE date > CURDATE()) GROUP BY  e.id;");
     const promises = result.map(event => getPlayAreaDocs(event.play_area_id, true));
     const promises1 = result.map(event => getPlayAreaDocs(event.id, false));
    
@@ -44,29 +44,25 @@ const getAllNotes = async (req, res) => {
       event.players = playersArrays[index];
     });
     const sports = await queryAsync("select name from sports;");
-    const lambda = new AWS.Lambda();
+    const apiUrl = 'http://localhost:3501/predict'; // Replace with your actual API URL
 
-    // Your parameter to be sent to the Lambda function
-    const yourParameter = 'someValue';
+    async function fetchData() {
+      try {
+        const response = await axios.get(`${apiUrl}/2`);
+        // console.log('Response:', response.data.body[0]);
+        const temp = response.data.body[0];
+        res.json({result,sports,temp});
+        // Further processing with the response data can be done here
 
-    const params = {
-      FunctionName: 'getMLRecommendations',
-      InvocationType: 'RequestResponse',
-      Payload: JSON.stringify({ parameter: result }),
-    };
-
-    lambda.invoke(params, (err, data) => {
-      if (err) {
-        console.error(err);
-        // Handle error
-      } else {
-        const lambdaResult = JSON.parse(data.Payload);
-        console.log('Lambda function result:', lambdaResult);
-        // Continue with your Node.js logic
+      } catch (error) {
+        console.error('Error:', error.message);
       }
-    });
-    // console.log(result);
-    res.json({result,sports});
+    }
+
+    // Inside an async function or event handler
+    await fetchData();
+    // res.json({result,sports});
+
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: 'Internal Server Error' });
@@ -197,6 +193,7 @@ const getMyEvents = async(req,res)=> {
     const sports = await queryAsync("select name from sports;");
     
     // console.log(result);
+    console.log(result);
     res.json({result,sports});
   }
   catch(err){
@@ -346,6 +343,30 @@ const rejectReq = async (req,res) =>{
 }
 
 
+const leaveEvent = async (req,res) => {
+  try {
+    const eventId = req.body.event_id; 
+    const userName = req.body.user_id;
+
+    const userId = await queryAsync("select id from users where username=?",[userName]);
+
+    console.log(eventId, userId[0].id);
+    const deleteQuery = 'DELETE FROM event_users WHERE event_id = ? AND user_id = ?';
+    const deleteResult = await queryAsync(deleteQuery, [eventId, userId[0].id]);
+
+    // Check if the update was successful
+    if (deleteResult.affectedRows > 0) {
+       
+      res.status(200).json({message:"Successfully left the event"});
+    }else{
+      res.status(400).json({message:"No Records Updated"});
+    }
+}catch(err){
+  console.log(err);
+  res.status(400).json({message:err})
+}
+}
+
 module.exports = {
     getAllNotes,
     getCreatedEvents,
@@ -353,5 +374,6 @@ module.exports = {
     joinEvent,
     getWaitList,
     acceptReq,
-    rejectReq
+    rejectReq,
+    leaveEvent
 }

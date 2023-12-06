@@ -9,3 +9,4 @@ export const getVenues = 'http://localhost:3500/venues/getVenues';
 export const myEvents = 'http://localhost:3500/home/myEvents';
 export const getAllEvents = 'http://localhost:3500/home/getAllEvents';
 export const createEvent = 'http://localhost:3500/venues/createEvent';
+export const leaveEvent = 'http://localhost:3500/home/leaveEvent';
