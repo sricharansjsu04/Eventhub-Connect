@@ -71,7 +71,7 @@ const PlayareaRequests = ({ playareas }) => {
           ))}
         </Row>
       ) : (
-        <div>No playarea requests available.</div>
+        <div>No venue requests available</div>
       )}
     </>
   );
