@@ -7,7 +7,7 @@ const eventController = require('../controllers/eventController')
 router.route('/myHostedEvents')
     .post(eventController.getCreatedEvents)
 
-router.route('/getAllEvents')
+router.route('/getAllEvents/:username')
     .get(eventController.getAllNotes)
 
 router.route('/MyEvents')
