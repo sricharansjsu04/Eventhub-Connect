@@ -309,8 +309,15 @@ const acceptReq = async (req,res) =>{
     const eventId = req.body.event_id; 
     const userId = req.body.user_id;
 
+    const cps = await queryAsync("select current_pool_size, pool_size from events WHERE id = ?", [eventId]);
+    if(cps[0].curret_pool_size==cps[0].pool_size){
+      res.status(400).json({message:"Event Full"});
+    }
+
     const updateQuery = 'UPDATE event_users SET status = ? WHERE event_id = ? AND user_id = ?';
     const updateResult = await queryAsync(updateQuery, [status, eventId, userId]);
+
+    const result1 = await queryAsync("UPDATE events SET current_pool_size = current_pool_size + 1 WHERE id = ?", [eventId]);
 
     // Check if the update was successful
     if (updateResult.affectedRows > 0) {
@@ -358,6 +365,8 @@ const leaveEvent = async (req,res) => {
     console.log(eventId, userId[0].id);
     const deleteQuery = 'DELETE FROM event_users WHERE event_id = ? AND user_id = ?';
     const deleteResult = await queryAsync(deleteQuery, [eventId, userId[0].id]);
+
+    const result1 = await queryAsync("UPDATE events SET current_pool_size = current_pool_size - 1 WHERE id = ?", [eventId]);
 
     // Check if the update was successful
     if (deleteResult.affectedRows > 0) {
