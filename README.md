@@ -40,6 +40,7 @@ The React frontend will start running on http://localhost:3000.
 **###4. User Creation (Node.js) Setup:**
 
 a. Open Terminal in the usercreation directory within the backend folder:
+
 cd PlayPal/backend/usercreation
 
 b. Install User Creation Dependencies:
@@ -51,6 +52,7 @@ node server.js
 **###5. Event Creation (Node.js) Setup:**
 
 a. Open Terminal in the eventcreation directory within the backend folder:
+
 cd PlayPal/backend/eventcreation
 
 b. Install Event Creation Dependencies:
@@ -63,6 +65,7 @@ node app.js
 **###6. Play Area Status (Node.js) Setup:**
 
 a. Open Terminal in the eventcreation directory within the backend folder:
+
 cd PlayPal/backend/PlayAreaStatus
 
 b. Install Play Area Status Dependencies:
@@ -78,6 +81,7 @@ cd PlayPal/backend/mlService
 
 b. Start the ML Service with Uvicorn:
 Use the following command to start the ML service using Uvicorn:
+
 uvicorn main:app --host 0.0.0.0 --port 3501 --reload
 
 Now, you should have the entire project up and running locally. You can access the frontend at http://localhost:3000 and make API requests to the backend at http://localhost:8080.
