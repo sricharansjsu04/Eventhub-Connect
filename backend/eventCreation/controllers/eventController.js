@@ -44,7 +44,7 @@ const getAllNotes = async (req, res) => {
       event.players = playersArrays[index];
     });
     const sports = await queryAsync("select name from sports;");
-    const apiUrl = 'http://localhost:3501/predict'; // Replace with your actual API URL
+    const apiUrl = 'https://eventUserALB-1046506387.us-east-2.elb.amazonaws.com/predict'; // Replace with your actual API URL
 
     async function fetchData() {
       try {

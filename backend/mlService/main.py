@@ -1,5 +1,6 @@
 import os
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 import json
 import pandas as pd
@@ -7,7 +8,6 @@ import pymysql
 from sqlalchemy import create_engine
 import itertools
 import boto3
-import sys
 from datetime import datetime
 from dotenv import load_dotenv
 
@@ -16,6 +16,17 @@ load_dotenv()
 
 
 app = FastAPI()
+
+origins = ["*"]
+
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 async def recommend(user_id: int):
@@ -80,7 +91,7 @@ async def recommend(user_id: int):
 
         # query = "SELECT * FROM events;"
         events = pd.read_sql_query(query, con=engine)
-        print(events.head())
+        # print(events.head())
 
         query = "SELECT * FROM event_users;"
         event_users = pd.read_sql_query(query, con=engine)
@@ -169,7 +180,7 @@ async def recommend(user_id: int):
         test_data_json = features_to_predict.values.tolist()
         # print(test_data_json)
         test_data_json_str = json.dumps(test_data_json)
-        print(test_data_json_str)
+
         # Make predictions
         # # predictions = clf.predict(features_to_predict)
         sagemaker_runtime = boto3.client('sagemaker-runtime', region_name=aws_region,
@@ -237,3 +248,9 @@ async def predict_endpoint(user_id: int):
     print(prediction_result)
     # Return the prediction result in the response
     return JSONResponse(content=prediction_result, status_code=200)
+
+
+@app.get("/health")
+def health():
+
+    return JSONResponse(content={}, status_code=200)

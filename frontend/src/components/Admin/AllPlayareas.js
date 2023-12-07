@@ -62,7 +62,7 @@ const AllPlayareas = ({ playareas }) => {
           ))}
         </Row>
       ) : (
-        <div>No venues available</div>
+        <div>No Play areas available</div>
       )}
     </>
   );
