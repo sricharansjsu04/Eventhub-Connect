@@ -88,12 +88,12 @@ if (confirmMessage || errorMessage) {
 
   
 
-  useEffect(() => {
-    if (!playarea) {
-      // Handle the case where playarea is not found, e.g., redirect or show a message
-      navigate('/admin/allPlayareas'); // Redirect back to the playareas list if not found
-    }
-  }, [playarea, navigate]);
+  // useEffect(() => {
+  //   if (!playarea) {
+  //     // Handle the case where playarea is not found, e.g., redirect or show a message
+  //     navigate('/admin/'); // Redirect back to the playareas list if not found
+  //   }
+  // }, [playarea, navigate]);
 
   // ... other component logic
 
