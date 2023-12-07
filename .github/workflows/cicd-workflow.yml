@@ -53,7 +53,7 @@ jobs:
 
   deploy:
     needs: build
-    runs-on: self-hosted
+    runs-on: [self-hosted, backend]
     steps:
       - name: Pull image from docker hub
         run: docker pull public.ecr.aws/r2n9m4w8/playpal_event_service:latest
@@ -64,7 +64,7 @@ jobs:
 
   deploy-ml:
     needs: build-ml
-    runs-on: self-hosted
+    runs-on: [self-hosted, backend]
     steps:
       - name: Pull image from docker hub
         run: docker pull public.ecr.aws/r2n9m4w8/playpal_ml_repo:latest

@@ -26,7 +26,8 @@ async def recommend(user_id: int):
         aws_secret_access_key = os.getenv('SECRETACCESSKEY')
         endpoint_name = "model-endpoint35"
         aws_region = 'us-east-2'
-
+        print(f"AWS Access Key ID: {aws_access_key_id}")
+        print(f"AWS Secret Access Key: {aws_secret_access_key}")
         # Data prep
         sports_list = {
             'Cricket': 22,
