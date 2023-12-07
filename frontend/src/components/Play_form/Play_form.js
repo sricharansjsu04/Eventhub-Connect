@@ -105,12 +105,12 @@ console.log("formData"+formData);
     { value: "Football", label: "Football" },
     { value: "Tennis", label: "Tennis" },
     { value: "Volleyball", label: "Volleyball" },
-    { value: "Golf", label: "Golf" },
     { value: "Squash", label: "Squash" },
     { value: "Soft ball", label: "Soft ball" },
     { value: "Pickle ball", label: "Pickle ball" },
-    { value: "Baseball", label: "Baseball" },
+    { value: "Basketball", label: "Basketball" },
     { value: "Badminton", label: "Badminton" },
+    { value: "Baseball", label: "Baseball" },
   ];
 
 
