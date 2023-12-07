@@ -143,7 +143,7 @@ jobs:
         run: docker run -d -p 3501:3501 --name playpal-ml public.ecr.aws/r2n9m4w8/playpal_ml_repo:latest
   
   deploy-usercreation:
-    needs: usercreation
+    needs: build-usercreation
     runs-on: [self-hosted, backend]
     steps:
       - name: Pull image from docker hub
@@ -154,7 +154,7 @@ jobs:
         run: docker run -d -p 3001:3001 --name playpal public.ecr.aws/r2n9m4w8/playpal_usercreation_service:latest
 
   deploy-playareastatus:
-    needs: usercreation
+    needs: build-playareastatus
     runs-on: [self-hosted, backend]
     steps:
       - name: Pull image from docker hub
