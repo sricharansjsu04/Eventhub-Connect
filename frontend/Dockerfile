@@ -13,6 +13,12 @@ RUN npm install
 # Step 5: Bundle app source inside Docker image
 COPY . .
 
+ARG REACT_APP_COGNITO_USER_POOL_ID
+ARG REACT_APP_COGNITO_CLIENT_ID
+
+ENV REACT_APP_COGNITO_USER_POOL_ID=${REACT_APP_COGNITO_USER_POOL_ID}
+ENV REACT_APP_COGNITO_CLIENT_ID=${REACT_APP_COGNITO_CLIENT_ID}
+
 # Step 6: Build the application for production
 RUN npm run build
 

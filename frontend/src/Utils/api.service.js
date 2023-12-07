@@ -9,8 +9,8 @@ import axios from "axios"
 //     .catch(err=>console.log(err))
 // }
 
-// const apiPath = 'https://pbh79m29ck.execute-api.us-east-2.amazonaws.com/Dev/api'
-const apiPath = 'http://localhost:8080/api'
+ const apiPath = 'https://pbh79m29ck.execute-api.us-east-2.amazonaws.com/Dev/api'
+//const apiPath = 'http://localhost:8080/api'
 
 
 export const getApi = (userName) => {
