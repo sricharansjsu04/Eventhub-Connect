@@ -153,7 +153,7 @@ jobs:
       - name: Run docker container
         run: docker run -d -p 3001:3001 --name playpal public.ecr.aws/r2n9m4w8/playpal_usercreation_service:latest
 
-   deploy-playareastatus:
+  deploy-playareastatus:
     needs: usercreation
     runs-on: [self-hosted, backend]
     steps:
