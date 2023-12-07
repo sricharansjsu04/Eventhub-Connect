@@ -311,7 +311,7 @@ const acceptReq = async (req,res) =>{
 
     const cps = await queryAsync("select current_pool_size, pool_size from events WHERE id = ?", [eventId]);
     if(cps[0].current_pool_size==cps[0].pool_size){
-      res.status(400).json({message:"Event Full"});
+      return res.status(400).json({message:"Event Full"});
     }
 
     const updateQuery = 'UPDATE event_users SET status = ? WHERE event_id = ? AND user_id = ?';
