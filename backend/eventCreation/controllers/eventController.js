@@ -310,7 +310,7 @@ const acceptReq = async (req,res) =>{
     const userId = req.body.user_id;
 
     const cps = await queryAsync("select current_pool_size, pool_size from events WHERE id = ?", [eventId]);
-    if(cps[0].curret_pool_size==cps[0].pool_size){
+    if(cps[0].current_pool_size==cps[0].pool_size){
       res.status(400).json({message:"Event Full"});
     }
 
