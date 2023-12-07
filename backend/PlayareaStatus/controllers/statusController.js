@@ -17,7 +17,7 @@ exports.changePlayAreaStatus = async (req, res) => {
     const ownerEmail = await playAreaModel.getPlayAreaOwnerEmail(id);
 
     // Send an email notification to the play area's owner
-    //await notificationService.sendEmail(ownerEmail, status, comments);
+    await notificationService.sendEmail(ownerEmail, status, comments);
 
     // Return a success response
     res.json({ message: `Status updated to ${status}`, id });

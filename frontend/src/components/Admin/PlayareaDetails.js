@@ -46,24 +46,7 @@ const PlayareaDetails = ({ playareas, documents = [], onSaveComment, onBan, onAc
       });
   };
   
-  
 
-
-  // let actionButtons;
-  // if (fromRequestsPage) {
-  //   actionButtons = (
-  //     <>
-  //       <Button variant="success" onClick={() => handleStatusChange('Accepted')}>Accept</Button>
-  //       <Button variant="danger" onClick={() => handleStatusChange('Rejected')}>Reject</Button>
-  //     </>
-  //   );
-  // } else {
-  //   if (playarea?.status === 'Accepted') {
-  //     actionButtons = <Button variant="danger" onClick={() => handleStatusChange('Banned')}>Ban Playarea</Button>;
-  //   } else if (playarea?.status === 'Rejected' || playarea?.status === 'Banned') {
-  //     actionButtons = <Button variant="success" onClick={() => handleStatusChange('Accepted')}>Accept Playarea</Button>;
-  //   }
-  // }
 
   let actionButtons;
 
@@ -86,72 +69,12 @@ if (confirmMessage || errorMessage) {
   }
 }
 
-  
-
-  // useEffect(() => {
-  //   if (!playarea) {
-  //     // Handle the case where playarea is not found, e.g., redirect or show a message
-  //     navigate('/admin/'); // Redirect back to the playareas list if not found
-  //   }
-  // }, [playarea, navigate]);
-
-  // ... other component logic
 
   if (!playarea) {
     return <div>Playarea not found.</div>;
   }
 
   return (
-    // <Container className="mt-4">
-    //   {updateMessage ? (
-    //   <Card>
-    //     <Card.Body>
-    //     <Card.Text style={{ fontSize: '1.5rem', textAlign: 'center' }}>
-    //         {updateMessage}
-    //       </Card.Text>
-    //       <Button variant="primary" onClick={() => navigate('/admin')}>Back to Dashboard</Button>
-    //     </Card.Body>
-    //   </Card>
-    // ) : (
-    //     <>
-    //       <Card>
-    //         <Card.Body>
-    //           <Card.Title>{playarea.name}</Card.Title>
-    //           <ListGroup className="list-group-flush">
-    //             <ListGroupItem>Owner: {playarea.owner}</ListGroupItem>
-    //             <ListGroupItem>Address: {`${playarea.address1}, ${playarea.address2}`}</ListGroupItem>
-    //             <ListGroupItem>City: {playarea.city}</ListGroupItem>
-    //             <ListGroupItem>State: {playarea.state}</ListGroupItem>
-    //             <ListGroupItem>Country: {playarea.country}</ListGroupItem>
-    //             <ListGroupItem>Zipcode: {playarea.zipcode}</ListGroupItem>
-    //             <ListGroupItem>Status: {playarea.status}</ListGroupItem>
-    //           </ListGroup>
-    //           <Form.Group className="my-3">
-    //             <Form.Label>Comments</Form.Label>
-    //             <Form.Control as="textarea" rows={3} value={comments} onChange={handleCommentChange} />
-    //           </Form.Group>
-    //           {actionButtons}
-    //         </Card.Body>
-    //       </Card>
-  
-    //       <h3 className="mt-4">Documents and Photos</h3>
-    //       <Row>
-    //         {documents.filter(doc => doc.play_area_id === parseInt(id)).map(doc => (
-    //           <Col key={doc.id} md={4} className="mb-3">
-    //             {doc.type === 'photo' ? 
-    //               <Image src={doc.s3url} alt={doc.name} fluid />
-    //               : 
-    //               <a href={doc.s3url} target="_blank" rel="noopener noreferrer">{doc.name}</a>
-    //             }
-    //           </Col>
-    //         ))}
-    //       </Row>
-    //     </>
-    //   )}
-    // </Container>
-
-
-
 
 <Container fluid className="mt-4">
 <Container className="main-container rounded p-4 bg-light" style={{ maxWidth: '80%', margin: 'auto' }}>
@@ -193,7 +116,7 @@ if (confirmMessage || errorMessage) {
 </dl>
 <Form.Group className="my-3">
     <Form.Label>Comments</Form.Label>
-    <Form.Control as="textarea" rows={3} value={playarea.comments} onChange={handleCommentChange} />
+    <Form.Control as="textarea" rows={3} value={comments} onChange={handleCommentChange} />
 </Form.Group>
 
 {actionButtons}
