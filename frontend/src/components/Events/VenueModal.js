@@ -25,7 +25,7 @@ const VenueModal = ({ showModal, formData, selectedVenue, closeModal, loggedInUs
       if (selectedVenue != null && selectedCourt !== '') {
         setLoading(true);
         console.log(selectedVenue,selectedCourt)
-        var api = 'https://pbh79m29ck.execute-api.us-east-2.amazonaws.com/Test/api/getSlotsByPlayAreaAndCourt?playAreaId='+selectedVenue.id+'&courtId='+selectedCourt+'&inputDate='+formData.date+'';
+        var api = 'https://pbh79m29ck.execute-api.us-east-2.amazonaws.com/Dev/api/getSlotsByPlayAreaAndCourt?playAreaId='+selectedVenue.id+'&courtId='+selectedCourt+'&inputDate='+formData.date+'';
         console.log(api);
         fetch(api)
           .then((response) => response.json())
