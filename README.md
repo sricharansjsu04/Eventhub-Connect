@@ -18,11 +18,9 @@ Follow these steps to run the project locally:
 **###2. Backend (Spring Boot) Setup:**
 
 a. Open Terminal in the slotService directory:
-
 cd PlayPal/slotService
 
 b. Build and Run the Spring Boot Application:
-
 ./mvnw spring-boot:run
 
 The backend server will start running on http://localhost:8080.
@@ -53,7 +51,6 @@ node server.js
 **###5. Event Creation (Node.js) Setup:**
 
 a. Open Terminal in the eventcreation directory within the backend folder:
-
 cd PlayPal/backend/eventcreation
 
 b. Install Event Creation Dependencies:
@@ -66,7 +63,6 @@ node app.js
 **###6. Play Area Status (Node.js) Setup:**
 
 a. Open Terminal in the eventcreation directory within the backend folder:
-
 cd PlayPal/backend/PlayAreaStatus
 
 b. Install Play Area Status Dependencies:
