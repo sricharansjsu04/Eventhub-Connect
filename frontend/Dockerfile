@@ -28,6 +28,10 @@ FROM nginx:alpine
 # Step 8: Copy the build output to replace the default Nginx contents.
 COPY --from=0 /usr/src/app/build /usr/share/nginx/html
 
+# Step 11: Copy custom Nginx config
+COPY src/config/custom-nginx.conf /etc/nginx/conf.d/default.conf
+
+
 # Step 9: Expose port 80 to the outside once the container has launched
 EXPOSE 80
 
