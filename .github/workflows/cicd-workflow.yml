@@ -73,7 +73,7 @@ jobs:
         run: docker build -t public.ecr.aws/r2n9m4w8/playpal_usercreation_service:latest -f backend/usercreation/Dockerfile backend/usercreation
       - name: Publish image to docker hub
         run: docker push public.ecr.aws/r2n9m4w8/playpal_usercreation_service:latest
-  
+
   build-playareastatus:
     runs-on: [ubuntu-latest]
     steps:
@@ -96,7 +96,6 @@ jobs:
         run: docker build -t public.ecr.aws/r2n9m4w8/playpal_playareastatus_service:latest -f backend/PlayareaStatus/Dockerfile backend/PlayareaStatus
       - name: Publish image to docker hub
         run: docker push public.ecr.aws/r2n9m4w8/playpal_playareastatus_service:latest
-
 
   build-frontend:
     runs-on: [ubuntu-latest]
@@ -127,9 +126,9 @@ jobs:
       - name: Pull image from docker hub
         run: docker pull public.ecr.aws/r2n9m4w8/playpal_event_service:latest
       - name: Delete old container
-        run: docker rm -f playpal
+        run: docker rm -f playpal-eventCreation
       - name: Run docker container
-        run: docker run -d -p 3500:3500 --name playpal-event-service public.ecr.aws/r2n9m4w8/playpal_event_service:latest
+        run: docker run -d -p 3500:3500 --name playpal-eventCreation -e DB_HOST=${{secrets.DB_HOST}} -e DB_USER=${{secrets.DB_USER}} -e DB_PASS=${{secrets.DB_PASS}} -e DB_PORT=${{secrets.DB_PORT}} -e DB_DB=${{secrets.DB_DB}} -e ACCESSKEYID=${{secrets.ACCESSKEYID}} -e SECRETACCESSKEY=${{secrets.SECRETACCESSKEY}} public.ecr.aws/r2n9m4w8/playpal_event_service:latest
 
   deploy-ml:
     needs: build-ml
@@ -140,8 +139,8 @@ jobs:
       - name: Delete old container
         run: docker rm -f playpal-ml
       - name: Run docker container
-        run: docker run -d -p 3501:3501 --name playpal-ml public.ecr.aws/r2n9m4w8/playpal_ml_repo:latest
-  
+        run: docker run -d -p 3501:3501 --name playpal-ml -e ACCESSKEYID=${{secrets.ACCESSKEYID}} -e SECRETACCESSKEY=${{secrets.SECRETACCESSKEY}} public.ecr.aws/r2n9m4w8/playpal_ml_repo:latest
+
   deploy-usercreation:
     needs: build-usercreation
     runs-on: [self-hosted, backend]
@@ -149,7 +148,7 @@ jobs:
       - name: Pull image from docker hub
         run: docker pull public.ecr.aws/r2n9m4w8/playpal_event_service:latest
       - name: Delete old container
-        run: docker rm -f playpal
+        run: docker rm -f playpal-usercreation
       - name: Run docker container
         run: |
           docker run -d -p 3001:3001 --name playpal-usercreation \
@@ -172,7 +171,7 @@ jobs:
       - name: Pull image from docker hub
         run: docker pull public.ecr.aws/r2n9m4w8/playpal_event_service:latest
       - name: Delete old container
-        run: docker rm -f playpal
+        run: docker rm -f playpal-playareastatus
       - name: Run docker container
         run: |
           docker run -d -p 3002:3002 --name playpal-playareastatus \
@@ -185,7 +184,6 @@ jobs:
           -e AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY_SHIREESH }} \
           -e AWS_REGION=${{ secrets.AWS_REGION }} \
           public.ecr.aws/r2n9m4w8/playpal_playareastatus_service:latest
-
 
   deploy-frontend:
     needs: build-frontend

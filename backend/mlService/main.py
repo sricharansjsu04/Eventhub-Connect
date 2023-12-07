@@ -26,7 +26,8 @@ async def recommend(user_id: int):
         aws_secret_access_key = os.getenv('SECRETACCESSKEY')
         endpoint_name = "model-endpoint35"
         aws_region = 'us-east-2'
-
+        print(f"AWS Access Key ID: {aws_access_key_id}")
+        print(f"AWS Secret Access Key: {aws_secret_access_key}")
         # Data prep
         sports_list = {
             'Cricket': 22,
@@ -79,7 +80,7 @@ async def recommend(user_id: int):
 
         # query = "SELECT * FROM events;"
         events = pd.read_sql_query(query, con=engine)
-        # print(events.head())
+        print(events.head())
 
         query = "SELECT * FROM event_users;"
         event_users = pd.read_sql_query(query, con=engine)
@@ -168,6 +169,7 @@ async def recommend(user_id: int):
         test_data_json = features_to_predict.values.tolist()
         # print(test_data_json)
         test_data_json_str = json.dumps(test_data_json)
+        print(test_data_json_str)
         # Make predictions
         # # predictions = clf.predict(features_to_predict)
         sagemaker_runtime = boto3.client('sagemaker-runtime', region_name=aws_region,
