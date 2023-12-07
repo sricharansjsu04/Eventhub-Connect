@@ -58,11 +58,11 @@ const getAllVenues = async (req, res) => {
     try {
         var result = '';
         if(req.body.location!='' && req.body.sportType!=''){
-            result = await queryAsync("SELECT DISTINCT pa.* FROM play_areas as pa INNER JOIN play_area_sports as pas ON pa.id=pas.play_area_id INNER JOIN sports as s ON s.id=pas.sport_id WHERE city=? and s.name=?;",[req.body.location,req.body.sportType]);
+            result = await queryAsync("SELECT DISTINCT pa.* FROM play_areas as pa INNER JOIN play_area_sports as pas ON pa.id=pas.play_area_id INNER JOIN sports as s ON s.id=pas.sport_id WHERE city=? and s.name=? and pa.status='Accepted';",[req.body.location,req.body.sportType]);
         }else if(req.body.location!=''){
-            result = await queryAsync("SELECT DISTINCT pa.* FROM play_areas as pa INNER JOIN play_area_sports as pas ON pa.id=pas.play_area_id INNER JOIN sports as s ON s.id=pas.sport_id WHERE city=?;",[req.body.location]);
+            result = await queryAsync("SELECT DISTINCT pa.* FROM play_areas as pa INNER JOIN play_area_sports as pas ON pa.id=pas.play_area_id INNER JOIN sports as s ON s.id=pas.sport_id WHERE city=? and pa.status='Accepted';",[req.body.location]);
         }else{
-            result = await queryAsync("SELECT DISTINCT pa.* FROM play_areas as pa INNER JOIN play_area_sports as pas ON pa.id=pas.play_area_id INNER JOIN sports as s ON s.id=pas.sport_id WHERE s.name=?;",[req.body.sportType]);
+            result = await queryAsync("SELECT DISTINCT pa.* FROM play_areas as pa INNER JOIN play_area_sports as pas ON pa.id=pas.play_area_id INNER JOIN sports as s ON s.id=pas.sport_id WHERE s.name=? and pa.status='Accepted';",[req.body.sportType]);
         }
       
         console.log(result)
