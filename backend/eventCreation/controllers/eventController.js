@@ -52,6 +52,7 @@ const getAllNotes = async (req, res) => {
     async function fetchData() {
       try {
         const response = await axios.get(`${apiUrl}/`+userId[0].id);
+        console.log(`${apiUrl}/`+userId[0].id);
         // console.log('Response:', response.data.body[0]);
         const temp = response.data.body[0];
         res.json({result,sports,temp});
