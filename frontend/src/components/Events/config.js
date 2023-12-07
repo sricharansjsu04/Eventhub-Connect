@@ -7,6 +7,6 @@ export const rejectReq = 'https://api.playpal.live/home/rejectReq';
 export const getSports = `https://api.playpal.live/venues/getSports`;
 export const getVenues = 'https://api.playpal.live/venues/getVenues';
 export const myEvents = 'https://api.playpal.live/home/myEvents';
-export const getAllEvents = 'https://api.playpal.live/home/getAllEvents';
+export const getAllEvents = 'https://api.playpal.live/home/getAllEvents/';
 export const createEvent = 'https://api.playpal.live/venues/createEvent';
 export const leaveEvent = 'https://api.playpal.live/home/leaveEvent';
