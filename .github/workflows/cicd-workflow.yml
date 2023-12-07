@@ -72,3 +72,36 @@ jobs:
         run: docker rm -f playpal-ml
       - name: Run docker container
         run: docker run -d -p 3501:3501 --name playpal-ml public.ecr.aws/r2n9m4w8/playpal_ml_repo:latest
+
+  build-frontend:
+    runs-on: [ubuntu-latest]
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v3
+      - name: Install AWS CLI
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y awscli
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-2
+      - name: Login to Amazon ECR
+        run: aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/r2n9m4w8
+      - name: Build docker image for frontend
+        run: docker build -t public.ecr.aws/r2n9m4w8/playpal_frontend:latest -f frontend/Dockerfile frontend
+      - name: Publish frontend image to docker hub
+        run: docker push public.ecr.aws/r2n9m4w8/playpal_frontend:latest
+
+  deploy-frontend:
+    needs: build-frontend
+    runs-on: [self-hosted, frontend]
+    steps:
+      - name: Pull frontend image from docker hub
+        run: docker pull public.ecr.aws/r2n9m4w8/playpal_frontend:latest
+      - name: Delete old frontend container
+        run: docker rm -f playpal-frontend
+      - name: Run frontend docker container
+        run: docker run -d -p 80:80 --name playpal-frontend public.ecr.aws/r2n9m4w8/playpal_frontend:latest
