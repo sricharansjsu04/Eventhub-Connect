@@ -128,7 +128,7 @@ jobs:
       - name: Delete old container
         run: docker rm -f playpal
       - name: Run docker container
-        run: docker run -d -p 3500:3500 --name playpal public.ecr.aws/r2n9m4w8/playpal_event_service:latest
+        run: docker run -d -p 3500:3500 --name playpal -e DB_HOST=${{secrets.DB_HOST}} -e DB_USER=${{secrets.DB_USER}} -e DB_PASS=${{secrets.DB_PASS}} -e DB_PORT=${{secrets.DB_PORT}} -e DB_DB=${{secrets.DB_DB}} -e ACCESSKEYID=${{secrets.ACCESSKEYID}} -e SECRETACCESSKEY=${{secrets.SECRETACCESSKEY}} public.ecr.aws/r2n9m4w8/playpal_event_service:latest
 
   deploy-ml:
     needs: build-ml
@@ -139,7 +139,7 @@ jobs:
       - name: Delete old container
         run: docker rm -f playpal-ml
       - name: Run docker container
-        run: docker run -d -p 3501:3501 --name playpal-ml public.ecr.aws/r2n9m4w8/playpal_ml_repo:latest
+        run: docker run -d -p 3501:3501 --name playpal-ml -e ACCESSKEYID=${{secrets.ACCESSKEYID}} -e SECRETACCESSKEY=${{secrets.SECRETACCESSKEY}} public.ecr.aws/r2n9m4w8/playpal_ml_repo:latest
 
   deploy-usercreation:
     needs: build-usercreation
