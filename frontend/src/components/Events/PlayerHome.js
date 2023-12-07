@@ -250,7 +250,7 @@ function PlayerHome() {
     if (!apiCalled.current) {
       async function fetchData() {
         try {
-          const response = await fetch(urls.getAllEvents);
+          const response = await fetch(`${urls.getAllEvents}${loggedInUser}`);
           const result = await response.json();
           console.log(result)
           setVenuesData(result.result);

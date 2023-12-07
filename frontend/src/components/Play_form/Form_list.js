@@ -97,13 +97,13 @@ useEffect(() => {
               </div>
               <div className='row py-3'>
                 {dataList.map((data) => (
-                  <div key={data?.id} className='col-lg-4 col-md-6 col-12 playCard'>
+                  <div key={data?.id} className='col-lg-4 col-md-6 col-12 playCard' style={{marginLeft:"15px"}}>
                     <div className='p-3'>
                       <h2 className='py-1'>{data.name}</h2>
                       {/* <h3>{data?.owner}</h3> */}
-                      <h4>Address1</h4>
+                      <h4>Address</h4>
                       <p>{data.address1}</p>
-                      <h4>Address2</h4>
+                      {/* <>Address2</h4> */}
                       <p>{data?.address2}</p>
                       <div className='d-flex'>
                         <p>{data?.city},</p>
@@ -134,5 +134,7 @@ useEffect(() => {
     </>
   );
 }
+
+
 
 export default Form_list;
