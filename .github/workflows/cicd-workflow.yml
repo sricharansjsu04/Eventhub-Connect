@@ -128,7 +128,7 @@ jobs:
       - name: Delete old container
         run: docker rm -f playpal-eventCreation
       - name: Run docker container
-        run: docker run -d -p 3500:3500 --name playpal-eventCreation -e DB_HOST=${{secrets.DB_HOST}} -e DB_USER=${{secrets.DB_USER}} -e DB_PASS=${{secrets.DB_PASS}} -e DB_PORT=${{secrets.DB_PORT}} -e DB_DB=${{secrets.DB_DB}} -e ACCESSKEYID=${{secrets.ACCESSKEYID}} -e SECRETACCESSKEY=${{secrets.SECRETACCESSKEY}} public.ecr.aws/r2n9m4w8/playpal_event_service:latest
+        run: docker run -d -p 3500:3500 --name playpal-eventCreation -e DB_HOST=${{secrets.DB_HOST}} -e DB_USER=${{secrets.DB_USER}} -e DB_PASS=${{secrets.DB_PASS}} -e DB_PORT=${{secrets.DB_PORT}} -e DB_DB=${{secrets.DB_DB}} -e ACCESSKEYID=${{secrets.ACCESSKEYID}} -e SECRETACCESSKEY=${{secrets.SECRETACCESSKEY}} --log-driver=awslogs --log-opt awslogs-region=us-east-2 --log-opt awslogs-group=Playpal_EventService public.ecr.aws/r2n9m4w8/playpal_event_service:latest
 
   deploy-ml:
     needs: build-ml
@@ -139,7 +139,7 @@ jobs:
       - name: Delete old container
         run: docker rm -f playpal-ml
       - name: Run docker container
-        run: docker run -d -p 3501:3501 --name playpal-ml -e ACCESSKEYID=${{secrets.ACCESSKEYID}} -e SECRETACCESSKEY=${{secrets.SECRETACCESSKEY}} public.ecr.aws/r2n9m4w8/playpal_ml_repo:latest
+        run: docker run -d -p 3501:3501 --name playpal-ml -e ACCESSKEYID=${{secrets.ACCESSKEYID}} -e SECRETACCESSKEY=${{secrets.SECRETACCESSKEY}} --log-driver=awslogs --log-opt awslogs-region=us-east-2 --log-opt awslogs-group=Playpal_Mlservice public.ecr.aws/r2n9m4w8/playpal_ml_repo:latest
 
   deploy-usercreation:
     needs: build-usercreation
@@ -162,6 +162,7 @@ jobs:
           -e AWS_REGION=${{ secrets.AWS_REGION }} \
           -e COGNITO_USER_POOL_ID=${{ secrets.REACT_APP_COGNITO_USER_POOL_ID }} \
           -e COGNITO_CLIENT_ID=${{ secrets.REACT_APP_COGNITO_CLIENT_ID }} \
+          --log-driver=awslogs --log-opt awslogs-region=us-east-2 --log-opt awslogs-group=Playpal_Usercreation \
           public.ecr.aws/r2n9m4w8/playpal_usercreation_service:latest
 
   deploy-playareastatus:
@@ -183,6 +184,7 @@ jobs:
           -e AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID_SHIREESH }} \
           -e AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY_SHIREESH }} \
           -e AWS_REGION=${{ secrets.AWS_REGION }} \
+          --log-driver=awslogs --log-opt awslogs-region=us-east-2 --log-opt awslogs-group=Playpal_Playareastatus \
           public.ecr.aws/r2n9m4w8/playpal_playareastatus_service:latest
 
   deploy-frontend:
@@ -197,4 +199,3 @@ jobs:
 
       - name: Run frontend docker container
         run: docker run -d -p 80:80 --name playpal-frontend public.ecr.aws/r2n9m4w8/playpal_frontend:latest
-
