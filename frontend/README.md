@@ -1,70 +1,119 @@
-# Getting Started with Create React App
+University Name:[San Jose State University](http://www.sjsu.edu/)
+Course: [Cloud Technologies](http://info.sjsu.edu/web-dbgen/catalog/courses/CMPE281.html)
+Professor: [Sanje Garje](https://www.linkedin.com/in/sanjaygarje/)
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Students:
+[Bhargav Krishna Mullapudi](https://www.linkedin.com/in/bhargavkrishna/)
+[Satya Ashish Veda](https://www.linkedin.com/in/satyaashishveda/)
+[Shireesh Vennamaneni](https://www.linkedin.com/in/shireesh-vennamaneni-9b906914a/)
+[Sri Anudeep Velicheti](https://www.linkedin.com/in/sri-anudeep-velicheti/)
 
-## Available Scripts
+# PlayPal
 
-In the project directory, you can run:
+![Imgur](https://i.imgur.com/YM5qexz.png)
 
-### `npm start`
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+[Playpal](https://playpal.live/) is a platform designed to connect sports enthusiasts with available play areas. It simplifies the process of organizing sports activities by allowing users to find players, join games, and host events.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
 
-### `npm test`
+## Prerequisites:
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Before you begin, ensure you have the following prerequisites installed on your system:
 
-### `npm run build`
+1. *Node.js*: Make sure you have Node.js installed. You can download it from [nodejs.org](https://nodejs.org/).
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+2. *Java Development Kit (JDK)*: You need to have JDK installed to run the Spring Boot backend. You can download it from [OpenJDK](https://openjdk.java.net/).
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+3. *Git*: Ensure you have Git installed on your machine to clone the repository. You can download it from [git-scm.com](https://git-scm.com/).
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+4. *AWS Requirements*:  You need to setup rds, s3 bucket, DynamoDB, AppSync API. 
 
-### `npm run eject`
+## Steps to Run the Project:
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+Follow these steps to run the project locally:
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+*###2. Backend (Spring Boot) Setup:*
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+a. Open Terminal in the slotService directory:
+cd PlayPal/slotService
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+b. Build and Run the Spring Boot Application:
+./mvnw spring-boot:run
 
-## Learn More
+The backend server will start running on http://localhost:8080.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+*###3. Frontend (React + Node.js) Setup:*
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+cd PlayPal/frontend
 
-### Code Splitting
+b. Install Frontend Dependencies:
+npm install
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+c. Start the React Development Server:
+npm start
 
-### Analyzing the Bundle Size
+The React frontend will start running on http://localhost:3000.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+*###4. User Creation (Node.js) Setup:*
 
-### Making a Progressive Web App
+a. Open Terminal in the usercreation directory within the backend folder:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+cd PlayPal/backend/usercreation
 
-### Advanced Configuration
+b. Install User Creation Dependencies:
+npm install
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+c. Start the User Creation Server:
+node server.js
 
-### Deployment
+*###5. Event Creation (Node.js) Setup:*
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+a. Open Terminal in the eventcreation directory within the backend folder:
 
-### `npm run build` fails to minify
+cd PlayPal/backend/eventcreation
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+b. Install Event Creation Dependencies:
+npm install
+
+c. Start the Event Creation Server:
+node app.js
+
+
+*###6. Play Area Status (Node.js) Setup:*
+
+a. Open Terminal in the eventcreation directory within the backend folder:
+
+cd PlayPal/backend/PlayAreaStatus
+
+b. Install Play Area Status Dependencies:
+npm install
+
+c. Start the Play Area Status Server:
+node server.js
+
+*### ML Service Setup:*
+
+a. Open Terminal in the MLservice directory:
+cd PlayPal/backend/mlService
+
+b. Start the ML Service with Uvicorn:
+Use the following command to start the ML service using Uvicorn:
+
+uvicorn main:app --host 0.0.0.0 --port 3501 --reload
+
+Now, you should have the entire project up and running locally. You can access the frontend at http://localhost:3000 and make API requests to the backend at http://localhost:8080.
+
+Make sure to update any configuration files or environment variables as needed for your specific project setup.
+
+
+##Sample Screenshots:
+
+![Imgur](https://i.imgur.com/AY2EjEE.jpg)
+
+![Imgur](https://i.imgur.com/u74XS67.jpg)
+
+![Imgur](https://i.imgur.com/3VSXz1P.jpg)
+
+![Imgur](https://i.imgur.com/jSFNMGd.jpg)
+
+![Imgur](https://i.imgur.com/qSkobxe.jpg)
