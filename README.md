@@ -1,11 +1,17 @@
 University Name:[San Jose State University](http://www.sjsu.edu/)
+
 Course: [Cloud Technologies](http://info.sjsu.edu/web-dbgen/catalog/courses/CMPE281.html)
+
 Professor: [Sanje Garje](https://www.linkedin.com/in/sanjaygarje/)
 
 Students:
+
 [Bhargav Krishna Mullapudi](https://www.linkedin.com/in/bhargavkrishna/)
+
 [Satya Ashish Veda](https://www.linkedin.com/in/satyaashishveda/)
+
 [Shireesh Vennamaneni](https://www.linkedin.com/in/shireesh-vennamaneni-9b906914a/)
+
 [Sri Anudeep Velicheti](https://www.linkedin.com/in/sri-anudeep-velicheti/)
 
 # PlayPal
