@@ -2,7 +2,7 @@ University Name:[San Jose State University](http://www.sjsu.edu/)
 
 Course: [Cloud Technologies](http://info.sjsu.edu/web-dbgen/catalog/courses/CMPE281.html)
 
-Professor: [Sanje Garje](https://www.linkedin.com/in/sanjaygarje/)
+Professor: [Sanjay Garje](https://www.linkedin.com/in/sanjaygarje/)
 
 Students:
 
@@ -41,22 +41,22 @@ Follow these steps to run the project locally:
 *###2. Backend (Spring Boot) Setup:*
 
 a. Open Terminal in the slotService directory:
-cd PlayPal/slotService
+```cd PlayPal/slotService```
 
 b. Build and Run the Spring Boot Application:
-./mvnw spring-boot:run
+```./mvnw spring-boot:run```
 
 The backend server will start running on http://localhost:8080.
 
 *###3. Frontend (React + Node.js) Setup:*
 
-cd PlayPal/frontend
+```cd PlayPal/frontend```
 
 b. Install Frontend Dependencies:
-npm install
+```npm install```
 
 c. Start the React Development Server:
-npm start
+```npm start```
 
 The React frontend will start running on http://localhost:3000.
 
@@ -64,48 +64,48 @@ The React frontend will start running on http://localhost:3000.
 
 a. Open Terminal in the usercreation directory within the backend folder:
 
-cd PlayPal/backend/usercreation
+```cd PlayPal/backend/usercreation```
 
 b. Install User Creation Dependencies:
-npm install
+```npm install```
 
 c. Start the User Creation Server:
-node server.js
+```node server.js```
 
 *###5. Event Creation (Node.js) Setup:*
 
 a. Open Terminal in the eventcreation directory within the backend folder:
 
-cd PlayPal/backend/eventcreation
+```cd PlayPal/backend/eventcreation```
 
 b. Install Event Creation Dependencies:
-npm install
+```npm install```
 
 c. Start the Event Creation Server:
-node app.js
+```node app.js```
 
 
 *###6. Play Area Status (Node.js) Setup:*
 
 a. Open Terminal in the eventcreation directory within the backend folder:
 
-cd PlayPal/backend/PlayAreaStatus
+```cd PlayPal/backend/PlayAreaStatus```
 
 b. Install Play Area Status Dependencies:
-npm install
+```npm install```
 
 c. Start the Play Area Status Server:
-node server.js
+```node server.js```
 
 *### ML Service Setup:*
 
 a. Open Terminal in the MLservice directory:
-cd PlayPal/backend/mlService
+```cd PlayPal/backend/mlService```
 
 b. Start the ML Service with Uvicorn:
 Use the following command to start the ML service using Uvicorn:
 
-uvicorn main:app --host 0.0.0.0 --port 3501 --reload
+```uvicorn main:app --host 0.0.0.0 --port 3501 --reload```
 
 Now, you should have the entire project up and running locally. You can access the frontend at http://localhost:3000 and make API requests to the backend at http://localhost:8080.
 
