@@ -12,7 +12,7 @@ Students:
 
 [Shireesh Vennamaneni](https://www.linkedin.com/in/shireesh-vennamaneni-9b906914a/)
 
-[Sri Charan Reddy Mallu](https://www.linkedin.com/in/sri-charan-reddy-mallu/)
+[Sri Charan Reddy Mallu](https://www.linkedin.com/in/sricharanreddymallu/)
 
 # Eventhub connect
 
