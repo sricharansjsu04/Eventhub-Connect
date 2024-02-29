@@ -19,7 +19,7 @@ Students:
 ![Imgur](https://i.imgur.com/YM5qexz.png)
 
 
-[Playpal](https://playpal.live/) is a platform designed to connect sports enthusiasts with available play areas. It simplifies the process of organizing sports activities by allowing users to find players, join games, and host events.
+[EventHub connnect](https://playpal.live/) is a platform designed to connect sports enthusiasts with available play areas. It simplifies the process of organizing sports activities by allowing users to find players, join games, and host events.
 
 
 ## Prerequisites:
