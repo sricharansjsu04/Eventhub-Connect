@@ -12,9 +12,9 @@ Students:
 
 [Shireesh Vennamaneni](https://www.linkedin.com/in/shireesh-vennamaneni-9b906914a/)
 
-[Sri Anudeep Velicheti](https://www.linkedin.com/in/sri-anudeep-velicheti/)
+[Sri Charan Reddy Malluu](https://www.linkedin.com/in/sri-charan-reddy-mallu/)
 
-# PlayPal
+# Eventhub connect
 
 ![Imgur](https://i.imgur.com/YM5qexz.png)
 
